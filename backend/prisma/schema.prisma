@@ -22,7 +22,7 @@ enum Role {
 model User {
   id Int @id @default(autoincrement())
   email String @unique
-  paaword String
+  password String
   firstName String @map("first_name")
   lastName String @map("last_name")
   phone String
@@ -31,5 +31,57 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  teacher Teacher?
+  parent Parent?
+
   @@map("users")
 }
+
+model Teacher {
+  id Int @id @default(autoincrement())
+  userId Int @unique @map("user_id")
+  specialty String?
+  bio String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("teachers")
+}
+
+model Parent {
+  id Int @id @default(autoincrement())
+  userId Int @unique @map("user_id")
+  familyId Int @unique @map("family_id")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@map("parents")
+}
+
+model Child {
+  id Int @id @default(autoincrement())
+  firstName String @map("first_name")
+  lastName String @map("last_name")
+  birthDate DateTime? @map("birth_date")
+  familyId Int @unique @map("family_id")
+  note String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@map("children")
+}
+
+model Family {
+  id Int @id @default(autoincrement())
+  parentOneId Int @unique @map("parent_one_id")
+  parentTwoId Int? @unique @map("parent_two_id")
+  createdAt DateTime @default(now())
+
+  children Child[]
+  parents Parent[]
+
+  @@map("families")
+}
+
+
