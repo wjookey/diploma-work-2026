@@ -25,7 +25,7 @@ const authenticate = async (req, res, next) => {
                 role: true,
                 isActive: true,
                 teacher: { select: { id: true } },
-                parent: { select: { id: true } },
+                parent: { select: { id: true, familyId: true } },
             },
         });
 
