@@ -20,13 +20,12 @@ router.post(
         body('lastName').notEmpty().withMessage('Enter last name'),
         body('phone').isMobilePhone('ru-RU').withMessage('Enter phone number'),
         body('role').isIn(['ADMIN', 'TEACHER', 'PARENT']).withMessage('Incorrect role'),
+        body('familyId').optional().notEmpty().withMessage('Enter family'),
     ],
     validate,
     controller.create
 );
-
 router.put('/:id', controller.update);
-
 router.delete('/:id', controller.remove);
 
 module.exports = router;

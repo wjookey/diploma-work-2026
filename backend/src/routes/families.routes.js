@@ -7,12 +7,12 @@ const controller = require('../controllers/families.controller');
 const router = Router();
 
 router.use(authenticate);
+router.use(authorize('ADMIN'));
 
-router.get('/', authorize('ADMIN'), controller.getAll);
+router.get('/', controller.getAll);
 router.get('/:id', controller.getById);
 router.post(
     '/',
-    authorize('ADMIN'),
     [
         body('familyName').notEmpty().withMessage('Enter family name').trim(),
         body('parents').isArray({ min: 1 }).withMessage('At least one parent is required'),
@@ -30,7 +30,7 @@ router.post(
     validate,
     controller.create
 );
-router.put('/:id', authorize('ADMIN'), controller.update);
-router.delete('/:id', authorize('ADMIN'), controller.remove);
+router.put('/:id', controller.update);
+router.delete('/:id', controller.remove);
 
 module.exports = router;

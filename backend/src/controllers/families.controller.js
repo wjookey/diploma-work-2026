@@ -54,7 +54,7 @@ exports.getById = async (req, res, next) => {
                         user: { select: { firstName: true, lastName: true, phone: true, email: true } },
                     },
                 },
-                children: { select: { firstName: true, lastName: true, birthDate: true } },
+                children: { select: { firstName: true, lastName: true, birthDate: true, note: true } },
             },
         });
 
@@ -69,14 +69,14 @@ exports.getById = async (req, res, next) => {
 exports.create = async (req, res, next) => {
     try {
         const { familyName, parents, children } = req.body;
-        
+
         const result = await prisma.$transaction(async (tx) => {
             const createdFamily = await tx.family.create({
                 data: { familyName },
             });
 
             const createdParents = [];
-
+            
             for (const parent of parents) {
                 const hashedPassword = await bcrypt.hash(parent.user.password, 12);
 
@@ -106,7 +106,7 @@ exports.create = async (req, res, next) => {
                     tx.child.create({
                         data: {
                             firstName: child.firstName,
-                            lastName: lastName,
+                            lastName: child.lastName,
                             birthDate: child.birthDate ? new Date(child.birthDate) : null,
                             familyId: createdFamily.id,
                             note: child.note || null,
@@ -130,7 +130,7 @@ exports.create = async (req, res, next) => {
                         user: { select: { firstName: true, lastName: true, phone: true, email: true } },
                     },
                 },
-                children: { select: { firstName: true, lastName: true, birthDate: true } },
+                children: { select: { firstName: true, lastName: true, birthDate: true, note: true } },
             },
         });
 

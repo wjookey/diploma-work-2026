@@ -23,13 +23,12 @@ const authenticate = async (req, res, next) => {
                 lastName: true,
                 phone: true,
                 role: true,
-                isActive: true,
                 teacher: { select: { id: true } },
                 parent: { select: { id: true, familyId: true } },
             },
         });
 
-        if (!user || !user.isActive) {
+        if (!user) {
             throw new AppError('User is not fount or deactivated', 401);
         }
 

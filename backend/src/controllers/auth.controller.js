@@ -24,10 +24,6 @@ exports.login = async (req, res, next) => {
             throw new AppError('Incorrect email or password', 401);
         }
 
-        if (!user.isActive) {
-            throw new AppError('Account is deactivated. Contact the administrator', 403);
-        }
-
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             throw new AppError('Incorrect email or password', 401);
@@ -49,46 +45,46 @@ exports.login = async (req, res, next) => {
     }
 };
 
-exports.register = async (req, res, next) => {
-    try {
-        const { email, password, firstName, lastName, phone } = req.body;
+// exports.register = async (req, res, next) => {
+//     try {
+//         const { email, password, firstName, lastName, phone } = req.body;
 
-        const existingUser = await prisma.user.findUnique({ where: { email } });
-        if (existingUser) {
-            throw new AppError('User already exists', 409);
-        }
+//         const existingUser = await prisma.user.findUnique({ where: { email } });
+//         if (existingUser) {
+//             throw new AppError('User already exists', 409);
+//         }
 
-        const hashedPassword = await bcrypt.hash(password, 12);
+//         const hashedPassword = await bcrypt.hash(password, 12);
 
-        const user = await prisma.user.create({
-            data: {
-                email,
-                password: hashedPassword,
-                firstName,
-                lastName,
-                phone,
-                role: 'PARENT',
-                parent: { create: { family: { create: {} } } },
-            },
-            include: {
-                parent: { select: { id: true, family: { select: { id: true } } } },
-            },
-        });
+//         const user = await prisma.user.create({
+//             data: {
+//                 email,
+//                 password: hashedPassword,
+//                 firstName,
+//                 lastName,
+//                 phone,
+//                 role: 'PARENT',
+//                 parent: { create: { family: { create: { familyName: lastName } } } },
+//             },
+//             include: {
+//                 parent: { select: { id: true, family: { select: { id: true,  familyName: true } } } },
+//             },
+//         });
 
-        const token = generateToken(user.id);
-        const { password: _, ...userData } = user;
+//         const token = generateToken(user.id);
+//         const { password: _, ...userData } = user;
 
-        res.status(201).json({
-            success: true,
-            data: {
-                user: userData,
-                token,
-            },
-        });
-    } catch (error) {
-        next(error);
-    }
-};
+//         res.status(201).json({
+//             success: true,
+//             data: {
+//                 user: userData,
+//                 token,
+//             },
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// };
 
 exports.getMe = async (req, res, next) => {
     try {
@@ -101,7 +97,6 @@ exports.getMe = async (req, res, next) => {
                 lastName: true,
                 phone: true,
                 role: true,
-                isActive: true,
                 createdAt: true,
                 teacher: { select: { id: true, specialty: true, bio: true } },
                 parent: {

@@ -37,7 +37,7 @@ exports.getAll = async (req, res, next) => {
                     subscriptions: {
                         where: { status: 'ACTIVE' },
                         include: {
-                            club: { select: { id: true, name: true, color: true } },
+                            club: { select: { id: true, name: true } },
                         },
                     },
                 },
@@ -79,7 +79,7 @@ exports.getById = async (req, res, next) => {
                 },
                 subscriptions: {
                     include: {
-                        club: { select: { id: true, name: true, color: true } },
+                        club: { select: { id: true, name: true } },
                         payment: true,
                     },
                     orderBy: { createdAt: 'desc' },
@@ -88,7 +88,7 @@ exports.getById = async (req, res, next) => {
                     include: {
                         lesson: {
                             include: {
-                                club: { select: { id: true, name: true, color: true } },
+                                club: { select: { id: true, name: true } },
                             },
                         },
                     },
@@ -143,7 +143,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { firstName, lastName, birthDate, note } = req.body;
+        const { firstName, lastName, birthDate, note, familyId } = req.body;
 
         const child = await prisma.child.update({
             where: { id: parseInt(req.params.id) },
@@ -152,6 +152,7 @@ exports.update = async (req, res, next) => {
                 ...(lastName && { lastName }),
                 ...(birthDate !== undefined && { birthDate: birthDate ? new Date(birthDate) : null }),
                 ...(note !== undefined && { note }),
+                ...(familyId && { familyId: parseInt(familyId) }),
             },
         });
 

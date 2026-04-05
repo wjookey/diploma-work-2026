@@ -8,7 +8,7 @@ exports.getAll = async (req, res, next) => {
 
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        const where = { isActive: true };
+        const where = {};
 
         if (role) where.role = role;
 
@@ -30,7 +30,6 @@ exports.getAll = async (req, res, next) => {
                     lastName: true,
                     phone: true,
                     role: true,
-                    isActive: true,
                     createdAt: true,
                     teacher: { select: { id: true, specialty: true } },
                     parent: {
@@ -81,7 +80,6 @@ exports.getById = async (req, res, next) => {
                 lastName: true,
                 phone: true,
                 role: true,
-                isActive: true,
                 createdAt: true,
                 teacher: {
                     select: {
@@ -117,7 +115,7 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const { email, password, firstName, lastName, phone, role, specialty, bio } = req.body;
+        const { email, password, firstName, lastName, phone, role, specialty, bio, familyId } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -135,7 +133,8 @@ exports.create = async (req, res, next) => {
         }
 
         if (role === 'PARENT') {
-            data.parent = { create: { family: { create: {} } } };
+            if (familyId) data.parent = { create: { familyId: parseInt(familyId) } };
+            else data.parent = { create: { family: { create: {} } } };
         }
 
         const user = await prisma.user.create({
