@@ -1,11 +1,20 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const prisma = require('../config/prisma');
 const config = require('../config');
 const { AppError } = require('../middleware/errorHandler');
 
-const generateToken = (userId) => {
-    return jwt.sign({ userId }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
+const generateToken = (userId, tokenType) => {
+    const jwtSecret = tokenType === "access" ? config.jwtAccessSecret : config.jwtRefreshSecret;
+    const jwtExpiresIn = tokenType === "access" ? config.jwtAccessExpiresIn : config.jwtRefreshExpiresIn;
+    const token = jwt.sign({ userId }, jwtSecret, { expiresIn: jwtExpiresIn });
+
+    return token;
+};
+
+const hashToken = (token) => {
+    return crypto.createHash('sha256').update(token).digest('hex');
 };
 
 exports.login = async (req, res, next) => {
@@ -29,7 +38,13 @@ exports.login = async (req, res, next) => {
             throw new AppError('Incorrect email or password', 401);
         }
 
-        const token = generateToken(user.id);
+        const accessToken = generateToken(user.id, "access");
+        const refreshToken = generateToken(user.id, "refresh");
+        
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { refreshToken: hashToken(refreshToken) },
+        });
 
         const { password: _, ...userData } = user;
 
@@ -37,7 +52,8 @@ exports.login = async (req, res, next) => {
             success: true,
             data: {
                 user: userData,
-                token,
+                accessToken,
+                refreshToken,
             },
         });
     } catch (error) {
@@ -45,46 +61,54 @@ exports.login = async (req, res, next) => {
     }
 };
 
-// exports.register = async (req, res, next) => {
-//     try {
-//         const { email, password, firstName, lastName, phone } = req.body;
+exports.register = async (req, res, next) => {
+    try {
+        const { email, password, firstName, lastName, phone } = req.body;
 
-//         const existingUser = await prisma.user.findUnique({ where: { email } });
-//         if (existingUser) {
-//             throw new AppError('User already exists', 409);
-//         }
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            throw new AppError('User already exists', 409);
+        }
 
-//         const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedPassword = await bcrypt.hash(password, 12);
 
-//         const user = await prisma.user.create({
-//             data: {
-//                 email,
-//                 password: hashedPassword,
-//                 firstName,
-//                 lastName,
-//                 phone,
-//                 role: 'PARENT',
-//                 parent: { create: { family: { create: { familyName: lastName } } } },
-//             },
-//             include: {
-//                 parent: { select: { id: true, family: { select: { id: true,  familyName: true } } } },
-//             },
-//         });
+        const user = await prisma.user.create({
+            data: {
+                email,
+                password: hashedPassword,
+                firstName,
+                lastName,
+                phone,
+                role: 'PARENT',
+                parent: { create: { family: { create: { familyName: lastName } } } },
+            },
+            include: {
+                parent: { select: { id: true, family: { select: { id: true,  familyName: true } } } },
+            },
+        });
 
-//         const token = generateToken(user.id);
-//         const { password: _, ...userData } = user;
+        const accessToken = generateToken(user.id, "access");
+        const refreshToken = generateToken(user.id, "refresh");
 
-//         res.status(201).json({
-//             success: true,
-//             data: {
-//                 user: userData,
-//                 token,
-//             },
-//         });
-//     } catch (error) {
-//         next(error);
-//     }
-// };
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { refreshToken: hashToken(refreshToken) },
+        });
+
+        const { password: _, ...userData } = user;
+
+        res.status(201).json({
+            success: true,
+            data: {
+                user: userData,
+                accessToken,
+                refreshToken,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 exports.getMe = async (req, res, next) => {
     try {
@@ -136,6 +160,54 @@ exports.changePassword = async (req, res, next) => {
         });
 
         res.json({ success: true, message: 'Password is changed successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.refreshToken = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            throw new AppError('Refresh Token is required', 401);
+        }
+
+        const decoded = jwt.verify(refreshToken, config.jwtRefreshSecret);
+
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+        });
+
+        if (!user || !user.refreshToken) {
+            throw new AppError('Invalid refresh token', 401);
+        }
+
+        const hashedIncomingToken = hashToken(refreshToken);
+
+        if (hashedIncomingToken !== user.refreshToken) {
+            throw new AppError('Invalid refresh token', 401);
+        }
+
+        const accessToken = generateToken(user.id, "access");
+
+        res.json({
+            success: true,
+            data: { accessToken }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.logout = async (req, res, next) => {
+    try {
+        await prisma.user.update({
+            where: { id: req.user.id },
+            data: { refreshToken: null },
+        });
+
+        res.json({ success: true, message: 'Logged out' });
     } catch (error) {
         next(error);
     }

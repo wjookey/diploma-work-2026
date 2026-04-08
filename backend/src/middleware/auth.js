@@ -12,7 +12,7 @@ const authenticate = async (req, res, next) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const decoded = jwt.verify(token, config.jwtSecret);
+        const decoded = jwt.verify(token, config.jwtAccessSecret);
         
         const user = await prisma.user.findUnique({
             where: { id: decoded.userId },
@@ -35,7 +35,10 @@ const authenticate = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        next(error);
+        if (error.name === 'TokenExpiredError') {
+            return next(new AppError('Token expired', 401));
+        }
+        return next(new AppError('Invalid token', 401));
     }
 };
 

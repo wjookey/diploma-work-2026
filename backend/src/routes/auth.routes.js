@@ -15,7 +15,6 @@ router.post(
     validate,
     controller.login
 );
-
 router.post(
     '/register',
     [
@@ -28,9 +27,7 @@ router.post(
     validate,
     controller.register
 )
-
 router.get('/me', authenticate, controller.getMe);
-
 router.put(
     '/password',
     authenticate,
@@ -41,5 +38,7 @@ router.put(
     validate,
     controller.changePassword
 );
+router.post('/refresh', controller.refreshToken);
+router.put('/logout', authenticate, controller.logout);
 
 module.exports = router;
