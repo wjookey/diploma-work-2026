@@ -3,7 +3,7 @@ const { AppError } = require('../middleware/errorHandler');
 
 exports.getAll = async (req, res, next) => {
     try {
-        const { childId, clubId, clubServiceId, status, page = 1, limit = 20 } = req.query;
+        const { childId, clubId, clubServiceId, status, familyId, page = 1, limit = 20 } = req.query;
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const where = {};
@@ -12,6 +12,12 @@ exports.getAll = async (req, res, next) => {
         if (clubId) where.clubId = parseInt(clubId);
         if (clubServiceId) where.clubServiceId = parseInt(clubServiceId);
         if (status) where.status = status;
+        if (req.user.role === 'PARENT') {
+            where.child = {};
+            where.child.familyId = req.user.parent.familyId;
+        } else if (familyId) {
+            where.familyId = parseInt(familyId);
+        }
 
         const [subscriptions, total] = await Promise.all([
             prisma.subscription.findMany({
@@ -68,6 +74,10 @@ exports.getById = async (req, res, next) => {
 
         if (!subscription) throw new AppError('Subscription is not found', 404);
 
+        if (req.user.role === 'PARENT' && subscription.child.familyId !== req.user.parent.familyId) {
+            throw new AppError('Forbidden', 403);
+        }
+
         res.json({ success: true, data: subscription });
     } catch (error) {
         next(error);
@@ -114,6 +124,54 @@ exports.create = async (req, res, next) => {
         });
 
         res.status(201).json({ success: true, data: subscription });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.createCombo = async (req, res, next) => {
+    try {
+        const { comboSubscriptions } = req.body;
+
+        const result = await prisma.$transaction(async (tx) => {
+            const createdCombo = [];
+
+            for (const comboSubscription of comboSubscriptions) {
+                const clubService = await tx.clubService.findUnique({
+                    where: { id: parseInt(comboSubscription.clubServiceId) }
+                });
+
+                if (!clubService) throw new AppError('Club service is not found', 404);
+
+                const activeSubscriptionCount = await tx.subscription.count({
+                    where: { clubId: clubService.clubId, childId: parseInt(comboSubscription.childId), status: 'ACTIVE' },
+                });
+
+                let date = new Date;
+                date = new Date(new Date(date.setDate(date.getDate() + 1)).setHours(0, 0, 0, 0));
+
+                const createdSubscription = await tx.subscription.create({
+                    data: {
+                        childId: parseInt(comboSubscription.childId),
+                        clubId: clubService.clubId,
+                        clubServiceId: parseInt(comboSubscription.clubServiceId),
+                        remainingLessons: clubService.subscriptionLessons,
+                        usedFreezes: 0,
+                        startDate: activeSubscriptionCount === 0 ? date : null,
+                        status: activeSubscriptionCount === 0 ? 'ACTIVE' : 'PENDING',
+                    },
+                });
+
+                createdCombo.push(createdSubscription);
+            }
+
+            return createdCombo;
+        });
+
+        res.status(201).json({
+            success: true,
+            data: result
+        });
     } catch (error) {
         next(error);
     }

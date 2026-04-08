@@ -20,6 +20,17 @@ router.post(
     validate,
     controller.create
 );
+router.post(
+    '/combo',
+    authorize('ADMIN'),
+    [
+        body('comboSubscriptions').isArray({ min: 2, max: 2 }).withMessage('comboSubscriptions must be an array of 2 objects'),
+        body('comboSubscriptions.*.childId').notEmpty().withMessage('Choose the child'),
+        body('comboSubscriptions.*.clubServiceId').notEmpty().withMessage('Enter the club service'),
+    ],
+    validate,
+    controller.createCombo
+);
 router.put('/:id', authorize('ADMIN'), controller.update);
 router.put('/:id/cancel', authorize('ADMIN'), controller.cancel);
 router.delete('/:id', authorize('ADMIN'), controller.remove);

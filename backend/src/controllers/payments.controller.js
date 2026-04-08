@@ -68,6 +68,22 @@ exports.getAll = async (req, res, next) => {
     }
 };
 
+exports.getById = async (req, res, next) => {
+    try {
+        const payment = await prisma.payment.findUnique({
+            where: { id: parseInt(req.params.id) },
+            include: {
+                subscription: true,
+            },
+        });
+
+        if (!payment) throw new AppError('Payment is not found', 404);
+
+        res.json({ success: true, data: payment });
+    } catch (error) {
+        next(error);
+    }
+}
 
 exports.create = async (req, res, next) => {
     try {

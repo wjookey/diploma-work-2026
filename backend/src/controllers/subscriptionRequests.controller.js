@@ -60,6 +60,24 @@ exports.getAll = async (req, res, next) => {
     }
 };
 
+exports.getById = async (req, res, next) => {
+    try {
+        const subscriptionRequest = await prisma.subscriptionRequest.findUnique({
+            where: { id: parseInt(req.params.id) },
+            include: {
+                child: true,
+                clubService: true,
+            },
+        });
+
+        if (!subscriptionRequest) throw new AppError('Request is not found', 404);
+
+        res.json({ success: true, data: subscriptionRequest });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.create = async (req, res, next) => {
     try {
         const { childId, clubServiceId, message } = req.body;
@@ -68,7 +86,7 @@ exports.create = async (req, res, next) => {
             throw new AppError('Only parents are allowed to submit requests', 403);
         }
 
-        const child = await prisma.child.findFirst({
+        const child = await prisma.child.findUnique({
             where: { id: parseInt(childId), familyId: req.user.parent.familyId },
         });
 
@@ -77,6 +95,8 @@ exports.create = async (req, res, next) => {
         const clubService = await prisma.clubService.findUnique({
             where: { id: parseInt(clubServiceId) },
         });
+
+        if (!clubService) throw new AppError('Club service is not found', 404);
 
         const subscriptionRequest = await prisma.subscriptionRequest.create({
             data: {
@@ -101,6 +121,51 @@ exports.create = async (req, res, next) => {
     }
 };
 
+exports.createCombo = async (req, res, next) => {
+    try {
+        const { requests } = req.body;
+
+        if (req.user.role !== 'PARENT') {
+            throw new AppError('Only parents are allowed to submit requests', 403);
+        }
+
+        const result = await prisma.$transaction(async (tx) => {
+            const createdRequests = [];
+
+            for (const request of requests) {
+                const child = await tx.child.findUnique({
+                    where: { id: parseInt(request.childId), familyId: req.user.parent.familyId },
+                });
+
+                if (!child) throw new AppError('Child is not found', 404);
+
+                const clubService = await tx.clubService.findUnique({
+                    where: { id: parseInt(request.clubServiceId) },
+                });
+
+                if (!clubService) throw new AppError('Club service is not found', 404);
+
+                const createdRequest = await tx.subscriptionRequest.create({
+                    data: {
+                        familyId: req.user.parent.familyId,
+                        childId: parseInt(request.childId),
+                        clubServiceId: parseInt(request.clubServiceId),
+                        message: request.message,
+                    },
+                });
+
+                createdRequests.push(createdRequest);
+            }
+
+            return createdRequests;
+        });
+
+        res.status(201).json({ success: true, data: result });
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.update = async (req, res, next) => {
     try {
         const { clubServiceId, childId } = req.body;
@@ -108,10 +173,6 @@ exports.update = async (req, res, next) => {
         if (req.user.role !== 'PARENT') {
             throw new AppError('Only parents are allowed to change requests', 403);
         }
-
-        const clubService = await prisma.clubService.findUnique({
-            where: { id: parseInt(clubServiceId) },
-        });
 
         const child = await prisma.child.findUnique({
             where: { id: parseInt(childId), familyId: req.user.parent.familyId },

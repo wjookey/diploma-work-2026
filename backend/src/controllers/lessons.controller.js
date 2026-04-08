@@ -79,6 +79,24 @@ exports.getAll = async (req, res, next) => {
     }
 };
 
+exports.getById = async (req, res, next) => {
+    try {
+        const lesson = await prisma.lesson.findUnique({
+            where: { id: parseInt(req.params.id) },
+            include: {
+                club: true,
+                teacher: true,
+            },
+        });
+
+        if (!lesson) throw new AppError('Lesson is not found', 404);
+
+        res.json({ success: true, data: lesson });
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.create = async (req, res, next) => {
     try {
         const { clubId, date, startTime, endTime, assignedTeacherId, room, topic } = req.body;
@@ -86,6 +104,8 @@ exports.create = async (req, res, next) => {
         const club = await prisma.club.findUnique({
             where: { id: parseInt(clubId) },
         });
+
+        if (!club) throw new AppError('Club is not found', 404);
 
         const lesson = await prisma.lesson.create({
             data: {
@@ -124,6 +144,8 @@ exports.createWeekLessons = async (req, res, next) => {
                 const club = await prisma.club.findUnique({
                     where: { id: parseInt(lesson.clubId) },
                 });
+
+                if (!club) throw new AppError('Club is not found', 404);
 
                 lessons.push({
                     clubId: parseInt(lesson.clubId),

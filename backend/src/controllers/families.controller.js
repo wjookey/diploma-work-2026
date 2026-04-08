@@ -60,6 +60,10 @@ exports.getById = async (req, res, next) => {
 
         if (!family) throw new AppError('Family is not found', 404);
 
+        if (req.user.role === 'PARENT' && family.id !== req.user.parent.familyId) {
+            throw new AppError('Forbidden', 403);
+        }
+
         res.json({ success: true, data: family });
     } catch (error) {
         next(error);
@@ -76,7 +80,6 @@ exports.create = async (req, res, next) => {
             });
 
             const createdParents = [];
-            
             for (const parent of parents) {
                 const hashedPassword = await bcrypt.hash(parent.user.password, 12);
 

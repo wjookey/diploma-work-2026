@@ -3,10 +3,12 @@ const { AppError } = require('../middleware/errorHandler');
 
 exports.getAll = async (req, res, next) => {
     try {
-        const { search, clubId, type, page = 1, limit = 20 } = req.query;
+        const { search, clubId, type, isActive, page = 1, limit = 20 } = req.query;
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const where = {};
+        
+        where.club = { isActive: parseInt(isActive) ? true : false };
 
         if (clubId) where.clubId = parseInt(clubId);
         if (type) where.type = type;
@@ -70,6 +72,14 @@ exports.getById = async (req, res, next) => {
 exports.create = async (req, res, next) => {
     try {
         const { name, price, subscriptionLessons, freezedLesson, clubId, type } = req.body;
+
+        const club = await prisma.club.findUnique({
+            where: { id: parseInt(clubId) },
+        });
+
+        if (!club) {
+            throw new AppError('Club is not found', 404);
+        }
 
         const clubService = await prisma.clubService.create({
             data: {

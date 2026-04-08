@@ -142,6 +142,21 @@ exports.update = async (req, res, next) => {
     }
 };
 
+exports.updateStatus = async (req, res, next) => {
+    try {
+        const { isActive } = req.body;
+
+        await prisma.club.update({
+            where: { id: parseInt(req.params.id) },
+            data: { isActive },
+        });
+
+        res.json({ success: true, message: 'Status is updated' });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.remove = async (req, res, next) => {
     try {
         await prisma.club.delete({

@@ -9,6 +9,7 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/', controller.getAll);
+router.get('/:id', authorize('ADMIN', 'PARENT'), controller.getById);
 router.post(
     '/',
     authorize('ADMIN'),
