@@ -8,8 +8,7 @@ exports.getAll = async (req, res, next) => {
 
         const where = {};
         
-        where.club = { isActive: parseInt(isActive) ? true : false };
-
+        if (isActive !== undefined) where.isActive = isActive === 'true';
         if (clubId) where.clubId = parseInt(clubId);
         if (type) where.type = type;
         if (search) where.name = { contains: search, mode: 'insensitive' };
@@ -18,7 +17,7 @@ exports.getAll = async (req, res, next) => {
             prisma.clubService.findMany({
                 where,
                 include: {
-                    club: { select: { id: true, name: true } },
+                    club: { select: { id: true, name: true, isActive: true } },
                 },
                 orderBy: { name: 'asc' },
                 skip,
@@ -125,8 +124,41 @@ exports.update = async (req, res, next) => {
     }
 };
 
+exports.updateStatus = async (req, res, next) => {
+    try {
+        const { isActive } = req.body;
+
+        await prisma.clubService.update({
+            where: { id: parseInt(req.params.id) },
+            data: { isActive },
+        });
+
+        res.json({ success: true, message: 'Status is updated' });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.remove = async (req, res, next) => {
     try {
+        const currentSubscriptions = await prisma.subscription.count({
+            where: {
+                clubServiceId: parseInt(req.params.id),
+                status: "ACTIVE" || 'PENDING',
+            },
+        });
+
+        if (currentSubscriptions !== 0) throw new AppError('There are current subscriptions connected to this club service', 409);
+
+        const currentRequests = await prisma.subscriptionRequest.count({
+            where: {
+                clubServiceId: parseInt(req.params.id),
+                status: 'PENDING',
+            },
+        });
+
+        if (currentRequests !== 0) throw new AppError('There are current requests connected to this club category', 409);
+
         await prisma.clubService.delete({
             where: { id: parseInt(req.params.id) },
         });

@@ -256,6 +256,14 @@ exports.reject = async (req, res, next) => {
     try {
         const requestId = parseInt(req.params.id);
 
+        const request = await prisma.subscriptionRequest.findUnique({
+            where: { id: requestId },
+        });
+
+        if (!request) throw new AppError('Request is not found', 404);
+
+        if (request.status !== 'PENDING') throw new AppError('Request is already processed', 400);
+
         await prisma.subscriptionRequest.update({
             where: { id: requestId },
             data: { status: 'REJECTED' },
@@ -265,7 +273,7 @@ exports.reject = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
 exports.remove = async (req, res, next) => {
     try {
@@ -273,8 +281,16 @@ exports.remove = async (req, res, next) => {
             throw new AppError('Only parents are allowed to remove requests', 403);
         }
 
+        const request = await prisma.subscriptionRequest.findUnique({
+            where: { id: parseInt(req.params.id) }
+        });
+
+        if (!request) throw new AppError('Request is not found', 404);
+
+        if (request.status !== 'PENDING') throw new AppError('You cannot remove processed request', 400);
+
         await prisma.subscriptionRequest.delete({
-            where: { id: parseInt(req.params.id), status: 'PENDING' },
+            where: { id: parseInt(req.params.id) },
         });
 
         res.json({ success: true, message: 'Subscription request is deleted' });

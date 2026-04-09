@@ -16,5 +16,7 @@ router.use('/attendances', require('./attendances.routes'));
 router.use('/subscriptions', require('./subscriptions.routes'));
 router.use('/payments', require('./payments.routes'));
 router.use('/subscriptionRequests', require('./subscriptionRequests.routes'));
+router.use('/schedule', require('./schedule.routes'));
+router.use('/dashboard', require('./dashboard.routes'));
 
 module.exports = router;

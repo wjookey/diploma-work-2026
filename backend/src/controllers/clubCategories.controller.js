@@ -3,11 +3,13 @@ const { AppError } = require('../middleware/errorHandler');
 
 exports.getAll = async (req, res, next) => {
     try {
-        const { search, page = 1, limit = 20 } = req.query;
+        const { search, isActive, page = 1, limit = 20 } = req.query;
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const where = {};
-
+        if (isActive !== undefined) {
+            where.isActive = isActive === 'true';
+        }
         if (search) {
             where.OR = [
                 { name: { contains: search, mode: 'insensitive' } },
@@ -94,8 +96,45 @@ exports.update = async (req, res, next) => {
     }
 };
 
+exports.updateStatus = async (req, res, next) => {
+    try {
+        const { isActive } = req.body;
+
+        await prisma.clubCategory.update({
+            where: { id: parseInt(req.params.id) },
+            data: { isActive },
+        });
+
+        res.json({ success: true, message: 'Status is updated' });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.remove = async (req, res, next) => {
     try {
+        const currentSubscriptions = await prisma.subscription.count({
+            where: {
+                club: {
+                    classCategoryId: parseInt(req.params.id),
+                },
+                status: 'ACTIVE' || 'PENDING',
+            },
+        });
+
+        if (currentSubscriptions !== 0) throw new AppError('There are current subscriptions connected to this club category', 409);
+        
+        const currentRequests = await prisma.subscriptionRequest.count({
+            where: {
+                clubService: {
+                    club: { classCategoryId: parseInt(req.params.id) },
+                },
+                status: 'PENDING',
+            },
+        });
+
+        if (currentRequests !== 0) throw new AppError('There are current requests connected to this club category', 409);
+
         await prisma.clubCategory.delete({
             where: { id: parseInt(req.params.id) },
         });

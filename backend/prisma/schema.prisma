@@ -116,6 +116,7 @@ model ClubCategory {
   id Int @id @default(autoincrement())
   name String
   description String?
+  isActive Boolean @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
 
   clubs Club[]
@@ -133,10 +134,11 @@ model Club {
   createdAt DateTime @default(now()) @map("created_at")
 
   clubCategory ClubCategory @relation(fields: [classCategoryId], references: [id], onDelete: Cascade)
-  teacher Teacher @relation(fields: [defaultTeacherId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation(fields: [defaultTeacherId], references: [id])
   clubServices ClubService[]
   lessons Lesson[]
   subscriptions Subscription[]
+  schedules Schedule[]
 
   @@map("clubs")
 }
@@ -149,6 +151,7 @@ model ClubService {
   freezedLesson Int @default(0) @map("freezed_lessons")
   clubId Int @map("club_id")
   type ServiceType
+  isActive Boolean @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
 
   club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
@@ -156,6 +159,19 @@ model ClubService {
   subscriptionRequests SubscriptionRequest[]
 
   @@map("club_services")
+}
+
+model Schedule {
+  id Int @id @default(autoincrement())
+  clubId Int @map("club_id")
+  dayOfWeek Int @map("day_of_week")
+  startTime String @map("start_time")
+  endTime String @map("end_time")
+  room String?
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@map("schedules")
 }
 
 model Lesson {

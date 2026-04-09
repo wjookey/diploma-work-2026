@@ -21,6 +21,7 @@ router.post(
     controller.create
 );
 router.put('/:id', authorize('ADMIN'), controller.update);
+router.put('/:id/status', authorize('ADMIN'), controller.updateStatus);
 router.delete('/:id', authorize('ADMIN'), controller.remove);
 
 module.exports = router;

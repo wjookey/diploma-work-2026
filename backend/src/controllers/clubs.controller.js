@@ -3,11 +3,14 @@ const { AppError } = require('../middleware/errorHandler');
 
 exports.getAll = async (req, res, next) => {
     try {
-        const { search, classCategoryId, page = 1, limit = 20 } = req.query;
+        const { search, classCategoryId, isActive, page = 1, limit = 20 } = req.query;
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const where = {};
 
+        if (isActive !== undefined) {
+            where.isActive = isActive === 'true';
+        }
         if (classCategoryId) {
             where.classCategoryId = parseInt(classCategoryId);
         }
@@ -19,7 +22,7 @@ exports.getAll = async (req, res, next) => {
             prisma.club.findMany({
                 where,
                 include: {
-                    clubCategory: { select: { id: true, name: true, description: true } },
+                    clubCategory: { select: { id: true, name: true, description: true, isActive: true } },
                     teacher: {
                         include: {
                             user: { select: { firstName: true, lastName: true, phone: true, email: true } },
@@ -159,6 +162,26 @@ exports.updateStatus = async (req, res, next) => {
 
 exports.remove = async (req, res, next) => {
     try {
+        const currentSubscriptions = await prisma.subscription.count({
+            where: {
+                clubId: parseInt(req.params.id),
+                status: 'ACTIVE' || 'PENDING',
+            },
+        });
+
+        if (currentSubscriptions !== 0) throw new AppError('There are current subscriptions connected to this club', 409);
+
+        const currentRequests = await prisma.subscriptionRequest.count({
+            where: {
+                clubService: {
+                    clubId: parseInt(req.params.id),
+                },
+                status: 'PENDING',
+            },
+        });
+
+        if (currentRequests !== 0) throw new AppError('There are current requests connected to this club category', 409);
+
         await prisma.club.delete({
             where: { id: parseInt(req.params.id) },
         });
