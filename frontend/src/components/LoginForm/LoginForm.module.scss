@@ -1,0 +1,56 @@
+@use '../../styles/abstracts/variables' as *;
+
+.layout {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: rgba(250, 250, 250, 0.411);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 3px 0 $purple-4;
+
+    .textBlock {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        text-align: left;
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: $neutral-10;
+        }
+
+        .description {
+            font-size: 16px;
+            font-weight: 400;
+            color: $neutral-7;
+        }
+    }
+
+    .formBlock {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+
+        .inputsBlock {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+        }
+    }
+}

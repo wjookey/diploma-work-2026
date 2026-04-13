@@ -1,0 +1,155 @@
+@use '../../styles/abstracts/variables' as *;
+
+.button {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 3px 0 $purple-4;
+    }
+
+    &.primary {
+        background-color: $purple-6;
+        color: $neutral-1;
+
+        &:hover {
+            background-color: $purple-8;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+
+            &:hover {
+                background-color: $purple-6;
+                opacity: 0.4;
+            }
+        }
+    }
+
+    &.transparent {
+        background-color: transparent;
+        color: $purple-10;
+
+        &:hover {
+            background-color: $purple-2;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+
+            &:hover {
+                background-color: transparent;
+                opacity: 0.4;
+            }
+        }
+    }
+
+    &.outline {
+        background-color: transparent;
+        color: $purple-7;
+        outline: 1px solid $purple-7;
+
+        &:hover {
+            background-color: $purple-2;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+
+            &:hover {
+                background-color: transparent;
+                opacity: 0.4;
+            }
+        }
+    }
+
+    &.success {
+        background-color: $green-5;
+        color: $neutral-1;
+
+        &:hover {
+            background-color: $green-7;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+
+            &:hover {
+                background-color: $green-5;
+                opacity: 0.4;
+            }
+        }
+    }
+
+    &.danger {
+        background-color: $red-5;
+        color: $neutral-1;
+
+        &:hover {
+            background-color: $red-7;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+
+            &:hover {
+                background-color: $red-5;
+                opacity: 0.4;
+            }
+        }
+    }
+
+    &.sm {
+        padding: 6px;
+        font-size: 12px;
+        height: 36px
+    }
+
+    &.md {
+        padding: 8px;
+        font-size: 14px;
+        height: 40px;
+    }
+
+    &.lg {
+        padding: 10px;
+        font-size: 16px;
+        height: 44px;
+    }
+
+    .loadingIcon {
+        width: 16px;
+        height: 16px;
+        
+        animation: button-spin 1s linear infinite;
+    }
+
+    .icon {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@keyframes button-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

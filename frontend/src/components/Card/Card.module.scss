@@ -1,0 +1,15 @@
+@use '../../styles/abstracts/variables' as *;
+
+.card {
+    display: block;
+    width: 100%;
+    background-color: $neutral-1;
+    border-radius: 8px;
+    box-shadow: 0 0 3px 0 $purple-4;
+    padding: 30px;
+
+    &:hover {
+        transition: box-shadow 0.2s ease;
+        box-shadow: 0 4px 12px 0 $purple-4;
+    }
+}

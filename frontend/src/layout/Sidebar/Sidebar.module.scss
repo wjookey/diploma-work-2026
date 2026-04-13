@@ -1,0 +1,51 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    .darkBackground {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+
+        &.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+
+    .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        display: flex;
+        flex-direction: column;
+        z-index: 50;
+        width: 310px;
+
+        transform: translateX(0);
+        transition: transform 0.3s ease;
+        &.isClosed {
+            transform: translateX(-100%);
+        }
+        
+        .links {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            background-color: $neutral-1;
+            padding: 10px;
+            gap: 5px;
+            overflow-y: auto;
+            flex: 1;
+
+            &::-webkit-scrollbar {
+                width: 1px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+        }
+    }
+}

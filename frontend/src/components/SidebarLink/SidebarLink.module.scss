@@ -1,0 +1,45 @@
+@use '../../styles/abstracts/variables' as *;
+
+.link {
+    text-decoration: none;
+    display: flex;
+    width: 100%;
+    height: 45px;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: $neutral-7;
+    background-color: transparent;
+
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: $neutral-2;
+        color: $neutral-9;
+    }
+
+    &.active {
+        background-color: $purple-1;
+        color: $purple-7;
+        box-shadow: 0 0 3px 0 $purple-4;
+    }
+
+    .icon {
+        width: 18px;
+        height: 18px;
+        color: $neutral-6;
+
+        transition: color 0.2s ease;
+    }
+
+    &:hover .icon.notActiveIcon {
+        color: $neutral-9;
+    }
+
+    &.active .icon.activeIcon {
+        color: $purple-7;
+    }
+}

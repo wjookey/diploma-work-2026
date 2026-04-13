@@ -1,0 +1,30 @@
+@use '../../styles/abstracts/variables' as *;
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    max-width: 160px;
+
+    &.purple {
+        background-color: $purple-2;
+        outline: 1px solid $purple-4;
+        color: $purple-7;
+    }
+
+    &.green {
+        background-color: $green-2;
+        outline: 1px solid $green-4;
+        color: $green-7;
+    }
+
+    &.red {
+        background-color: $red-2;
+        outline: 1px solid $red-4;
+        color: $red-7;
+    }
+}
