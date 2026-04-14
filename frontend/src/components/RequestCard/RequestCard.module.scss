@@ -1,0 +1,67 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    text-align: left;
+
+    .name {
+        font-size: 16px;
+        font-weight: 500;
+        color: $neutral-9;
+    }
+
+    .request {
+        font-size: 16px;
+        font-weight: 500;
+        color: $neutral-9;
+    }
+
+    .parentsBlock {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+
+        .header {
+            font-size: 16px;
+            font-weight: 600;
+            text-align: left;
+            color: $neutral-9;
+        }
+
+        .parents {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            gap: 10px;
+            li {
+                list-style: none;
+            }
+        }
+    }
+
+    .date {
+        font-size: 14px;
+        color: $neutral-7;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-overflow: ellipsis;
+    }
+
+    .icon {
+        width: 18px;
+        height: 18px;
+        color: $neutral-6;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 5px;
+    }
+}

@@ -1,0 +1,51 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+
+    .startDate {
+        display: flex;
+        width: 100%;
+        gap: 5px;
+        align-items: center;
+        font-size: 14px;
+        color: $neutral-7;
+
+        .icon {
+            width: 18px;
+            height: 18px;
+            color: $neutral-6;
+        }
+    }
+
+    .lessons, .freezes {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 5px;
+
+        .count {
+            width: 35px;
+            font-size: 14px;
+            color: $neutral-7;
+            text-align: left;
+        }
+
+        .progress {
+            width: 64px;
+            height: 6px;
+            background-color: $neutral-3;
+            border-radius: 9999px;
+            overflow: hidden;
+
+            .progressFilled {
+                height: 100%;
+                border-radius: 9999px;
+                transition: width 0.3s ease;
+            }
+        }
+    }
+}

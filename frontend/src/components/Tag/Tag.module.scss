@@ -4,11 +4,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 4px 20px;
+    padding: 4px 8px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
-    max-width: 160px;
 
     &.purple {
         background-color: $purple-2;

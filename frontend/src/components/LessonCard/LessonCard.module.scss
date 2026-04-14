@@ -1,0 +1,64 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-between;
+    gap: 5px;
+
+    .block {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+
+        .scheduleInfo {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            width: 100%;
+            gap: 10px;
+
+            .clubName {
+                font-size: 16px;
+                font-weight: 500;
+                color: $neutral-9;
+            }
+
+            .details {
+                display: flex;
+                flex-direction: column;
+
+                .time, .teacher, .room {
+                    font-size: 14px;
+                    color: $neutral-7;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    text-overflow: ellipsis;
+                }
+
+                .icon {
+                    width: 18px;
+                    height: 18px;
+                    color: $neutral-6;
+                }
+            }
+            
+        }
+
+        .button {
+            width: 15%;
+        }
+
+        @media (max-width: 520px) {
+            flex-direction: column;
+
+            .button {
+                width: 100%;
+            }
+        }
+    }
+}

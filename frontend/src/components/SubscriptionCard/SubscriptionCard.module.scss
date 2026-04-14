@@ -7,55 +7,52 @@
     align-items: center;
     gap: 20px;
 
-    .personalInfo {
+    .info {
         display: flex;
         flex-direction: column;
-        text-align: left;
         width: 100%;
-        gap: 5px;
+        text-align: left;
+        gap: 10px;
 
+        
         .name {
             font-size: 16px;
             font-weight: 500;
             color: $neutral-9;
         }
 
-        .contacts {
+        .sub {
             display: flex;
             flex-direction: column;
+            gap: 10px;
 
-            .clubs {
-                font-size: 14px;
-                color: $purple-5;
+            .club {
+                color: $neutral-9;
+                font-size: 16px;
                 font-weight: 500;
-            }
-
-            .email, .phone {
-                font-size: 14px;
-                color: $neutral-7;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                text-overflow: ellipsis;
-            }
-
-            .icon {
-                width: 18px;
-                height: 18px;
-                color: $neutral-6;
-            }
+            }     
         }
-        
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+        }
+
     }
 
-    .button {
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
         width: 15%;
     }
 
     @media (max-width: 520px) {
         flex-direction: column;
 
-        .button {
+        .buttons {
             width: 100%;
         }
     }

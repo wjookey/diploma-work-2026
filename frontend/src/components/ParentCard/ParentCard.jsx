@@ -2,7 +2,7 @@ import styles from './ParentCard.module.scss';
 import Button from '../Button/Button';
 import { Pen, Mail, Phone } from 'lucide-react';
 
-const ParentCard = ({ name, email, phone, onEdit }) => {
+const ParentCard = ({ name, email, phone, onEdit, isEditMode }) => {
     return (
         <div className={styles.wrapper}>
             <div className={styles.personalInfo}>
@@ -19,7 +19,7 @@ const ParentCard = ({ name, email, phone, onEdit }) => {
                 </div>
             </div>
             <div className={styles.button}>
-                <Button icon={Pen} variant='primary' onClick={onEdit} />
+                {isEditMode && <Button icon={Pen} variant='primary' onClick={onEdit} />}
             </div>
         </div>
     );

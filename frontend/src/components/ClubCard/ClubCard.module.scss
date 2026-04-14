@@ -7,30 +7,32 @@
     align-items: center;
     gap: 20px;
 
-    .personalInfo {
+    .info {
         display: flex;
         flex-direction: column;
-        text-align: left;
         width: 100%;
-        gap: 5px;
+        text-align: left;
+        gap: 10px;
 
-        .name {
+        .title {
             font-size: 16px;
             font-weight: 500;
             color: $neutral-9;
         }
 
-        .contacts {
+        .description {
+            font-size: 14px;
+            color: $neutral-7;
+        }
+
+        .tags {
             display: flex;
-            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
 
-            .clubs {
-                font-size: 14px;
-                color: $purple-5;
-                font-weight: 500;
-            }
-
-            .email, .phone {
+        .aboutClub {
+            .teacher, .clients {
                 font-size: 14px;
                 color: $neutral-7;
                 display: flex;
@@ -45,7 +47,6 @@
                 color: $neutral-6;
             }
         }
-        
     }
 
     .button {

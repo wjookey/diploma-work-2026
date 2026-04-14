@@ -1,0 +1,99 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-align: left;
+        gap: 10px;
+
+        .title {
+            font-size: 16px;
+            font-weight: 500;
+            color: $neutral-9;
+        }
+
+        .description {
+            font-size: 14px;
+            color: $neutral-7;
+        }
+
+        .tags {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .aboutService {
+            .teacher {
+                font-size: 14px;
+                color: $neutral-7;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                text-overflow: ellipsis;
+            }
+
+            .icon {
+                width: 18px;
+                height: 18px;
+                color: $neutral-6;
+            }
+
+            .included {
+                display: flex;
+                width: 100%;
+                gap: 15px;
+                font-size: 14px;
+                color: $neutral-7;
+
+                .lessons, .freezes {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+
+                    .icon {
+                        width: 18px;
+                        height: 18px;
+                        color: $neutral-6;
+                    }
+                }
+            }
+
+            .price {
+                margin-top: 15px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 18px;
+                font-weight: 600;
+                color: $neutral-8;
+
+                .icon {
+                    width: 24px;
+                    height: 24px;
+                    color: $neutral-7;
+                }
+            }
+        }
+    }
+
+    .button {
+        width: 15%;
+    }
+
+    @media (max-width: 520px) {
+        flex-direction: column;
+
+        .button {
+            width: 100%;
+        }
+    }
+}

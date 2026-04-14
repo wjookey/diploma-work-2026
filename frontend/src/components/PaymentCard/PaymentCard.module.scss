@@ -7,12 +7,12 @@
     align-items: center;
     gap: 20px;
 
-    .personalInfo {
+    .info {
         display: flex;
         flex-direction: column;
         text-align: left;
         width: 100%;
-        gap: 5px;
+        gap: 10px;
 
         .name {
             font-size: 16px;
@@ -20,17 +20,18 @@
             color: $neutral-9;
         }
 
-        .contacts {
+        .payment {
             display: flex;
             flex-direction: column;
-
-            .clubs {
-                font-size: 14px;
-                color: $purple-5;
+            gap: 10px;
+            
+            .service {
+                color: $neutral-9;
+                font-size: 16px;
                 font-weight: 500;
             }
 
-            .email, .phone {
+            .date, .amount, .note {
                 font-size: 14px;
                 color: $neutral-7;
                 display: flex;
@@ -45,7 +46,6 @@
                 color: $neutral-6;
             }
         }
-        
     }
 
     .button {

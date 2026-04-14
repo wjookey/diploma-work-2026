@@ -7,30 +7,24 @@
     align-items: center;
     gap: 20px;
 
-    .personalInfo {
+    .scheduleInfo {
         display: flex;
         flex-direction: column;
         text-align: left;
         width: 100%;
         gap: 5px;
 
-        .name {
+        .clubName {
             font-size: 16px;
             font-weight: 500;
             color: $neutral-9;
         }
 
-        .contacts {
+        .details {
             display: flex;
             flex-direction: column;
 
-            .clubs {
-                font-size: 14px;
-                color: $purple-5;
-                font-weight: 500;
-            }
-
-            .email, .phone {
+            .time, .teacher, .room {
                 font-size: 14px;
                 color: $neutral-7;
                 display: flex;
@@ -52,11 +46,11 @@
         width: 15%;
     }
 
-    @media (max-width: 520px) {
-        flex-direction: column;
+    // @media (max-width: 520px) {
+    //     flex-direction: column;
 
-        .button {
-            width: 100%;
-        }
-    }
+    //     .button {
+    //         width: 100%;
+    //     }
+    // }
 }

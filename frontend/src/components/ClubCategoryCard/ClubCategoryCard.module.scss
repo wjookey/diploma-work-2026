@@ -1,0 +1,41 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-align: left;
+        gap: 10px;
+
+        .title {
+            font-size: 16px;
+            font-weight: 500;
+            color: $neutral-9;
+        }
+
+        .description {
+            font-size: 14px;
+            color: $neutral-7;
+        }
+
+    }
+
+    .button {
+        width: 15%;
+    }
+
+    // @media (max-width: 520px) {
+    //     flex-direction: column;
+
+    //     .button {
+    //         width: 100%;
+    //     }
+    // }
+}
