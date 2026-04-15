@@ -1,5 +1,5 @@
 import styles from './TeacherCard.module.scss';
-import { Mail, Phone, Palette, Pen } from 'lucide-react';
+import { Mail, Phone, Pen } from 'lucide-react';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 

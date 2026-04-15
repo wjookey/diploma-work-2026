@@ -4,7 +4,7 @@ import Tag from '../Tag/Tag';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 
-const ClubServiceCard = ({ clubService, onEdit }) => {
+const ClubServiceCard = ({ clubService, isEditMode = true, onEdit }) => {
     const color = clubService.isActive ? "green" : "red";
     const text = clubService.isActive ? "Активный" : "Не активный";
 
@@ -39,9 +39,9 @@ const ClubServiceCard = ({ clubService, onEdit }) => {
                         </div>
                     </div>
                 </div>
-                <div className={styles.button}>
+                {isEditMode && (<div className={styles.button}>
                     <Button icon={Pen} variant='primary' onClick={onEdit} />
-                </div>
+                </div>)}
             </div>
         </Card>
     );

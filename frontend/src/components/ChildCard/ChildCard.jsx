@@ -2,7 +2,7 @@ import styles from './ChildCard.module.scss';
 import { Eye, Pen, Cake } from 'lucide-react';
 import Button from '../Button/Button';
 
-const ChildCard = ({ name, birthDate, onEdit, onWatchDetailed, isEditMode }) => {
+const ChildCard = ({ name, birthDate, onEdit, onWatchDetailed, isEditMode = false, isWatchDetailed = true }) => {
     return (
         <div className={styles.wrapper}>
             <div className={styles.personalInfo}>
@@ -14,9 +14,12 @@ const ChildCard = ({ name, birthDate, onEdit, onWatchDetailed, isEditMode }) => 
                     </div>
                 </div>
             </div>
-            <div className={styles.button}>
-                <Button icon={isEditMode ? Pen : Eye} variant='primary' onClick={isEditMode ? onEdit : onWatchDetailed} />
-            </div>
+            {isEditMode && <div className={styles.button}>
+                <Button icon={Pen} variant='primary' onClick={onEdit} />
+            </div>}
+            {isWatchDetailed && <div className={styles.button}>
+                <Button icon={Eye} variant='primary' onClick={onWatchDetailed} />
+            </div>}
         </div>
     );
 }

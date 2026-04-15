@@ -6,7 +6,7 @@ import { Eye, Pen } from 'lucide-react';
 import Card from '../Card/Card';
 import { getSubscriptionType, getSubscriptionStatus, getSubPaymentStatus } from '../../utils/helper';
 
-const SubscriptionCard = ({ subscription, onEdit, onWatchDetailed }) => {
+const SubscriptionCard = ({ subscription, isEditMode = true, onEdit, onWatchDetailed }) => {
     const typeColor = subscription.status === 'ACTIVE' ? 'green' : subscription.status === 'PENDIND' ? 'purple' : 'red';
     const paymentColor = subscription.payment === null ? 'red' : 'green';
     return (
@@ -31,7 +31,7 @@ const SubscriptionCard = ({ subscription, onEdit, onWatchDetailed }) => {
                     </div>
                 </div>
                 <div className={styles.buttons}>
-                    <Button variant='primary' icon={Pen} onClick={onEdit} />
+                    {isEditMode && <Button variant='primary' icon={Pen} onClick={onEdit} />}
                     <Button variant='primary' icon={Eye} onClick={onWatchDetailed} />
                 </div>
             </div>

@@ -1,0 +1,11 @@
+@use '../../styles/abstracts/variables' as *;
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.button {
+    margin-top: 10px;
+}

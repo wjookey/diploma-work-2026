@@ -5,7 +5,7 @@ import Card from "../Card/Card";
 import Tag from "../Tag/Tag";
 import { getLessonStatus } from "../../utils/helper";
 
-const LessonCard = ({ lesson, onEdit, onMarkAttendance }) => {
+const LessonCard = ({ lesson, isEditMode = true, onEdit, onMarkAttendance }) => {
     const color = lesson.status === 'SCHEDULED' ? 'purple' : lesson.status === 'COMPLETED' ? 'green' : 'red';
 
     return (
@@ -30,11 +30,11 @@ const LessonCard = ({ lesson, onEdit, onMarkAttendance }) => {
                             </div>
                         </div>
                     </div>
-                    <div className={styles.button}>
+                    {isEditMode && (<div className={styles.button}>
                         <Button icon={Pen} variant='primary' onClick={onEdit} />
-                    </div>
+                    </div>)}
                 </div>
-                <Button variant='outline' onClick={onMarkAttendance}>Отметить посещаемость</Button>
+                {isEditMode && <Button variant='outline' onClick={onMarkAttendance}>Отметить посещаемость</Button>}
             </div>
         </Card>
     );

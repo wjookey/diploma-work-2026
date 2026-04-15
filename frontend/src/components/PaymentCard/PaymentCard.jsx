@@ -4,7 +4,7 @@ import Button from '../Button/Button';
 import Card from '../Card/Card';
 import { formatDate } from '../../utils/helper';
 
-const PaymentCard = ({ payment, onEdit }) => {
+const PaymentCard = ({ payment, isEditMode = true, onEdit }) => {
     return (
         <Card>
             <div className={styles.wrapper}>
@@ -26,9 +26,9 @@ const PaymentCard = ({ payment, onEdit }) => {
                         </div>
                     </div>
                 </div>
-                <div className={styles.button}>
+                {isEditMode && (<div className={styles.button}>
                     <Button variant='primary' icon={Pen} onClick={onEdit} />
-                </div>
+                </div>)}
             </div>
         </Card>
     );

@@ -1,0 +1,54 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+
+    .title {
+        font-size: 18px;
+        font-weight: 600;
+        text-align: left;
+        color: $neutral-10;
+    }
+
+    .familyMembers {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+
+        .parentsBlock, .childrenBlock {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+
+            .header {
+                font-size: 16px;
+                font-weight: 600;
+                text-align: left;
+                color: $neutral-9;
+            }
+
+            .parents, .children {
+                display: flex;
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+
+                li {
+                    list-style: none;
+                }
+            }
+        }
+
+        @media (min-width: 900px) {
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
+
+    
+}
