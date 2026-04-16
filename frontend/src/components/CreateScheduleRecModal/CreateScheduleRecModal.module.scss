@@ -10,5 +10,10 @@
         display: flex;
         flex-direction: column;
         gap: 5px;
+
+        .details {
+            display: flex;
+            gap: 10px;
+        }
     }
 }

@@ -4,12 +4,12 @@ import Tag from '../Tag/Tag';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 
-const ClubServiceCard = ({ clubService, isEditMode = true, onEdit }) => {
+const ClubServiceCard = ({ clubService, isEditMode = true, onEdit, isInModal = false }) => {
     const color = clubService.isActive ? "green" : "red";
     const text = clubService.isActive ? "Активный" : "Не активный";
 
     return (
-        <Card>
+        <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
                 <div className={styles.info}>
                     <h3 className={styles.title}>{clubService.name}</h3>

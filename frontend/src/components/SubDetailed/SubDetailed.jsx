@@ -10,7 +10,7 @@ const SubDetailed = ({ subscription, service, payment, isOpen, onClose }) => {
             <div className={styles.content}>
                 <div className={styles.service}>
                     <h3 className={styles.header}>Услуга</h3>
-                    <ClubServiceCard clubService={service} isEditMode={false} />
+                    <ClubServiceCard clubService={service} isEditMode={false} isInModal={true} />
                 </div>
                 <div className={styles.subscription}>
                     <h3 className={styles.header}>Абонемент</h3>
@@ -18,7 +18,7 @@ const SubDetailed = ({ subscription, service, payment, isOpen, onClose }) => {
                 </div>
                 <div className={styles.payment}>
                     <h3 className={styles.header}>Оплата</h3>
-                    <PaymentCard payment={payment} isEditMode={false} />
+                    <PaymentCard payment={payment} isEditMode={false} isInModal={true} />
                 </div>
             </div>
         </Modal>

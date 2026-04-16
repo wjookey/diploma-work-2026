@@ -1,8 +1,8 @@
 import styles from './Card.module.scss';
 
-const Card = ({ children, ...props }) => {
+const Card = ({ children, isInModal = false, ...props }) => {
     return (
-        <div className={styles.card} {...props}>
+        <div className={`${styles.card} ${isInModal ? styles.modal : ''}`} {...props}>
             {children}
         </div>
     );

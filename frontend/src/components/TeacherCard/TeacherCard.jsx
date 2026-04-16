@@ -3,9 +3,9 @@ import { Mail, Phone, Pen } from 'lucide-react';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 
-const TeacherCard = ({ name, email, phone, clubs, onEdit }) => {
+const TeacherCard = ({ name, email, phone, clubs, onEdit, isInModal = false }) => {
     return (
-        <Card>
+        <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
                 <div className={styles.personalInfo}>
                     <h3 className={styles.name}>{name}</h3>

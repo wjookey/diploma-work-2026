@@ -16,28 +16,42 @@ export const getSubscriptionType = (type) => {
     return map[type];
 }
 
-export const getSubscriptionStatus = (status) => {
-    const map = {
-        ACTIVE: 'Активный',
-        EXPIRED: 'Истёк',
-        CANCELLED: 'Отменён',
-        PENDING: 'В ожидании'
-    }
+export const SUBSCRIPTION_STATUS = [
+    {value: 'ACTIVE', label: 'Активный'},
+    {value: 'EXPIRED', label: 'Истёк'},
+    {value: 'CANCELLED', label: 'Отменён'},
+    {value: 'PENDING', label: 'В ожидании'},
+]
 
-    return map[status];
+export const getSubscriptionStatus = (status) => {
+    return SUBSCRIPTION_STATUS.find((ss) => ss.value === status).label;
 }
 
-export const getLessonStatus = (status) => {
-    const map = {
-        SCHEDULED: 'Запланировано',
-        COMPLETED: 'Проведено',
-        CANCELLED: 'Отменено',
-    }
+export const LESSON_STATUS = [
+    { value: 'SCHEDULED', label: 'Запланировано' },
+    { value: 'COMPLETED', label: 'Проведено' },
+    { value: 'CANCELLED', label: 'Отменено' }
+];
 
-    return map[status];
+export const getLessonStatus = (status) => {
+    return LESSON_STATUS.find((ls) => ls.value === status).label;
 }
 
 export const getSubPaymentStatus = (payment) => {
     if (payment === null) return 'Не оплачено';
     else return 'Оплачено';
+}
+
+export const DAYS_OF_WEEK = [
+    { value: 1, label: 'Понедельник', short: 'Пн' },
+    { value: 2, label: 'Вторник', short: 'Вт' },
+    { value: 3, label: 'Среда', short: 'Ср' },
+    { value: 4, label: 'Четверг', short: 'Чт' },
+    { value: 5, label: 'Пятница', short: 'Пт' },
+    { value: 6, label: 'Суббота', short: 'Сб' },
+    { value: 7, label: 'Воскресенье', short: 'Вс' }
+];
+
+export const getDayName = (day) => {
+    return DAYS_OF_WEEK.find((d) => d.value === day).label;
 }

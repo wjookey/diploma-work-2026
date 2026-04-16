@@ -12,7 +12,7 @@ const AttendanceModal = ({ lesson, attendance, onStatusChange, onMarkAttendance,
     return (
         <Modal title={`Посещаемость - ${formatDate(lesson.date)}`} isOpen={isOpen} onClose={onClose}>
             <div className={styles.content}>
-                <LessonCard lesson={lesson} isEditMode={false} />
+                <LessonCard lesson={lesson} isEditMode={false} isInModal={true} isMarkAttMode={false} />
                 {attendanceItems}
             </div>
             <div className={styles.button}>

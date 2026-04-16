@@ -4,12 +4,12 @@ import Button from '../Button/Button';
 import { Pen, GraduationCap, Users } from 'lucide-react';
 import Card from '../Card/Card';
 
-const ClubCard = ({ club, onEdit }) => {
+const ClubCard = ({ club, onEdit, isInModal = false }) => {
     const color = club.isActive ? "green" : "red";
     const text = club.isActive ? "Активный" : "Не активный";
 
     return (
-        <Card>
+        <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
                 <div className={styles.info}>
                     <h3 className={styles.title}>{club.name}</h3>

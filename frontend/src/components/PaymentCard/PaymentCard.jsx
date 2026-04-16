@@ -4,9 +4,9 @@ import Button from '../Button/Button';
 import Card from '../Card/Card';
 import { formatDate } from '../../utils/helper';
 
-const PaymentCard = ({ payment, isEditMode = true, onEdit }) => {
+const PaymentCard = ({ payment, isEditMode = true, isInModal = false, onEdit }) => {
     return (
-        <Card>
+        <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
                 <div className={styles.info}>
                     <h3 className={styles.name}>{payment.subscription.child.lastName} {payment.subscription.child.firstName}</h3>

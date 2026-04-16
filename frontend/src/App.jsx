@@ -41,6 +41,23 @@ import CreateTeacherModal from "./components/CreateTeacherModal/CreateTeacherMod
 import EditTeacherModal from "./components/EditTeacherModal/EditTeacherModal";
 import CreateClubCatModal from "./components/CreateClubCatModal/CreateClubCatModal";
 import EditClubCatModal from "./components/EditClubCatModal/EditClubCatModal";
+import CreateClubModal from "./components/CreateClubModal/CreateClubModal";
+import EditClubModal from "./components/EditClubModal/EditClubModal";
+import CreateServiceModal from "./components/CreateServiceModal/CreateServiceModal";
+import EditServiceModal from "./components/EditServiceModal/EditServiceModal";
+import CreateScheduleRecModal from "./components/CreateScheduleRecModal/CreateScheduleRecModal";
+import EditScheduleRecModal from "./components/EditScheduleRecModal/EditScheduleRecModal";
+import GenerateLessonsModal from "./components/GenerateLessonsModal/GenerateLessonsModal";
+import CreateLessonModal from "./components/CreateLessonModal/CreateLessonModal";
+import EditLessonModal from "./components/EditLessonModal/EditLessonModal";
+import CreateSubscriptionModal from "./components/CreateSubscriptionModal/CreateSubscriptionModal";
+import CreateComboModal from "./components/CreateComboModal/CreateComboModal";
+import EditSubscriptionModal from "./components/EditSubscriptionModal/EditSubscriptionModal";
+import CreatePaymentModal from "./components/CreatePaymentModal/CreatePaymentModal";
+import EditPaymentModal from "./components/EditPaymentModal/EditPaymentModal";
+import CreateRequestModal from "./components/CreateRequestModal/CreateRequestModal";
+import CreateComboReqModal from "./components/CreateComboReqModal/CreateComboReqModal";
+import DangerModal from "./components/DangerModal/DangerModal";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -604,7 +621,7 @@ function App() {
       endTime: "18:30",
       room: null,
       topic: null,
-      status: "SCHEDULED",
+      status: "COMPLETED",
       assignedTeacherId: 1,
       createdAt: "2026-04-08T20:09:21.190Z",
       club: {
@@ -630,85 +647,155 @@ function App() {
             child: sub.child,
             isPresent: false,
           }));
-    console.log(attendance);
     setAttendance(data);
   }, []);
 
   const user = {
-            "id": 9,
-            "email": "smirnov@educrm.ru",
-            "firstName": "Максим",
-            "lastName": "Смирнов",
-            "phone": "89999999990",
-            "role": "PARENT",
-            "createdAt": "2026-04-08T20:09:21.159Z",
-            "teacher": null,
-            "parent": {
-                "id": 4,
-                "family": {
-                  "id": 3,
-                  "familyName": "Семья Смирновых",
-                    "children": [
-                        {
-                            "id": 4,
-                            "firstName": "Анастасия",
-                            "lastName": "Смирнова",
-                            "birthDate": "2018-03-25T00:00:00.000Z"
-                        },
-                        {
-                            "id": 5,
-                            "firstName": "Мария",
-                            "lastName": "Смирнова",
-                            "birthDate": "2018-03-25T00:00:00.000Z"
-                        }
-                    ]
-                }
-            }
-  }
+    id: 9,
+    email: "smirnov@educrm.ru",
+    firstName: "Максим",
+    lastName: "Смирнов",
+    phone: "89999999990",
+    role: "PARENT",
+    createdAt: "2026-04-08T20:09:21.159Z",
+    teacher: null,
+    parent: {
+      id: 4,
+      family: {
+        id: 3,
+        familyName: "Семья Смирновых",
+        children: [
+          {
+            id: 4,
+            firstName: "Анастасия",
+            lastName: "Смирнова",
+            birthDate: "2018-03-25T00:00:00.000Z",
+          },
+          {
+            id: 5,
+            firstName: "Мария",
+            lastName: "Смирнова",
+            birthDate: "2018-03-25T00:00:00.000Z",
+          },
+        ],
+      },
+    },
+  };
   const child = {
-    "id": 4,
-    "firstName": "Анастасия",
-    "lastName": "Смирнова",
-    "birthDate": "2018-03-25T00:00:00.000Z",
-    "familyId": 3,
-    "note": null,
-    "createdAt": "2026-04-08T20:09:21.159Z",
-    "family": {
-      "id": 3,
-      "familyName": "Семья Смирновых",
-      "createdAt": "2026-04-08T20:09:21.159Z",
-      "parents": [
+    id: 4,
+    firstName: "Анастасия",
+    lastName: "Смирнова",
+    birthDate: "2018-03-25T00:00:00.000Z",
+    familyId: 3,
+    note: null,
+    createdAt: "2026-04-08T20:09:21.159Z",
+    family: {
+      id: 3,
+      familyName: "Семья Смирновых",
+      createdAt: "2026-04-08T20:09:21.159Z",
+      parents: [
         {
-          "id": 4,
-          "userId": 9,
-          "familyId": 3,
-          "user": {
-            "firstName": "Максим",
-            "lastName": "Смирнов",
-            "phone": "89999999990",
-            "email": "smirnov@educrm.ru"
-          }
+          id: 4,
+          userId: 9,
+          familyId: 3,
+          user: {
+            firstName: "Максим",
+            lastName: "Смирнов",
+            phone: "89999999990",
+            email: "smirnov@educrm.ru",
+          },
         },
         {
-          "id": 5,
-          "userId": 10,
-          "familyId": 3,
-          "user": {
-            "firstName": "Ксения",
-            "lastName": "Смирнова",
-            "phone": "89999999991",
-            "email": "smirnova@educrm.ru"
-          }
-        }
-      ]
-    }
-  }
+          id: 5,
+          userId: 10,
+          familyId: 3,
+          user: {
+            firstName: "Ксения",
+            lastName: "Смирнова",
+            phone: "89999999991",
+            email: "smirnova@educrm.ru",
+          },
+        },
+      ],
+    },
+  };
 
   const cat = {
     name: "Psychological Classes",
-    description: "Classes which are expected to improve child's emotional awareness bla bla bla",
-    isActive: true
-  }
+    description:
+      "Classes which are expected to improve child's emotional awareness bla bla bla",
+    isActive: true,
+  };
+
+  const service1 = {
+    id: 18,
+    name: "Абонемент на 12 занятий (+2 заморозки)",
+    price: 10800,
+    subscriptionLessons: 12,
+    freezedLesson: 2,
+    clubId: 5,
+    type: "SUBSCRIPTION",
+    isActive: true,
+    createdAt: "2026-04-08T20:09:21.186Z",
+    club: {
+      id: 5,
+      name: "Театр Взлёт",
+      isActive: true,
+    },
+  };
+
+  const schedule1 = {
+    id: 1,
+    clubId: 4,
+    dayOfWeek: 1,
+    startTime: "15:00",
+    endTime: "15:30",
+    room: null,
+    club: {
+      id: 4,
+      name: "Кактус",
+      description: null,
+      classCategoryId: 2,
+      defaultTeacherId: 3,
+      maxStudents: null,
+      isActive: true,
+      createdAt: "2026-04-08T20:09:21.164Z",
+      teacher: {
+        id: 3,
+        userId: 4,
+        specialty: "Психология",
+        bio: null,
+      },
+    },
+  };
+
+  const lesson1 = {
+    id: 1,
+    clubId: 1,
+    date: "2026-04-05T00:00:00.000Z",
+    startTime: "17:00",
+    endTime: "18:30",
+    room: null,
+    topic: null,
+    status: 'SCHEDULED',
+    assignedTeacherId: 1,
+    createdAt: "2026-04-08T20:09:21.190Z",
+    club: {
+      id: 1,
+      name: "Музыкальная энциклопедия",
+    },
+    teacher: {
+      id: 1,
+      userId: 2,
+      specialty: "Музыка",
+      bio: null,
+      user: {
+        firstName: "Елена",
+        lastName: "Иванова",
+      },
+    },
+    attendances: [],
+  };
 
   const array = [1, 2, 3, 4, 5];
 
@@ -876,6 +963,13 @@ function App() {
             onApprove={() => setIsOpen(!isOpen)}
             onReject={() => setIsOpen(!isOpen)}
           />
+          <RequestCard
+            request={request}
+            onApprove={() => setIsOpen(!isOpen)}
+            onReject={() => setIsOpen(!isOpen)}
+            isForParent={true}
+            onCancel={() => setIsOpen(!isOpen)}
+          />
 
           <AttendanceRecord
             name={"Miacheva Lena"}
@@ -922,6 +1016,74 @@ function App() {
           <CreateClubCatModal isOpen={false} />
 
           <EditClubCatModal category={cat} isOpen={false} />
+
+          <CreateClubModal isOpen={false} teachers={[]} categories={[]} />
+
+          <EditClubModal
+            isOpen={false}
+            club={club}
+            categories={[]}
+            teachers={[]}
+          />
+
+          <CreateServiceModal isOpen={false} clubs={[]} />
+          <EditServiceModal isOpen={false} service={service1} clubs={[]} />
+          <CreateScheduleRecModal isOpen={false} clubs={[]} />
+          <EditScheduleRecModal record={schedule1} isOpen={false} clubs={[]} />
+
+          <GenerateLessonsModal isOpen={false} />
+
+          <CreateLessonModal isOpen={false} clubs={[]} teachers={[]} />
+
+          <EditLessonModal
+            lesson={lesson1}
+            clubs={[]}
+            teachers={[]}
+            isOpen={false}
+          />
+
+          <CreateSubscriptionModal
+            isOpen={false}
+            children={children}
+            clubs={[club]}
+            services={[service1]}
+          />
+          <CreateComboModal
+            isOpen={false}
+            children={children}
+            clubs={[club]}
+            services={[service1]}
+          />
+
+          <EditSubscriptionModal
+            subscription={sub}
+            children={children}
+            clubs={[club]}
+            services={[service]}
+            isOpen={false}
+          />
+
+          <CreatePaymentModal subscriptions={subs} isOpen={false} />
+          <EditPaymentModal
+            payment={payment}
+            subscriptions={subs}
+            isOpen={false}
+          />
+
+          <CreateRequestModal
+            isOpen={false}
+            children={children}
+            clubs={[club]}
+            services={[service]}
+          />
+          <CreateComboReqModal
+            isOpen={false}
+            children={children}
+            clubs={[club]}
+            services={[service]}
+          />
+
+          <DangerModal isOpen={false} />
         </div>
       </section>
     </>

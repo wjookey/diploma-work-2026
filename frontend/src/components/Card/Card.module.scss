@@ -12,4 +12,13 @@
         transition: box-shadow 0.2s ease;
         box-shadow: 0 4px 12px 0 $purple-4;
     }
+
+    &.modal {
+        box-shadow: none;
+        outline: 1px solid $purple-5;
+        &:hover {
+            transition: none;
+            box-shadow: none;
+        }
+    }
 }

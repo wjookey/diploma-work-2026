@@ -3,6 +3,7 @@ import Input from '../Input/Input';
 import Select from '../Select/Select';
 import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
+import Textarea from '../Textarea/Textarea';
 
 const EditClubCatModal = ({ category, onSubmit, onDelete, isOpen, onClose }) => {
     return (
@@ -10,7 +11,7 @@ const EditClubCatModal = ({ category, onSubmit, onDelete, isOpen, onClose }) => 
             <div className={styles.wrapper}>
                 <div className={styles.inputs}>
                     <Input label={"Название"} id={"name"} value={category.name} />
-                    <Input label={"Описание"} id={"description"} value={category.description} />
+                    <Textarea label={"Описание"} id={"description"} value={category.description} />
                     <Select
                         label={"Статус"}
                         id={"status"}

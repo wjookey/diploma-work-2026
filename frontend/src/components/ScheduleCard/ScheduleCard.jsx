@@ -3,9 +3,9 @@ import { Pen, GraduationCap, AlarmClock, MapPin } from 'lucide-react';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 
-const ScheduleCard = ({ record, onEdit }) => {
+const ScheduleCard = ({ record, onEdit, isInModal = false }) => {
     return (
-        <Card>
+        <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
                 <div className={styles.scheduleInfo}>
                     <h3 className={styles.clubName}>{record.club.name}</h3>

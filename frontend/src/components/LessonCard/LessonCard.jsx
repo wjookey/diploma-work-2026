@@ -5,11 +5,11 @@ import Card from "../Card/Card";
 import Tag from "../Tag/Tag";
 import { getLessonStatus } from "../../utils/helper";
 
-const LessonCard = ({ lesson, isEditMode = true, onEdit, onMarkAttendance }) => {
+const LessonCard = ({ lesson, isEditMode = true, isInModal = false, isMarkAttMode = true, onEdit, onMarkAttendance }) => {
     const color = lesson.status === 'SCHEDULED' ? 'purple' : lesson.status === 'COMPLETED' ? 'green' : 'red';
 
     return (
-        <Card>
+        <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
                 <div className={styles.block}>
                     <div className={styles.scheduleInfo}>
@@ -34,7 +34,7 @@ const LessonCard = ({ lesson, isEditMode = true, onEdit, onMarkAttendance }) => 
                         <Button icon={Pen} variant='primary' onClick={onEdit} />
                     </div>)}
                 </div>
-                {isEditMode && <Button variant='outline' onClick={onMarkAttendance}>Отметить посещаемость</Button>}
+                {isMarkAttMode && <Button variant='outline' onClick={onMarkAttendance}>Отметить посещаемость</Button>}
             </div>
         </Card>
     );
