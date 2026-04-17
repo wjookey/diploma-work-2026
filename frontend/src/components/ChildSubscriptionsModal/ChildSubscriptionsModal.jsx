@@ -3,7 +3,7 @@ import Modal from '../Modal/Modal';
 import ChildSubscriptionCard from '../ChildSubscriptionCard/ChildSubscriptionCard';
 
 const ChildSubscriptionsModal = ({ subscriptions, isOpen, onClose }) => {
-    const subscriptionsItems = subscriptions.map((sub) => (
+    const subscriptionsItems = subscriptions?.map((sub) => (
         <ChildSubscriptionCard subDetails={sub} key={sub.id} />
     ));
 

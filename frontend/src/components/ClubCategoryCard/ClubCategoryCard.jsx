@@ -16,8 +16,8 @@ const ClubCategoryCard = ({ clubCategory, onEdit, isInModal = false }) => {
                     <div><Tag text={text} color={color} /></div>
                     <p className={styles.description}>{clubCategory.description !== null ? clubCategory.description : 'Нет описания'}</p>
                 </div>
-                <div className={styles.button}>
-                    <Button icon={Pen} variant='primary' onClick={onEdit} />
+                <div className={styles.buttons}>
+                    <div className={styles.button}><Button icon={Pen} variant='primary' onClick={onEdit} /></div>
                 </div>
             </div>
         </Card>

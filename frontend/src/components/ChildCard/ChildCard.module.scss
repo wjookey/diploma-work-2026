@@ -45,8 +45,13 @@
         
     }
 
-    .button {
-        width: 15%;
+    .buttons {
+        display: flex;
+        gap: 5px;
+
+        .button {
+            width: 40px;
+        }
     }
 
     // @media (max-width: 520px) {

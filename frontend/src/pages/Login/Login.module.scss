@@ -1,0 +1,35 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 20px;
+
+        .header {
+            color: $neutral-10;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .subheader {
+            color: $neutral-9;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .logo {
+            width: 70px;
+        }
+    }
+}

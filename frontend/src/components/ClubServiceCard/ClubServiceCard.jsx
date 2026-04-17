@@ -39,8 +39,8 @@ const ClubServiceCard = ({ clubService, isEditMode = true, onEdit, isInModal = f
                         </div>
                     </div>
                 </div>
-                {isEditMode && (<div className={styles.button}>
-                    <Button icon={Pen} variant='primary' onClick={onEdit} />
+                {isEditMode && (<div className={styles.buttons}>
+                    <div className={styles.button}><Button icon={Pen} variant='primary' onClick={onEdit} /></div>
                 </div>)}
             </div>
         </Card>

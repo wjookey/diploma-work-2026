@@ -5,21 +5,21 @@ import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
 import { Mail, Phone } from 'lucide-react';
 
-const EditParentModal = ({ user, families, onSubmit, onDelete, isOpen, onClose }) => {
+const EditParentModal = ({ parent, familyName, families, onSubmit, onDelete, isOpen, onClose }) => {
     return (
         <Modal title={'Редактировать родителя'} isOpen={isOpen} onClose={onClose}>
             <div className={styles.wrapper}>
                 <div className={styles.inputs}>
                     <div className={styles.name}>
-                        <Input label={"Имя"} id={"firstName"} value={user.firstName} />
-                        <Input label={"Фамилия"} id={"lastName"} value={user.lastName} />
+                        <Input label={"Имя"} id={"firstName"} value={parent?.user?.firstName} />
+                        <Input label={"Фамилия"} id={"lastName"} value={parent?.user?.lastName} />
                     </div>
-                    <Input label={"Телефон"} id={"phone"} icon={Phone} value={user.phone}/>
-                    <Input label={"Почта"} id={"email"} icon={Mail} value={user.email} />
+                    <Input label={"Телефон"} id={"phone"} icon={Phone} value={parent?.user?.phone}/>
+                    <Input label={"Почта"} id={"email"} icon={Mail} value={parent?.user?.email} />
                     <Select
                         label={"Семья"}
                         id={"family"}
-                        placeholder={user.parent.family.familyName}
+                        placeholder={familyName}
                         options={families.map((fam) => ({
                             value: fam.id,
                             label: fam.familyName

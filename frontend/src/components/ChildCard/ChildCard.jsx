@@ -14,12 +14,10 @@ const ChildCard = ({ name, birthDate, onEdit, onWatchDetailed, isEditMode = fals
                     </div>
                 </div>
             </div>
-            {isEditMode && <div className={styles.button}>
-                <Button icon={Pen} variant='primary' onClick={onEdit} />
-            </div>}
-            {isWatchDetailed && <div className={styles.button}>
-                <Button icon={Eye} variant='primary' onClick={onWatchDetailed} />
-            </div>}
+            <div className={styles.buttons}>
+                {isEditMode && <div className={styles.button}><Button icon={Pen} variant='primary' onClick={onEdit} /></div>}
+                {isWatchDetailed && <div className={styles.button}><Button icon={Eye} variant='primary' onClick={onWatchDetailed} /></div>}
+            </div>
         </div>
     );
 }

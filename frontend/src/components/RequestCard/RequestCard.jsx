@@ -15,7 +15,7 @@ const RequestCard = ({ request, onApprove, onReject, onCancel, isForParent = fal
                 <h3 className={styles.name}>{request.child.lastName} {request.child.firstName}</h3>
                 <h3 className={styles.request}>{request.clubService.club.name} - {request.clubService.name}</h3>
                 {!isForParent && (<div className={styles.parentsBlock}>
-                    <h3 className={styles.header}>Parents</h3>
+                    <h3 className={styles.header}>Родители</h3>
                     <ul className={styles.parents}>
                         {parentsItems}
                     </ul>

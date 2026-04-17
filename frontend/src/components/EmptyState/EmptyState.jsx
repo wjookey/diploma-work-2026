@@ -10,7 +10,7 @@ const EmptyState = ({ icon: Icon = Inbox, title, description, action }) => {
             </div>
             <h3 className={styles.text}>{title}</h3>
             {descriptionBlock}
-            {action}
+            <div className={styles.button}>{action}</div>
         </div>
     );
 }

@@ -3,14 +3,15 @@ import Button from '../Button/Button';
 import Card from '../Card/Card';
 import ParentCard from '../ParentCard/ParentCard';
 import ChildCard from '../ChildCard/ChildCard';
+import { formatDate } from '../../utils/helper';
 
 const FamilyCard = ({ familyName, parents, children, onEdit, onWatchDetailed }) => {
     const parentsItems = parents.map((parent) => (
-        <li key={parent.key}><ParentCard name={`${parent.lastName} ${parent.firstName}`} email={parent.email} phone={parent.phone} isEditMode={false} /></li>
+        <li key={parent.id}><ParentCard name={`${parent.user.lastName} ${parent.user.firstName}`} email={parent.user.email} phone={parent.user.phone} isEditMode={false} /></li>
     ));
 
     const childrenItems = children.map((child) => (
-        <li key={child.key}><ChildCard name={`${child.lastName} ${child.firstName}`} birthDate={child.birthDate} onWatchDetailed={onWatchDetailed} isEditMode={false}/></li>
+        <li key={child.id}><ChildCard name={`${child.lastName} ${child.firstName}`} birthDate={formatDate(child.birthDate)} onWatchDetailed={() => onWatchDetailed(child)} isEditMode={false}/></li>
     ));
 
     return (

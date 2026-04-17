@@ -55,3 +55,13 @@ export const DAYS_OF_WEEK = [
 export const getDayName = (day) => {
     return DAYS_OF_WEEK.find((d) => d.value === day).label;
 }
+
+export const REQUEST_STATUS = [
+    { value: 'PENDING', label: 'В ожидании' },
+    { value: 'APPROVED', label: 'Одобрено' },
+    { value: 'REJECTED', label: 'Отклонено' },
+];
+
+export const getRequestStatus = (status) => {
+    return REQUEST_STATUS.find((s) => s.value === status).label;
+}

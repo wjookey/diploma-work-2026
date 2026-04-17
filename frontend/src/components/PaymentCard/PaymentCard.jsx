@@ -26,8 +26,8 @@ const PaymentCard = ({ payment, isEditMode = true, isInModal = false, onEdit }) 
                         </div>
                     </div>
                 </div>
-                {isEditMode && (<div className={styles.button}>
-                    <Button variant='primary' icon={Pen} onClick={onEdit} />
+                {isEditMode && (<div className={styles.buttons}>
+                    <div className={styles.button}><Button variant='primary' icon={Pen} onClick={onEdit} /></div>
                 </div>)}
             </div>
         </Card>

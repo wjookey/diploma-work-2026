@@ -10,13 +10,13 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onSubmit, 
         <Modal title={'Редактировать кружок'} isOpen={isOpen} onClose={onClose}>
             <div className={styles.wrapper}>
                 <div className={styles.inputs}>
-                    <Input label={"Название"} id={"name"} />
-                    <Textarea label={"Описание"} id={"description"} />
+                    <Input label={"Название"} id={"name"} value={club?.name} />
+                    <Textarea label={"Описание"} id={"description"} value={club?.description} />
                     <div className={styles.details}>
                         <Select
                             label={"Тип занятий"}
                             id={"category"}
-                            placeholder={club.clubCategory.name}
+                            placeholder={club?.clubCategory?.name}
                             options={categories.map((cat) => ({
                                 value: cat.id,
                                 label: cat.name
@@ -25,18 +25,18 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onSubmit, 
                         <Select
                             label={"Преподаватель"}
                             id={"teacher"}
-                            placeholder={`${club.teacher.user.lastName} ${club.teacher.user.firstName}`}
+                            placeholder={`${club?.teacher?.user?.lastName} ${club?.teacher?.user?.firstName}`}
                             options={teachers.map((teacher) => ({
                                 value: teacher.teacher.id,
                                 label: `${teacher.lastName} ${teacher.firstName}`
                             }))}
                         />
                     </div>
-                    <Input label={"Максимальное число участников"} id={"maxStudents"} value={club.maxStudents === null ? '' : club.maxStudents} />
+                    <Input label={"Максимальное число участников"} id={"maxStudents"} value={club?.maxStudents === null ? '' : club?.maxStudents} />
                     <Select
                         label={"Статус"}
                         id={"status"}
-                        placeholder={club.isActive ? 'Активный' : 'Не активный'}
+                        placeholder={club?.isActive ? 'Активный' : 'Не активный'}
                         options={[
                             { value: 0, label: "Не активный" },
                             { value: 1, label: "Активный" },

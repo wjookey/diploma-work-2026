@@ -3,21 +3,27 @@ import { Mail, Phone, Pen } from 'lucide-react';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 
-const TeacherCard = ({ name, email, phone, clubs, onEdit, isInModal = false }) => {
+const TeacherCard = ({ teacher, onEdit, isInModal = false }) => {
+    let clubs = '';
+    for (const club of teacher.teacher.clubs) {
+        clubs += `${club.name}, `;
+    }
+    clubs = clubs.slice(0, -2);
+
     return (
         <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
                 <div className={styles.personalInfo}>
-                    <h3 className={styles.name}>{name}</h3>
+                    <h3 className={styles.name}>{teacher.lastName} {teacher.firstName}</h3>
                     <div className={styles.contacts}>
                         <p className={styles.clubs}>{clubs}</p>
                         <div className={styles.email}>
                             <Mail className={styles.icon} />
-                            <p>{email}</p>
+                            <p>{teacher.email}</p>
                         </div>
                         <div className={styles.phone}>
                             <Phone className={styles.icon} />
-                            <p>{phone}</p>
+                            <p>{teacher.phone}</p>
                         </div>
                     </div>
                 </div>

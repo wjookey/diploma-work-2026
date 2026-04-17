@@ -13,26 +13,26 @@ const EditPaymentModal = ({ payment, subscriptions, isOpen, onClose, onSubmit, o
                     <Select
                         label={"Абонемент"}
                         id={"subscription"}
-                        placeholder={`${payment.subscription.clubService.club.name} - ${payment.subscription.clubService.name}`}
+                        placeholder={`${payment?.subscription?.clubService?.club?.name} - ${payment?.subscription?.clubService?.name}`}
                         options={subscriptions.map((sub) => ({
                             value: sub.id,
                             label: `${sub.clubService.club.name} - ${sub.clubService.name}`
                         }))}
                         disabled
                     />
-                    <Input label={"Сумма оплаты"} id={"payment"} value={payment.amount} />
+                    <Input label={"Сумма оплаты"} id={"payment"} value={payment?.amount} />
                     <Select
                         label={"Способ оплаты"}
                         id={"method"}
-                        placeholder={payment.paymentMethod}
+                        placeholder={payment?.paymentMethod}
                         options={[
                             { value: 'Наличные', label: 'Наличные' },
                             { value: 'Перевод', label: 'Перевод' },
                             { value: 'Карта', label: 'Карта' },
                         ]}
                     />
-                    <Input label={"Дата"} id={"date"} type="date" value={payment.paymentDate.split('T')[0]} />
-                    <Textarea label={'Примечание'} id={"message"} value={payment.note === null ? '' : payment.note} />
+                    <Input label={"Дата"} id={"date"} type="date" value={payment?.paymentDate.split('T')[0]} />
+                    <Textarea label={'Примечание'} id={"message"} value={payment?.note === null ? '' : payment?.note} />
                 </div>   
                 <div className={styles.buttons}>
                     <Button variant='primary' onClick={onSubmit}>Сохранить</Button>

@@ -18,11 +18,11 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete 
         <Modal title={'Редактировать услугу'} isOpen={isOpen} onClose={onClose}>
             <div className={styles.wrapper}>
                 <div className={styles.inputs}>
-                    <Input label={"Название"} id={"name"} value={service.name} />
+                    <Input label={"Название"} id={"name"} value={service?.name} />
                     <Select
                         label={"Кружок"}
                         id={"club"}
-                        placeholder={service.club.name}
+                        placeholder={service?.club?.name}
                         options={clubs.map((club) => ({
                             value: club.id,
                             label: club.name
@@ -31,21 +31,21 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete 
                     <Select
                         label={"Тип услуги"}
                         id={"type"}
-                        placeholder={getSubscriptionType(service.type)}
+                        placeholder={getSubscriptionType(service?.type)}
                         options={types.map((type) => ({
                             value: type.id,
                             label: type.label
                         }))}
                     />
-                    <Input label={"Цена"} id={"price"} value={service.price} />
+                    <Input label={"Цена"} id={"price"} value={service?.price} />
                     <div className={styles.details}>
-                        <Input label={"Количество занятий"} id={"lessons"} value={service.subscriptionLessons} />
-                        <Input label={"Количество заморозок"} id={"freezes"} value={service.freezedLesson} />
+                        <Input label={"Количество занятий"} id={"lessons"} value={service?.subscriptionLessons} />
+                        <Input label={"Количество заморозок"} id={"freezes"} value={service?.freezedLesson} />
                     </div>
                     <Select
                         label={"Статус"}
                         id={"status"}
-                        placeholder={service.isActive ? 'Активная' : 'Не активная'}
+                        placeholder={service?.isActive ? 'Активная' : 'Не активная'}
                         options={[
                             { value: 0, label: "Не активная" },
                             { value: 1, label: "Активная" },

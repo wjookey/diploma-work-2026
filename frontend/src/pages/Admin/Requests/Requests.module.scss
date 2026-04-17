@@ -1,0 +1,56 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+
+    .left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .pageName {
+            font-size: 30px;
+            color: $neutral-1;
+        }
+        
+        .sidebarButton {
+            width: 40px;
+        }
+    }
+}
+
+.wrapper {
+    max-width: 1000px;
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+
+    .input {
+        display: flex;
+        justify-content: center;
+        width: 350px;
+        gap: 10px;
+    }
+
+    .requests {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+
+        .list {
+            width: 100%;
+            list-style: none;
+
+            li {
+                margin-bottom: 10px;
+            }
+        }
+    }
+}

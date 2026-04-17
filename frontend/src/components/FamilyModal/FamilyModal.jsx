@@ -3,14 +3,15 @@ import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
 import ParentCard from '../ParentCard/ParentCard';
 import ChildCard from '../ChildCard/ChildCard';
+import { formatDate } from '../../utils/helper';
 
-const FamilyModal = ({ familyName, parents, children, onEdit, onAdd, onDelete, isOpen, onClose }) => {
-    const parentsItems = parents.map((parent) => (
-        <li key={parent.key}><ParentCard name={`${parent.lastName} ${parent.firstName}`} email={parent.email} phone={parent.phone} isEditMode={true} onEdit={onEdit} /></li>
+const FamilyModal = ({ familyName, parents, children, onParentEdit, onChildEdit, onParentAdd, onChildAdd, onDelete, isOpen, onClose }) => {
+    const parentsItems = parents?.map((parent) => (
+        <li key={parent?.id}><ParentCard name={`${parent?.user?.lastName} ${parent?.user?.firstName}`} email={parent?.user?.email} phone={parent?.user?.phone} isEditMode={true} onEdit={() => onParentEdit(parent)} /></li>
     ));
 
     const childrenItems = children.map((child) => (
-        <li key={child.key}><ChildCard name={`${child.lastName} ${child.firstName}`} birthDate={child.birthDate} isEditMode={true} onEdit={onEdit} /></li>
+        <li key={child?.id}><ChildCard name={`${child?.lastName} ${child?.firstName}`} birthDate={formatDate(child?.birthDate)} isEditMode={true} isWatchDetailed={false} onEdit={() => onChildEdit(child)} /></li>
     ));
 
     return (
@@ -22,14 +23,14 @@ const FamilyModal = ({ familyName, parents, children, onEdit, onAdd, onDelete, i
                         <ul className={styles.parents}>
                             {parentsItems}
                         </ul>
-                        <Button variant='primary' onClick={onAdd}>Добавить родителя</Button>
+                        <Button variant='primary' onClick={onParentAdd}>Добавить родителя</Button>
                     </div>
                     <div className={styles.childrenBlock}>
                         <h3 className={styles.header}>Children</h3>
                         <ul className={styles.children}>
                             {childrenItems}
                         </ul>
-                        <Button variant='primary' onClick={onAdd}>Добавить ребёнка</Button>
+                        <Button variant='primary' onClick={onChildAdd}>Добавить ребёнка</Button>
                     </div>
                 </div>
                 <Button variant='danger' onClick={onDelete}>Удалить семью</Button>

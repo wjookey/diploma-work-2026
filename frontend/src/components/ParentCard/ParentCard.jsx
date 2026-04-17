@@ -18,8 +18,8 @@ const ParentCard = ({ name, email, phone, onEdit, isEditMode }) => {
                     </div>
                 </div>
             </div>
-            <div className={styles.button}>
-                {isEditMode && <Button icon={Pen} variant='primary' onClick={onEdit} />}
+            <div className={styles.buttons}>
+                {isEditMode && <div className={styles.button}><Button icon={Pen} variant='primary' onClick={onEdit} /></div>}
             </div>
         </div>
     );

@@ -10,11 +10,11 @@ const EditTeacherModal = ({ user, onSubmit, onDelete, isOpen, onClose }) => {
             <div className={styles.wrapper}>
                 <div className={styles.inputs}>
                     <div className={styles.name}>
-                        <Input label={"Имя"} id={"firstName"} value={user.firstName} />
-                        <Input label={"Фамилия"} id={"lastName"} value={user.lastName} />
+                        <Input label={"Имя"} id={"firstName"} value={user?.firstName} />
+                        <Input label={"Фамилия"} id={"lastName"} value={user?.lastName} />
                     </div>
-                    <Input label={"Телефон"} id={"phone"} icon={Phone} value={user.phone}/>
-                    <Input label={"Почта"} id={"email"} icon={Mail} value={user.email} />
+                    <Input label={"Телефон"} id={"phone"} icon={Phone} value={user?.phone}/>
+                    <Input label={"Почта"} id={"email"} icon={Mail} value={user?.email} />
                 </div>
                 <div className={styles.buttons}>
                     <Button variant='primary' onClick={onSubmit}>Сохранить</Button>
