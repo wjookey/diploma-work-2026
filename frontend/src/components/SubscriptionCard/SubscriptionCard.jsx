@@ -31,8 +31,8 @@ const SubscriptionCard = ({ subscription, isEditMode = true, onEdit, onWatchDeta
                     </div>
                 </div>
                 <div className={styles.buttons}>
-                    {isEditMode && <Button variant='primary' icon={Pen} onClick={onEdit} />}
-                    <Button variant='primary' icon={Eye} onClick={onWatchDetailed} />
+                    {isEditMode && <div className={styles.button}><Button variant='primary' icon={Pen} onClick={onEdit} /></div>}
+                    <div className={styles.button}><Button variant='primary' icon={Eye} onClick={onWatchDetailed} /></div>
                 </div>
             </div>
         </Card>

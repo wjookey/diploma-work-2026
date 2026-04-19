@@ -6,7 +6,7 @@ import Modal from '../Modal/Modal';
 
 const SubDetailed = ({ subscription, service, payment, isOpen, onClose }) => {
     return (
-        <Modal title={`${subscription.child.lastName} ${subscription.child.firstName}`} isOpen={isOpen} onClose={onClose}>
+        <Modal title={`${subscription?.child?.lastName} ${subscription?.child?.firstName}`} isOpen={isOpen} onClose={onClose}>
             <div className={styles.content}>
                 <div className={styles.service}>
                     <h3 className={styles.header}>Услуга</h3>

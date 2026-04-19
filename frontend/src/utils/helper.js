@@ -1,4 +1,5 @@
 export const formatDate = (date) => {
+    if (!date) return '-';
     const [year, month, day] = date.split('T')[0].split('-');
     const formatted = `${day}.${month}.${year}`;
     return formatted;
@@ -24,7 +25,7 @@ export const SUBSCRIPTION_STATUS = [
 ]
 
 export const getSubscriptionStatus = (status) => {
-    return SUBSCRIPTION_STATUS.find((ss) => ss.value === status).label;
+    return SUBSCRIPTION_STATUS.find((ss) => ss.value === status).label || '';
 }
 
 export const LESSON_STATUS = [
@@ -34,6 +35,7 @@ export const LESSON_STATUS = [
 ];
 
 export const getLessonStatus = (status) => {
+    if (!status) return '';
     return LESSON_STATUS.find((ls) => ls.value === status).label;
 }
 
@@ -53,6 +55,7 @@ export const DAYS_OF_WEEK = [
 ];
 
 export const getDayName = (day) => {
+    if (!day) return '';
     return DAYS_OF_WEEK.find((d) => d.value === day).label;
 }
 

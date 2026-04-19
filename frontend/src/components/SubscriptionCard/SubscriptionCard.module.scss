@@ -46,14 +46,23 @@
         display: flex;
         flex-direction: column;
         gap: 5px;
-        width: 15%;
+
+        .button {
+            width: 40px;
+        }
     }
 
-    @media (max-width: 520px) {
+
+}   
+@media (max-width: 520px) {
+    .wrapper {
         flex-direction: column;
 
         .buttons {
             width: 100%;
+            .button {
+                width: 100%;
+            }
         }
     }
 }

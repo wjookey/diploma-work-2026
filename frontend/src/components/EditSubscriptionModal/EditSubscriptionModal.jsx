@@ -13,7 +13,7 @@ const EditSubscriptionModal = ({ subscription, children, clubs, services, isOpen
                     <Select
                         label={"Ребёнок"}
                         id={"child"}
-                        placeholder={`${subscription.child.lastName} ${subscription.child.firstName}`}
+                        placeholder={`${subscription?.child?.lastName} ${subscription?.child?.firstName}`}
                         options={children.map((child) => ({
                             value: child.id,
                             label: `${child.lastName} ${child.firstName}`
@@ -23,7 +23,7 @@ const EditSubscriptionModal = ({ subscription, children, clubs, services, isOpen
                     <Select
                         label={"Кружок"}
                         id={"club"}
-                        placeholder={subscription.clubService.club.name}
+                        placeholder={subscription?.clubService?.club?.name}
                         options={clubs.map((club) => ({
                             value: club.id,
                             label: club.name
@@ -33,7 +33,7 @@ const EditSubscriptionModal = ({ subscription, children, clubs, services, isOpen
                     <Select
                         label={"Услуга"}
                         id={"service"}
-                        placeholder={subscription.clubService.name}
+                        placeholder={subscription?.clubService?.name}
                         options={services.map((service) => ({
                             value: service.id,
                             label: service.name
@@ -41,18 +41,18 @@ const EditSubscriptionModal = ({ subscription, children, clubs, services, isOpen
                         disabled
                     />
                     <div className={styles.details}>
-                        <Input label={"Осталось занятий"} id={"lessons"} value={subscription.remainingLessons} disabled={subscription.status === 'PENDING' || subscription.status === 'CANCELLED'} />
-                        <Input label={"Осталось заморозок"} id={"freezes"} value={subscription.clubService.freezedLesson - subscription.usedFreezes} disabled={subscription.status === 'PENDING' || subscription.status === 'CANCELLED'} />
+                        <Input label={"Осталось занятий"} id={"lessons"} value={subscription?.remainingLessons} disabled={subscription?.status === 'PENDING' || subscription?.status === 'CANCELLED'} />
+                        <Input label={"Осталось заморозок"} id={"freezes"} value={subscription?.clubService?.freezedLesson - subscription?.usedFreezes} disabled={subscription?.status === 'PENDING' || subscription?.status === 'CANCELLED'} />
                     </div>
                     <Select
                         label={"Статус"}
                         id={"status"}
-                        placeholder={getSubscriptionStatus(subscription.status)}
+                        placeholder={subscription?.status ? getSubscriptionStatus(subscription?.status) : ''}
                         options={SUBSCRIPTION_STATUS.filter((subSt) => subSt.value !== 'CANCELLED' && subSt.value !== 'PENDING').map((lessonSt) => ({
                             value: lessonSt.value,
                             label: lessonSt.label
                         }))}
-                        disabled={subscription.status === 'PENDING' || subscription.status === 'CANCELLED'}
+                        disabled={subscription?.status === 'PENDING' || subscription?.status === 'CANCELLED'}
                     />
                 </div>   
                 <div className={styles.buttons}>

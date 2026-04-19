@@ -5,7 +5,7 @@ import ParentCard from '../ParentCard/ParentCard';
 import ChildCard from '../ChildCard/ChildCard';
 import { formatDate } from '../../utils/helper';
 
-const FamilyModal = ({ familyName, parents, children, onParentEdit, onChildEdit, onParentAdd, onChildAdd, onDelete, isOpen, onClose }) => {
+const FamilyModal = ({ familyName, parents, children, onParentEdit, onChildEdit, onParentAdd, onChildAdd, onDelete, isOpen, onClose, isAdminMode = true }) => {
     const parentsItems = parents?.map((parent) => (
         <li key={parent?.id}><ParentCard name={`${parent?.user?.lastName} ${parent?.user?.firstName}`} email={parent?.user?.email} phone={parent?.user?.phone} isEditMode={true} onEdit={() => onParentEdit(parent)} /></li>
     ));
@@ -19,21 +19,21 @@ const FamilyModal = ({ familyName, parents, children, onParentEdit, onChildEdit,
             <div className={styles.wrapper}>
                 <div className={styles.familyMembers}>
                     <div className={styles.parentsBlock}>
-                        <h3 className={styles.header}>Parents</h3>
+                        <h3 className={styles.header}>Родители</h3>
                         <ul className={styles.parents}>
                             {parentsItems}
                         </ul>
                         <Button variant='primary' onClick={onParentAdd}>Добавить родителя</Button>
                     </div>
                     <div className={styles.childrenBlock}>
-                        <h3 className={styles.header}>Children</h3>
+                        <h3 className={styles.header}>Дети</h3>
                         <ul className={styles.children}>
                             {childrenItems}
                         </ul>
                         <Button variant='primary' onClick={onChildAdd}>Добавить ребёнка</Button>
                     </div>
                 </div>
-                <Button variant='danger' onClick={onDelete}>Удалить семью</Button>
+                {isAdminMode && (<Button variant='danger' onClick={onDelete}>Удалить семью</Button>)}
             </div>
         </Modal>
     );

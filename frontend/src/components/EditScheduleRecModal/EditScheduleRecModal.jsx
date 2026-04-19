@@ -13,7 +13,7 @@ const EditScheduleRecModal = ({ record, clubs, isOpen, onClose, onSubmit, onDele
                     <Select
                         label={"Кружок"}
                         id={"club"}
-                        placeholder={record.club.name}
+                        placeholder={record?.club?.name}
                         options={clubs.map((club) => ({
                             value: club.id,
                             label: club.name
@@ -22,17 +22,17 @@ const EditScheduleRecModal = ({ record, clubs, isOpen, onClose, onSubmit, onDele
                     <Select
                         label={"День недели"}
                         id={"dayOfWeek"}
-                        placeholder={getDayName(record.dayOfWeek)}
+                        placeholder={getDayName(record?.dayOfWeek)}
                         options={DAYS_OF_WEEK.map((day) => ({
                             value: day.value,
                             label: day.label
                         }))}
                     />
                     <div className={styles.details}>
-                        <Input label={"Время начала"} id={"startTime"} value={record.startTime} type="time"/>
-                        <Input label={"Время конца"} id={"endTime"} value={record.endTime} type="time" />
+                        <Input label={"Время начала"} id={"startTime"} value={record?.startTime} type="time"/>
+                        <Input label={"Время конца"} id={"endTime"} value={record?.endTime} type="time" />
                     </div>
-                    <Input label={"Кабинет"} id={"room"} value={record.room === null ? '' : record.room} />
+                    <Input label={"Кабинет"} id={"room"} value={record?.room === null ? '' : record?.room} />
                 </div>   
                 <div className={styles.buttons}>
                     <Button variant='primary' onClick={onSubmit}>Сохранить</Button>

@@ -1,0 +1,57 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+
+    .title {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+
+        .text {
+            font-size: 16px;
+            font-weight: 500;
+            color: $neutral-9;
+        }
+    }
+
+    .list {
+        list-style: none;
+
+        li {
+            background-color: rgba($color: $purple-1, $alpha: 0.4);
+            margin-bottom: 10px;
+            border-radius: 8px;
+
+            .info {
+                display: flex;
+                text-align: left;
+                width: 100%;
+                gap: 10px;
+                padding: 10px;
+                justify-content: space-between;
+                align-items: center;
+
+                .infoText {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+
+                    .club {
+                        color: $neutral-8;
+                        font-size: 14px;
+                        font-weight: 500;
+                    }
+
+                    .family {
+                        font-size: 16px;
+                        font-weight: 500;
+                        color: $neutral-9;
+                    }
+                }
+                
+            }
+        }
+    }
+}

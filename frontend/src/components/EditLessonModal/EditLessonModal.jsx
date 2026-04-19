@@ -13,39 +13,39 @@ const EditLessonModal = ({ lesson, clubs, teachers, isOpen, onClose, onSubmit, o
                     <Select
                         label={"Кружок"}
                         id={"club"}
-                        placeholder={lesson.club.name}
+                        placeholder={lesson?.club.name}
                         options={clubs.map((club) => ({
                             value: club.id,
                             label: club.name
                         }))}
-                        disabled={lesson.status === 'COMPLETED' || lesson.status === 'CANCELLED'}
+                        disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'}
                     />
-                    <Input label={"Дата"} id={"date"} type="date" value={lesson.date.split('T')[0]} disabled={lesson.status === 'COMPLETED' || lesson.status === 'CANCELLED'} />
+                    <Input label={"Дата"} id={"date"} type="date" value={lesson?.date.split('T')[0]} disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'} />
                     <div className={styles.details}>
-                        <Input label={"Время начала"} id={"startTime"} type="time" value={lesson.startTime} disabled={lesson.status === 'COMPLETED' || lesson.status === 'CANCELLED'}/>
-                        <Input label={"Время конца"} id={"endTime"} type="time" value={lesson.endTime} disabled={lesson.status === 'COMPLETED' || lesson.status === 'CANCELLED'} />
+                        <Input label={"Время начала"} id={"startTime"} type="time" value={lesson?.startTime} disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'}/>
+                        <Input label={"Время конца"} id={"endTime"} type="time" value={lesson?.endTime} disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'} />
                     </div>
                     <Select
                         label={"Учитель"}
                         id={"teacher"}
-                        placeholder={`${lesson.teacher.user.lastName} ${lesson.teacher.user.firstName}`}
+                        placeholder={`${lesson?.teacher.user.lastName} ${lesson?.teacher.user.firstName}`}
                         options={teachers.map((teacher) => ({
                             value: teacher.teacher.id,
                             label: `${teacher.lastName} ${teacher.firstName}`
                         }))}
-                        disabled={lesson.status === 'COMPLETED' || lesson.status === 'CANCELLED'}
+                        disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'}
                     />
-                    <Input label={"Кабинет"} id={"room"} value={lesson.room === null ? '' : lesson.room} disabled={lesson.status === 'COMPLETED' || lesson.status === 'CANCELLED'} />
-                    <Input label={"Тема занятия"} id={"topic"} value={lesson.topic === null ? '' : lesson.topic} disabled={lesson.status === 'COMPLETED' || lesson.status === 'CANCELLED'}/>
+                    <Input label={"Кабинет"} id={"room"} value={lesson?.room === null ? '' : lesson?.room} disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'} />
+                    <Input label={"Тема занятия"} id={"topic"} value={lesson?.topic === null ? '' : lesson?.topic} disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'}/>
                     <Select
                         label={"Статус"}
                         id={"status"}
-                        placeholder={getLessonStatus(lesson.status)}
+                        placeholder={getLessonStatus(lesson?.status)}
                         options={LESSON_STATUS.filter((lessonSt) => lessonSt.value !== 'COMPLETED').map((lessonSt) => ({
                             value: lessonSt.value,
                             label: lessonSt.label
                         }))}
-                        disabled={lesson.status === 'COMPLETED'}
+                        disabled={lesson?.status === 'COMPLETED'}
                     />
                 </div>   
                 <div className={styles.buttons}>

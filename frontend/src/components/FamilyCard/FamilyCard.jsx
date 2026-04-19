@@ -20,13 +20,13 @@ const FamilyCard = ({ familyName, parents, children, onEdit, onWatchDetailed }) 
                 <h2 className={styles.title}>{familyName}</h2>
                 <div className={styles.familyMembers}>
                     <div className={styles.parentsBlock}>
-                        <h3 className={styles.header}>Parents</h3>
+                        <h3 className={styles.header}>Родители</h3>
                         <ul className={styles.parents}>
                             {parentsItems}
                         </ul>
                     </div>
                     <div className={styles.childrenBlock}>
-                        <h3 className={styles.header}>Children</h3>
+                        <h3 className={styles.header}>Дети</h3>
                         <ul className={styles.children}>
                             {childrenItems}
                         </ul>

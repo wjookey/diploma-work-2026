@@ -9,20 +9,20 @@ const PaymentCard = ({ payment, isEditMode = true, isInModal = false, onEdit }) 
         <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
                 <div className={styles.info}>
-                    <h3 className={styles.name}>{payment.subscription.child.lastName} {payment.subscription.child.firstName}</h3>
+                    <h3 className={styles.name}>{payment?.subscription?.child?.lastName} {payment?.subscription?.child?.firstName}</h3>
                     <div className={styles.payment}>
-                        <h3 className={styles.service}>{payment.subscription.clubService.club.name} - {payment.subscription.clubService.name}</h3>
+                        <h3 className={styles.service}>{payment?.subscription?.clubService?.club?.name} - {payment?.subscription?.clubService?.name}</h3>
                         <div className={styles.date}>
                             <CalendarDays className={styles.icon} />
-                            <p>{formatDate(payment.paymentDate)}</p>
+                            <p>{formatDate(payment?.paymentDate)}</p>
                         </div>
                         <div className={styles.amount}>
                             <CreditCard className={styles.icon} />
-                            <p>{payment.amount} руб {payment.paymentMethod !== undefined ? `- ${payment.paymentMethod}` : ''}</p>
+                            <p>{payment?.amount} руб {payment?.paymentMethod !== undefined ? `- ${payment?.paymentMethod}` : ''}</p>
                         </div>
                         <div className={styles.note}>
                             <MessageSquare className={styles.icon} />
-                            <p>{payment.note !== null ? payment.note : '-'}</p>
+                            <p>{payment?.note !== null ? payment?.note : '-'}</p>
                         </div>
                     </div>
                 </div>
