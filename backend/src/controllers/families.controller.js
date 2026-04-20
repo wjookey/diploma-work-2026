@@ -9,7 +9,13 @@ exports.getAll = async (req, res, next) => {
 
         const where = {};
 
-        if (search) where.familyName = { contains: search, mode: 'insensitive' };
+        if (search) {
+            where.OR = [
+                { familyName: { contains: search, mode: 'insensitive' } },
+                { parents: { some: { user: { phone: { contains: search, mode: 'insensitive' } } } } },
+                { parents: { some: { user: { email: { contains: search, mode: 'insensitive' } } } } }
+            ];
+        }
 
         const [families, total] = await Promise.all([
             prisma.family.findMany({
@@ -17,10 +23,18 @@ exports.getAll = async (req, res, next) => {
                 include: {
                     parents: {
                         include: {
-                            user: { select: { firstName: true, lastName: true, phone: true, email: true } },
+                            user: { select: { id: true, firstName: true, lastName: true, phone: true, email: true } },
                         },
                     },
-                    children: { select: { firstName: true, lastName: true, birthDate: true } },
+                    children: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            birthDate: true,
+                            subscriptions: true,
+                        }
+                    },
                 },
                 orderBy: { familyName: 'asc' },
                 skip,
@@ -51,10 +65,19 @@ exports.getById = async (req, res, next) => {
             include: {
                 parents: {
                     include: {
-                        user: { select: { firstName: true, lastName: true, phone: true, email: true } },
+                        user: { select: { id: true, firstName: true, lastName: true, phone: true, email: true } },
                     },
                 },
-                children: { select: { firstName: true, lastName: true, birthDate: true, note: true } },
+                children: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        birthDate: true,
+                        note: true,
+                        subscriptions: true,
+                    }
+                },
             },
         });
 

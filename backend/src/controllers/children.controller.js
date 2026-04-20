@@ -113,7 +113,7 @@ exports.getById = async (req, res, next) => {
 exports.create = async (req, res, next) => {
     try {
         const { firstName, lastName, birthDate, familyId, note } = req.body;
-
+        
         const child = await prisma.child.create({
             data: {
                 firstName,
@@ -144,6 +144,14 @@ exports.create = async (req, res, next) => {
 exports.update = async (req, res, next) => {
     try {
         const { firstName, lastName, birthDate, note, familyId } = req.body;
+
+        if (req.user.role === 'PARENT') {
+            const childCheck = await prisma.child.findUnique({
+                where: { id: parseInt(req.params.id) },
+            });
+
+            if (req.user.parent.familyId !== childCheck.familyId) throw new AppError('Forbidden', 403);
+        }
 
         const child = await prisma.child.update({
             where: { id: parseInt(req.params.id) },

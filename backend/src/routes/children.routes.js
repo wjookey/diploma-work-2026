@@ -21,7 +21,7 @@ router.post(
     validate,
     controller.create
 );
-router.put('/:id', authorize('ADMIN'), controller.update);
+router.put('/:id', authorize('ADMIN', 'PARENT'), controller.update);
 router.delete('/:id', authorize('ADMIN'), controller.remove);
 
 module.exports = router;

@@ -87,7 +87,7 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const { subscriptionId, paymentDate, paymentMethod, note } = req.body;
+        const { subscriptionId, amount, paymentDate, paymentMethod, note } = req.body;
 
         const existingPayment = await prisma.payment.findUnique({
             where: { subscriptionId: parseInt(subscriptionId) },
@@ -107,7 +107,7 @@ exports.create = async (req, res, next) => {
         const payment = await prisma.payment.create({
             data: {
                 subscriptionId: parseInt(subscriptionId),
-                amount: subscription.clubService.price,
+                amount: parseFloat(amount),
                 paymentDate: paymentDate ? new Date(paymentDate) : new Date(),
                 paymentMethod,
                 note,
@@ -134,11 +134,12 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { paymentDate, paymentMethod, note } = req.body;
+        const { amount, paymentDate, paymentMethod, note } = req.body;
 
         const payment = await prisma.payment.update({
             where: { id: parseInt(req.params.id) },
             data: {
+                ...(amount && { amount: parseFloat(amount) }),
                 ...(paymentDate && { paymentDate: new Date(paymentDate) }),
                 ...(paymentMethod && { paymentMethod }),
                 ...(note !== undefined && { note }),

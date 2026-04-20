@@ -31,13 +31,22 @@ exports.getAll = async (req, res, next) => {
                     phone: true,
                     role: true,
                     createdAt: true,
-                    teacher: { select: { id: true, specialty: true } },
+                    teacher: {
+                        select: {
+                            id: true,
+                            specialty: true,
+                            clubs: {
+                                select: { id: true, name: true },
+                            },
+                        }
+                    },
                     parent: {
                         select: {
                             id: true,
                             family: {
                                 select: {
                                     id: true,
+                                    familyName: true,
                                     children: {
                                         select: { id: true, firstName: true, lastName: true, birthDate: true }
                                     },
@@ -97,6 +106,7 @@ exports.getById = async (req, res, next) => {
                         family: {
                             select: {
                                 id: true,
+                                familyName: true,
                                 children: true,
                             },
                         },
@@ -133,8 +143,15 @@ exports.create = async (req, res, next) => {
         }
 
         if (role === 'PARENT') {
-            if (familyId) data.parent = { create: { familyId: parseInt(familyId) } };
-            else data.parent = { create: { family: { create: {} } } };
+            data.parent = {
+                create: {
+                    family: {
+                        connect: {
+                            id: req.user.role === 'PARENT' ? req.user.parent.familyId : parseInt(familyId),
+                        },
+                    },
+                }
+            };
         }
 
         const user = await prisma.user.create({
@@ -160,8 +177,19 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { firstName, lastName, phone, email, specialty, bio } = req.body;
+        const { firstName, lastName, phone, email, specialty, bio, familyId } = req.body;
         const userId = parseInt(req.params.id);
+
+        if (req.user.role === 'PARENT') {
+            const parent = await prisma.user.findUnique({
+                where: { id: userId },
+                include: {
+                    parent: true,
+                }
+            });
+
+            if (req.user.parent.familyId !== parent.parent.familyId) throw new AppError('Forbidden', 403);
+        }
 
         const user = await prisma.user.update({
             where: { id: userId },
@@ -184,11 +212,20 @@ exports.update = async (req, res, next) => {
         });
 
         if (user.role === 'TEACHER' && user.teacher && (specialty !== undefined || bio !== undefined)) {
-            await prisma.user.update({
+            await prisma.teacher.update({
                 where: { id: user.teacher.id },
                 data: {
                     ...(specialty !== undefined && { specialty }),
                     ...(bio !== undefined && { bio }),
+                },
+            });
+        }
+
+        if (user.role === 'PARENT' && user.parent) {
+            await prisma.parent.update({
+                where: { id: user.parent.id },
+                data: {
+                    ...(familyId && { familyId: parseInt(familyId) }),
                 },
             });
         }

@@ -190,10 +190,19 @@ exports.refreshToken = async (req, res, next) => {
         }
 
         const accessToken = generateToken(user.id, "access");
+        const newRefreshToken = generateToken(user.id, "refresh");
+        
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { refreshToken: hashToken(newRefreshToken) },
+        });
 
         res.json({
             success: true,
-            data: { accessToken }
+            data: {
+                accessToken,
+                refreshToken: newRefreshToken,
+            }
         });
     } catch (error) {
         next(error);

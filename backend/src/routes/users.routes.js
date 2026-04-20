@@ -7,12 +7,12 @@ const controller = require('../controllers/users.controller');
 const router = Router();
 
 router.use(authenticate);
-router.use(authorize('ADMIN'));
 
 router.get('/', controller.getAll);
 router.get('/:id', controller.getById);
 router.post(
     '/',
+    authorize('ADMIN', 'PARENT'),
     [
         body('email').isEmail().withMessage('Enter correct email'),
         body('password').isLength({ min: 6 }).withMessage('Password should be at least 6 symbols'),
@@ -25,7 +25,7 @@ router.post(
     validate,
     controller.create
 );
-router.put('/:id', controller.update);
-router.delete('/:id', controller.remove);
+router.put('/:id', authorize('ADMIN', 'PARENT'), controller.update);
+router.delete('/:id', authorize('ADMIN'), controller.remove);
 
 module.exports = router;

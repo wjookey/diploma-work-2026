@@ -39,6 +39,6 @@ router.put(
     controller.changePassword
 );
 router.post('/refresh', controller.refreshToken);
-router.put('/logout', authenticate, controller.logout);
+router.post('/logout', authenticate, controller.logout);
 
 module.exports = router;

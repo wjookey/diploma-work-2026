@@ -7,7 +7,13 @@ exports.getAll = async (req, res, next) => {
         const schedule = await prisma.schedule.findMany({
             include: {
                 club: {
-                    include: { teacher: true },
+                    include: {
+                        teacher: {
+                            include: {
+                                user: { select: { id: true, firstName: true, lastName: true, phone: true, email: true } },
+                            },
+                        },
+                    },
                 },
             },
             orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
@@ -25,7 +31,13 @@ exports.getById = async (req, res, next) => {
             where: { id: parseInt(req.params.id) },
             include: {
                 club: {
-                    include: { teacher: true },
+                    include: {
+                        teacher: {
+                            include: {
+                                user: { select: { id: true, firstName: true, lastName: true, phone: true, email: true } },
+                            },
+                        },
+                    },
                 },
             },
         });

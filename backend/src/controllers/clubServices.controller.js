@@ -17,7 +17,17 @@ exports.getAll = async (req, res, next) => {
             prisma.clubService.findMany({
                 where,
                 include: {
-                    club: { select: { id: true, name: true, isActive: true } },
+                    club: {
+                        include: {
+                            clubCategory: true,
+                            teacher: {
+                                include: {
+                                    user: { select: { id: true, firstName: true, lastName: true, phone: true, email: true } },
+                                },
+                            },
+                        },
+                        
+                    },
                 },
                 orderBy: { name: 'asc' },
                 skip,
@@ -46,16 +56,16 @@ exports.getById = async (req, res, next) => {
         const clubService = await prisma.clubService.findUnique({
             where: { id: parseInt(req.params.id) },
             include: {
-                club: { select: { id: true, name: true, description: true } },
-                subscriptions: {
+                club: {
                     include: {
-                        child: { select: { id: true, firstName: true, lastName: true } },
+                        clubCategory: true,
+                        teacher: {
+                            include: {
+                                user: { select: { id: true, firstName: true, lastName: true, phone: true, email: true } },
+                            },
+                        },
                     },
-                },
-                subscriptionRequests: {
-                    include: {
-                        child: { select: { id: true, firstName: true, lastName: true } },
-                    },
+                        
                 },
             },
         });
