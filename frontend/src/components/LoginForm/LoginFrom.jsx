@@ -3,7 +3,7 @@ import Button from '../Button/Button';
 import Input from '../Input/Input';
 import { Mail, Lock } from 'lucide-react';
 
-const LoginForm = ({loading, onButtonClick}) => {
+const LoginForm = ({loading, onButtonClick, onEmailChange, onPasswordChange}) => {
     return (
         <div className={styles.layout}>
             <div className={styles.textBlock}>
@@ -14,8 +14,8 @@ const LoginForm = ({loading, onButtonClick}) => {
             </div>
             <div className={styles.formBlock}>
                 <div className={styles.inputsBlock}>
-                    <Input label="Почта" id="login-email" icon={Mail} />
-                    <Input label="Пароль" id="login-password" icon={Lock} />
+                    <Input label="Почта" id="login-email" icon={Mail} onChange={onEmailChange} required />
+                    <Input label="Пароль" id="login-password" icon={Lock} onChange={onPasswordChange} required type="password"/>
                 </div>
                 <div className={styles.button}>
                     <Button variant='primary' loading={loading} onClick={onButtonClick}>Войти</Button>

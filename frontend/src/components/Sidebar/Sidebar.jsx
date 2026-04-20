@@ -15,6 +15,7 @@ import {
     AlarmClock,
 } from "lucide-react";
 import { useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 const adminLinks = [
     { to: "/", icon: LayoutDashboard, label: "Дашборд" },
@@ -29,7 +30,25 @@ const adminLinks = [
     { to: "/requests", icon: FileText, label: "Заявки" },
 ];
 
-const Sidebar = ({ isOpen, onToggle, onExitButtonClick, name, email }) => {
+const teacherLinks = [
+    { to: "/", icon: CalendarDays, label: "Расписание" },
+    { to: "/lessons", icon: AlarmClock, label: "Уроки" },
+];
+
+const parentLinks = [
+    { to: "/", icon: Users, label: "Моя семья" },
+    { to: "/services", icon: Clipboard, label: "Услуги" },
+    { to: "/lessons", icon: AlarmClock, label: "Уроки" },
+    { to: "/subscriptions", icon: BookOpen, label: "Абонементы" },
+    { to: "/payments", icon: CreditCard, label: "Оплата" },
+    { to: "/requests", icon: FileText, label: "Заявки" },
+];
+
+const Sidebar = ({ isOpen, onToggle }) => {
+    const { user, logout } = useAuth();
+
+    const links = user?.role === 'ADMIN' ? adminLinks : user?.role === 'TEACHER' ? teacherLinks : parentLinks;
+
     useEffect(() => {
         if (isOpen) document.body.style.overflow = "hidden";
         else document.body.style.overflow = "";
@@ -39,7 +58,7 @@ const Sidebar = ({ isOpen, onToggle, onExitButtonClick, name, email }) => {
         };
     }, [isOpen]);
 
-    const sidebarLinks = adminLinks.map((link) => (
+    const sidebarLinks = links.map((link) => (
         <SidebarLink
             key={link.to}
             keyValue={link.to}
@@ -59,7 +78,7 @@ const Sidebar = ({ isOpen, onToggle, onExitButtonClick, name, email }) => {
         <aside className={`${styles.sidebar} ${!isOpen ? styles.isClosed : ""}`}>
             <SidebarHeader onClose={onToggle} />
             <nav className={styles.links}>{sidebarLinks}</nav>
-            <SidebarFooter onClick={onExitButtonClick} name={name} email={email} />
+            <SidebarFooter onClick={logout} name={`${user.lastName} ${user.firstName}`} email={user.email} />
         </aside>
         </div>
     );
