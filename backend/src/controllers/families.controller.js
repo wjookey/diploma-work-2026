@@ -27,13 +27,15 @@ exports.getAll = async (req, res, next) => {
                         },
                     },
                     children: {
-                        select: {
-                            id: true,
-                            firstName: true,
-                            lastName: true,
-                            birthDate: true,
-                            subscriptions: true,
-                        }
+                        include: {
+                            subscriptions: {
+                                include: {
+                                    clubService: {
+                                        include: { club: true },
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
                 orderBy: { familyName: 'asc' },
@@ -69,14 +71,15 @@ exports.getById = async (req, res, next) => {
                     },
                 },
                 children: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        birthDate: true,
-                        note: true,
-                        subscriptions: true,
-                    }
+                    include: {
+                        subscriptions: {
+                            include: {
+                                clubService: {
+                                    include: { club: true },
+                                },
+                            },
+                        },
+                    },
                 },
             },
         });
@@ -185,8 +188,26 @@ exports.update = async (req, res, next) => {
 
 exports.remove = async (req, res, next) => {
     try {
-        await prisma.family.delete({
-            where: { id: parseInt(req.params.id) },
+        await prisma.$transaction(async (tx) => {
+            const family = await tx.family.findUnique({
+                where: { id: parseInt(req.params.id) },
+                include: {
+                    parents: true,
+                    children: true,
+                },
+            });
+
+            if (!family) throw new AppError('Family is not found', 404);
+
+            const userIds = family.parents.map((p) => p.userId);
+
+            if (userIds.length > 0) {
+                await tx.user.deleteMany({
+                    where: { id: { in: userIds } },
+                });
+            }
+
+            await tx.family.delete({ where: { id: parseInt(req.params.id) } });
         });
 
         res.json({ success: true, message: 'Family is deleted' });
