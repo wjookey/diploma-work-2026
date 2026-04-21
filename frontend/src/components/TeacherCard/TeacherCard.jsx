@@ -27,8 +27,8 @@ const TeacherCard = ({ teacher, onEdit, isInModal = false }) => {
                         </div>
                     </div>
                 </div>
-                <div className={styles.button}>
-                    <Button icon={Pen} variant='primary' onClick={onEdit} />
+                <div className={styles.buttons}>
+                    <div className={styles.button}><Button icon={Pen} variant='primary' onClick={onEdit} /></div>
                 </div>
             </div>
         </Card>

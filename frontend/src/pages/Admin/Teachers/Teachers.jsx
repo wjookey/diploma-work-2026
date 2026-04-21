@@ -5,9 +5,12 @@ import TeacherCard from '../../../components/TeacherCard/TeacherCard';
 import Button from '../../../components/Button/Button';
 import Input from '../../../components/Input/Input';
 import { Menu, Search, Plus, GraduationCap } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CreateTeacherModal from '../../../components/CreateTeacherModal/CreateTeacherModal';
 import EditTeacherModal from '../../../components/EditTeacherModal/EditTeacherModal';
+import Loader from '../../../components/Loader/Loader';
+import api from '../../../api/axios';
+import toast from 'react-hot-toast';
 
 const Teachers = () => {
     const [search, setSearch] = useState('');
@@ -15,38 +18,84 @@ const Teachers = () => {
     const [createTeacherModal, setCreateTeacherModal] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [editModal, setEditModal] = useState(false);
-    const [teachers, setTeachers] = useState([
-      {
-        id: 5,
-        email: "danilova@educrm.ru",
-        firstName: "Анастасия",
-        lastName: "Данилова",
-        phone: "89999999995",
-        role: "TEACHER",
-        createdAt: "2026-04-08T20:09:21.151Z",
-        teacher: {
-          id: 4,
-          specialty: "Актерское мастерство",
-          clubs: [{ name: "Театр Взлёт" }, { name: "Кактус" }],
-        },
-        parent: null,
-      },
-      {
-        id: 4,
-        email: "sokolova@educrm.ru",
-        firstName: "Мария",
-        lastName: "Соколова",
-        phone: "89999999996",
-        role: "TEACHER",
-        createdAt: "2026-04-08T20:09:21.150Z",
-        teacher: {
-          id: 3,
-          specialty: "Психология",
-          clubs: [{ name: "Калейдоскоп эмоций" }, { name: "Кактус" }],
-        },
-        parent: null,
-      }
-    ]);
+    const [teachers, setTeachers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [creatingTeacher, setCreatingTeacher] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const url = search ? `/users?role=TEACHER&search=${encodeURIComponent(search)}` : '/users?role=TEACHER';
+                const res = await api.get(url);
+                setTeachers(res.data.data);
+            } catch (error) {
+                toast.error("Ошибка загрузки данных преподавателей");
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [search, createTeacherModal, editModal]);
+
+    const handleCreateTeacher = async (teacherData) => {
+        setCreatingTeacher(true);
+        try {
+            const user = {
+                firstName: teacherData.firstName,
+                lastName: teacherData.lastName,
+                email: teacherData.email,
+                phone: teacherData.phone,
+                password: 'password123',
+            }
+
+            await api.post('/users', { ...user, role: 'TEACHER' });
+            toast.success("Преподаватель добавлен");
+            setCreateTeacherModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка добавления преподавателя');
+            console.error(error);
+        } finally {
+            setCreatingTeacher(false);
+        }
+    };
+
+    const handleUpdateTeacher = async (teacherData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${teacherData.id}`, {
+                firstName: teacherData.firstName,
+                lastName: teacherData.lastName,
+                phone: teacherData.phone,
+                email: teacherData.email
+            });
+
+            toast.success('Данные преподавателя обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления преподавателя');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    }
+
+    const handleDeleteTeacher = async (userId) => {
+        setSubmittingEdit(true);
+        try {
+            await api.delete(`/users/${userId}`);
+            toast.success('Преподаватель удалён');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка удаления преподавателя');
+        } finally {
+            setSubmittingEdit(false);
+        }
+    }
+
+    if (loading) return <Loader />;
 
     const teacherItems = teachers.map((teacher) => (
         <li key={teacher.id}>
@@ -80,15 +129,20 @@ const Teachers = () => {
                 ) : (
                     <EmptyState
                         icon={GraduationCap}
-                        title={'Нет клиентов'}
-                        description={'Добавьте первую семью для начала работы'}
-                        action={<Button icon={Plus} onClick={() => setCreateTeacherModal(true)}>Добавить семью</Button>}
+                        title={'Нет учителей'}
+                        description={'Добавьте первого учителя для начала работы'}
+                        action={<Button icon={Plus} onClick={() => setCreateTeacherModal(true)}>Добавить учителя</Button>}
                     />
                 )}
             </div>
 
             <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
-            <CreateTeacherModal isOpen={createTeacherModal} onClose={() => setCreateTeacherModal(false)} />
+            <CreateTeacherModal
+                isOpen={createTeacherModal}
+                onClose={() => setCreateTeacherModal(false)}
+                onAdd={handleCreateTeacher}
+                loading={creatingTeacher}
+            />
             <EditTeacherModal
                 user={selectedTeacher}
                 isOpen={editModal} 
@@ -96,6 +150,9 @@ const Teachers = () => {
                     setEditModal(false);
                     setSelectedTeacher(null);
                 }}
+                onSubmit={handleUpdateTeacher}
+                onDelete={handleDeleteTeacher}
+                loading={submittingEdit}
             />
         </>
     );

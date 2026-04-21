@@ -55,8 +55,11 @@
     @media (max-width: 520px) {
         flex-direction: column;
 
-        .button {
+        .buttons {
             width: 100%;
+            .button {
+                width: 100%;
+            }
         }
     }
 }
