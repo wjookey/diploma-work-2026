@@ -4,8 +4,58 @@ import Button from '../Button/Button';
 import Input from '../Input/Input';
 import Select from '../Select/Select';
 import { getSubscriptionType } from "../../utils/helper";
+import toast from 'react-hot-toast';
+import DangerModal from '../DangerModal/DangerModal';
+import { useState, useEffect } from 'react';
 
-const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete }) => {
+const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete, onStatusChange, loading = false }) => {
+    const [formData, setFormData] = useState({
+        name: '',
+        clubId: null,
+        type: '',
+        price: null,
+        subscriptionLessons: null,
+        freezedLesson: null,
+        isActive: false
+    });
+    const [isDangerModalOpen, setIsDangerModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (isOpen && service) {
+            setFormData({
+                name: service.name,
+                clubId: service.clubId,
+                type: service.type,
+                price: service.price,
+                subscriptionLessons: service.subscriptionLessons,
+                freezedLesson: service.freezedLesson,
+                isActive: service.isActive
+            });
+        }
+    }, [isOpen, service]);
+
+    const handleChange = (field, value) => {
+        if (field === 'isActive') {
+            value = value === 'true' || value === true;
+        }
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleSubmit = async () => {
+        if (!formData.name || !formData.clubId || !formData.type || formData.price === undefined || formData.subscriptionLessons === undefined || formData.freezedLesson === undefined) {
+            toast.error("Заполните все поля");
+            return;
+        }
+        await onSubmit({ ...service, ...formData });
+        await onStatusChange(service.id, formData.isActive);
+    };
+
+    const handleDelete = async () => {
+        await onDelete(service.id);
+        setIsDangerModalOpen(false);
+        onClose();
+    };
+    
     const types = [
         { id: "TRIAL", label: getSubscriptionType("TRIAL") },
         { id: "SINGLE", label: getSubscriptionType("SINGLE") },
@@ -15,49 +65,105 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete 
     ];
 
     return (
-        <Modal title={'Редактировать услугу'} isOpen={isOpen} onClose={onClose}>
-            <div className={styles.wrapper}>
-                <div className={styles.inputs}>
-                    <Input label={"Название"} id={"name"} value={service?.name} />
-                    <Select
-                        label={"Кружок"}
-                        id={"club"}
-                        placeholder={service?.club?.name}
-                        options={clubs.map((club) => ({
-                            value: club.id,
-                            label: club.name
-                        }))}
-                    />
-                    <Select
-                        label={"Тип услуги"}
-                        id={"type"}
-                        placeholder={getSubscriptionType(service?.type)}
-                        options={types.map((type) => ({
-                            value: type.id,
-                            label: type.label
-                        }))}
-                    />
-                    <Input label={"Цена"} id={"price"} value={service?.price} />
-                    <div className={styles.details}>
-                        <Input label={"Количество занятий"} id={"lessons"} value={service?.subscriptionLessons} />
-                        <Input label={"Количество заморозок"} id={"freezes"} value={service?.freezedLesson} />
+        <>
+            <Modal title={'Редактировать услугу'} isOpen={isOpen} onClose={onClose}>
+                <div className={styles.wrapper}>
+                    <div className={styles.inputs}>
+                        <Input
+                            label={"Название"}
+                            id={"name"}
+                            value={formData.name || ''}
+                            onChange={(e) => handleChange('name', e.target.value)}
+                            placeholder={"Название"}
+                            required
+                        />
+                        <Select
+                            label={"Кружок"}
+                            id={"club"}
+                            placeholder={'Выберите'}
+                            value={formData.clubId || ''}
+                            onChange={(e) => handleChange('clubId', e.target.value)}
+                            options={clubs.map((club) => ({
+                                value: club.id,
+                                label: club.name
+                            }))}
+                            required
+                        />
+                        <Select
+                            label={"Тип услуги"}
+                            id={"type"}
+                            placeholder={'Выберите'}
+                            value={formData.type || ''}
+                            onChange={(e) => handleChange('type', e.target.value)}
+                            options={types.map((type) => ({
+                                value: type.id,
+                                label: type.label
+                            }))}
+                            required
+                        />
+                        <Input
+                            label={"Цена"}
+                            id={"price"}
+                            value={formData.price || ''}
+                            onChange={(e) => handleChange('price', e.target.value)}
+                            placeholder={"Цена"}
+                            required
+                        />
+                        <div className={styles.details}>
+                            <Input
+                                label={"Количество занятий"}
+                                id={"lessons"}
+                                value={formData.subscriptionLessons || ''}
+                                onChange={(e) => handleChange('subscriptionLessons', e.target.value)}
+                                placeholder={"Количество занятий"}
+                                required
+                            />
+                            <Input
+                                label={"Количество заморозок"}
+                                id={"freezes"}
+                                value={formData.freezedLesson}
+                                onChange={(e) => handleChange('freezedLesson', e.target.value)}
+                                placeholder={"Количество заморозок"}
+                                required
+                            />
+                        </div>
+                        <Select
+                            label={"Статус"}
+                            id={"status"}
+                            placeholder={"Выберите"}
+                            value={formData.isActive}
+                            onChange={(e) => handleChange('isActive', e.target.value)}
+                            options={[
+                                { value: false, label: "Не активная" },
+                                { value: true, label: "Активная" },
+                            ]}
+                            required
+                        />
+                    </div>    
+                    <div className={styles.buttons}>
+                        <Button
+                            variant='primary'
+                            onClick={handleSubmit}
+                            disabled={loading}
+                        >
+                            {loading ? 'Сохранение...' : 'Сохранить'}
+                        </Button>
+                        <Button
+                            variant='danger'
+                            onClick={() => setIsDangerModalOpen(true)}
+                            disabled={loading}
+                        >
+                            Удалить
+                        </Button>
                     </div>
-                    <Select
-                        label={"Статус"}
-                        id={"status"}
-                        placeholder={service?.isActive ? 'Активная' : 'Не активная'}
-                        options={[
-                            { value: 0, label: "Не активная" },
-                            { value: 1, label: "Активная" },
-                        ]}
-                    />
-                </div>    
-                <div className={styles.buttons}>
-                    <Button variant='primary' onClick={onSubmit}>Сохранить</Button>
-                    <Button variant='danger' onClick={onDelete}>Удалить</Button>
                 </div>
-            </div>
-        </Modal>
+            </Modal>
+            <DangerModal
+                isOpen={isDangerModalOpen}
+                onClose={() => setIsDangerModalOpen(false)}
+                onDelete={handleDelete}
+            />
+        </>
     );
 }
 

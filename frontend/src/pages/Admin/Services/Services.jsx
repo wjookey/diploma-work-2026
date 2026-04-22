@@ -5,208 +5,128 @@ import CreateServiceModal from '../../../components/CreateServiceModal/CreateSer
 import EditServiceModal from '../../../components/EditServiceModal/EditServiceModal';
 import ClubServiceCard from '../../../components/ClubServiceCard/ClubServiceCard';
 import { Search, Menu, Plus, Clipboard } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import EmptyState from '../../../components/EmptyState/EmptyState';
 import Sidebar from '../../../components/Sidebar/Sidebar';
+import api from '../../../api/axios';
+import toast from 'react-hot-toast';
+import { Loader } from 'lucide-react';
 
 const Services = () => {
     const [search, setSearch] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [createSerModal, setCreateSerModal] = useState(false);
-    const [services, setServices] = useState([
-      {
-        id: 6,
-        name: "Абонемент на 12 занятий (+2 заморозки)",
-        price: 8400,
-        subscriptionLessons: 12,
-        freezedLesson: 2,
-        clubId: 2,
-        type: "SUBSCRIPTION",
-        isActive: true,
-        createdAt: "2026-04-08T20:09:21.175Z",
-        club: {
-          id: 2,
-          name: "Музыкальные истории",
-          isActive: true,
-          description: null,
-          clubCategory: {
-            id: 1,
-            name: "Музыкальные занятия",
-          },
-          teacher: {
-            user: {
-              firstName: "Елена",
-              lastName: "Иванова",
-            },
-          },
-        },
-      },
-      {
-        id: 2,
-        name: "Абонемент на 12 занятий (+2 заморозки)",
-        price: 8400,
-        subscriptionLessons: 12,
-        freezedLesson: 2,
-        clubId: 1,
-        type: "SUBSCRIPTION",
-        isActive: true,
-        createdAt: "2026-04-08T20:09:21.171Z",
-        club: {
-          id: 1,
-          name: "Музыкальная энциклопедия",
-          isActive: false,
-          description: null,
-          clubCategory: {
-            id: 1,
-            name: "Музыкальные занятия",
-          },
-          teacher: {
-            user: {
-              firstName: "Елена",
-              lastName: "Иванова",
-            },
-          },
-        },
-      },
-      {
-        id: 7,
-        name: "Абонемент на 6 занятий",
-        price: 4500,
-        subscriptionLessons: 6,
-        freezedLesson: 0,
-        clubId: 2,
-        type: "SUBSCRIPTION",
-        isActive: true,
-        createdAt: "2026-04-08T20:09:21.177Z",
-        club: {
-          id: 2,
-          name: "Музыкальные истории",
-          isActive: true,
-          description: null,
-          clubCategory: {
-            id: 1,
-            name: "Музыкальные занятия",
-          },
-          teacher: {
-            user: {
-              firstName: "Елена",
-              lastName: "Иванова",
-            },
-          },
-        },
-      },
-      {
-        id: 3,
-        name: "Абонемент на 6 занятий",
-        price: 4500,
-        subscriptionLessons: 6,
-        freezedLesson: 0,
-        clubId: 1,
-        type: "SUBSCRIPTION",
-        isActive: true,
-        createdAt: "2026-04-08T20:09:21.172Z",
-        club: {
-          id: 1,
-          name: "Музыкальная энциклопедия",
-          isActive: false,
-          description: null,
-          clubCategory: {
-            id: 1,
-            name: "Музыкальные занятия",
-          },
-          teacher: {
-            user: {
-              firstName: "Елена",
-              lastName: "Иванова",
-            },
-          },
-        },
-      },
-      {
-        id: 5,
-        name: "Пробное занятие",
-        price: 600,
-        subscriptionLessons: 1,
-        freezedLesson: 0,
-        clubId: 2,
-        type: "TRIAL",
-        isActive: true,
-        createdAt: "2026-04-08T20:09:21.174Z",
-        club: {
-          id: 2,
-          name: "Музыкальные истории",
-          isActive: true,
-          description: null,
-          clubCategory: {
-            id: 1,
-            name: "Музыкальные занятия",
-          },
-          teacher: {
-            user: {
-              firstName: "Елена",
-              lastName: "Иванова",
-            },
-          },
-        },
-      },
-      {
-        id: 1,
-        name: "Пробное занятие",
-        price: 600,
-        subscriptionLessons: 1,
-        freezedLesson: 0,
-        clubId: 1,
-        type: "TRIAL",
-        isActive: true,
-        createdAt: "2026-04-08T20:09:21.167Z",
-        club: {
-          id: 1,
-          name: "Музыкальная энциклопедия",
-          isActive: false,
-          description: null,
-          clubCategory: {
-            id: 1,
-            name: "Музыкальные занятия",
-          },
-          teacher: {
-            user: {
-              firstName: "Елена",
-              lastName: "Иванова",
-            },
-          },
-        },
-      },
-      {
-        id: 4,
-        name: "Разовое занятие",
-        price: 800,
-        subscriptionLessons: 1,
-        freezedLesson: 0,
-        clubId: 1,
-        type: "SINGLE",
-        isActive: true,
-        createdAt: "2026-04-08T20:09:21.173Z",
-        club: {
-          id: 1,
-          name: "Музыкальная энциклопедия",
-          isActive: false,
-          description: null,
-          clubCategory: {
-            id: 1,
-            name: "Музыкальные занятия",
-          },
-          teacher: {
-            user: {
-              firstName: "Елена",
-              lastName: "Иванова",
-            },
-          },
-        },
-      },
-    ]);
+    const [services, setServices] = useState([]);
     const [editServiceModal, setEditServiceModal] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
     const [clubs, setClubs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [creatingItem, setCreatingItem] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const url = search ? `/clubServices?search=${encodeURIComponent(search)}` : '/clubServices';
+                const res = await api.get(url);
+                setServices(res.data.data);
+            } catch (error) {
+                toast.error("Ошибка загрузки данных");
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [search, createSerModal, editServiceModal]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const res = await api.get('/clubs');
+                setClubs(res.data.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        loadData();
+    }, [createSerModal, editServiceModal]);
+
+    const handleCreate = async (serviceData) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                name: serviceData.name,
+                clubId: serviceData.clubId,
+                type: serviceData.type,
+                price: serviceData.price,
+                subscriptionLessons: serviceData.subscriptionLessons,
+                freezedLesson: serviceData.freezedLesson,
+            };
+
+            await api.post('/clubServices', { ...data });
+            toast.success("Услуга добавлена");
+            setCreateSerModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка добавления услуги');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleUpdate = async (serviceData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/clubServices/${serviceData.id}`, {
+                name: serviceData.name,
+                clubId: serviceData.clubId,
+                type: serviceData.type,
+                price: serviceData.price,
+                subscriptionLessons: serviceData.subscriptionLessons,
+                freezedLesson: serviceData.freezedLesson,
+            });
+
+            toast.success("Детали услуги обновлены");
+            setEditServiceModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления деталей услуги');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleUpdateStatus = async (serviceId, isActive) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/clubServices/${serviceId}/status`, { isActive: Boolean(isActive) });
+            toast.success('Статус услуги изменён')
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления статуса услуги');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleDelete = async (serviceId) => {
+        setSubmittingEdit(true);
+        try {
+            await api.delete(`/clubServices/${serviceId}`);
+            toast.success('Услуга удалена');
+            setEditServiceModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка удаления услуги');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    }
+
+    if (loading) return <Loader />;
 
     const serviceItems = services.map((service) => (
         <li key={service.id}>
@@ -252,6 +172,8 @@ const Services = () => {
                 clubs={clubs}
                 isOpen={createSerModal}
                 onClose={() => setCreateSerModal(false)}
+                onAdd={handleCreate}
+                loading={creatingItem}
             />
             <EditServiceModal
                 service={selectedService}
@@ -261,6 +183,9 @@ const Services = () => {
                     setEditServiceModal(false);
                     setSelectedService(null);
                 }}
+                onSubmit={handleUpdate}
+                onDelete={handleDelete}
+                onStatusChange={handleUpdateStatus}
             />
         </>
     );

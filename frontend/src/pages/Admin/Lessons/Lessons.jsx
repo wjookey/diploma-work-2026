@@ -6,503 +6,19 @@ import CreateScheduleRecModal from '../../../components/CreateScheduleRecModal/C
 import EditLessonModal from '../../../components/EditLessonModal/EditLessonModal';
 import EmptyState from '../../../components/EmptyState/EmptyState';
 import { AlarmClock, Plus, Menu } from 'lucide-react';
-import { useState } from 'react';
-import { formatDate } from '../../../utils/helper';
+import { useEffect, useState } from 'react';
+import { formatDate, formatDateToISO } from '../../../utils/helper';
 import Select from '../../../components/Select/Select';
 import Input from '../../../components/Input/Input';
 import CreateLessonModal from '../../../components/CreateLessonModal/CreateLessonModal';
 import AttendanceModal from '../../../components/AttendanceModal/AttendanceModal';
+import toast from "react-hot-toast";
+import api from "../../../api/axios";
+import Loader from "../../../components/Loader/Loader";
 
 const Lessons = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [lessons, setLessons] = useState([
-      {
-        id: 1,
-        clubId: 1,
-        date: "2026-04-05T00:00:00.000Z",
-        startTime: "17:00",
-        endTime: "18:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 1,
-        createdAt: "2026-04-08T20:09:21.190Z",
-        club: {
-          id: 1,
-          name: "Музыкальная энциклопедия",
-        },
-        teacher: {
-          id: 1,
-          userId: 2,
-          specialty: "Музыка",
-          bio: null,
-          user: {
-            firstName: "Елена",
-            lastName: "Иванова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 4,
-        clubId: 2,
-        date: "2026-04-07T00:00:00.000Z",
-        startTime: "16:00",
-        endTime: "17:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 1,
-        createdAt: "2026-04-08T20:09:21.192Z",
-        club: {
-          id: 2,
-          name: "Музыкальные истории",
-        },
-        teacher: {
-          id: 1,
-          userId: 2,
-          specialty: "Музыка",
-          bio: null,
-          user: {
-            firstName: "Елена",
-            lastName: "Иванова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 7,
-        clubId: 3,
-        date: "2026-04-07T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 3,
-        createdAt: "2026-04-08T20:09:21.192Z",
-        club: {
-          id: 3,
-          name: "Калейдоскоп эмоций",
-        },
-        teacher: {
-          id: 3,
-          userId: 4,
-          specialty: "Психология",
-          bio: null,
-          user: {
-            firstName: "Мария",
-            lastName: "Соколова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 10,
-        clubId: 4,
-        date: "2026-04-08T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 3,
-        createdAt: "2026-04-08T20:09:21.193Z",
-        club: {
-          id: 4,
-          name: "Кактус",
-        },
-        teacher: {
-          id: 3,
-          userId: 4,
-          specialty: "Психология",
-          bio: null,
-          user: {
-            firstName: "Мария",
-            lastName: "Соколова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 16,
-        clubId: 6,
-        date: "2026-04-09T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 2,
-        createdAt: "2026-04-08T20:09:21.194Z",
-        club: {
-          id: 6,
-          name: "Фотокружок",
-        },
-        teacher: {
-          id: 2,
-          userId: 3,
-          specialty: "Фотография",
-          bio: null,
-          user: {
-            firstName: "Дмитрий",
-            lastName: "Петров",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 13,
-        clubId: 5,
-        date: "2026-04-09T00:00:00.000Z",
-        startTime: "16:00",
-        endTime: "17:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 4,
-        createdAt: "2026-04-08T20:09:21.194Z",
-        club: {
-          id: 5,
-          name: "Театр Взлёт",
-        },
-        teacher: {
-          id: 4,
-          userId: 5,
-          specialty: "Актерское мастерство",
-          bio: null,
-          user: {
-            firstName: "Анастасия",
-            lastName: "Данилова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 2,
-        clubId: 1,
-        date: "2026-04-12T00:00:00.000Z",
-        startTime: "17:00",
-        endTime: "18:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 1,
-        createdAt: "2026-04-08T20:09:21.190Z",
-        club: {
-          id: 1,
-          name: "Музыкальная энциклопедия",
-        },
-        teacher: {
-          id: 1,
-          userId: 2,
-          specialty: "Музыка",
-          bio: null,
-          user: {
-            firstName: "Елена",
-            lastName: "Иванова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 8,
-        clubId: 3,
-        date: "2026-04-14T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 3,
-        createdAt: "2026-04-08T20:09:21.192Z",
-        club: {
-          id: 3,
-          name: "Калейдоскоп эмоций",
-        },
-        teacher: {
-          id: 3,
-          userId: 4,
-          specialty: "Психология",
-          bio: null,
-          user: {
-            firstName: "Мария",
-            lastName: "Соколова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 5,
-        clubId: 2,
-        date: "2026-04-14T00:00:00.000Z",
-        startTime: "16:00",
-        endTime: "17:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 1,
-        createdAt: "2026-04-08T20:09:21.192Z",
-        club: {
-          id: 2,
-          name: "Музыкальные истории",
-        },
-        teacher: {
-          id: 1,
-          userId: 2,
-          specialty: "Музыка",
-          bio: null,
-          user: {
-            firstName: "Елена",
-            lastName: "Иванова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 11,
-        clubId: 4,
-        date: "2026-04-15T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 3,
-        createdAt: "2026-04-08T20:09:21.193Z",
-        club: {
-          id: 4,
-          name: "Кактус",
-        },
-        teacher: {
-          id: 3,
-          userId: 4,
-          specialty: "Психология",
-          bio: null,
-          user: {
-            firstName: "Мария",
-            lastName: "Соколова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 17,
-        clubId: 6,
-        date: "2026-04-16T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 2,
-        createdAt: "2026-04-08T20:09:21.194Z",
-        club: {
-          id: 6,
-          name: "Фотокружок",
-        },
-        teacher: {
-          id: 2,
-          userId: 3,
-          specialty: "Фотография",
-          bio: null,
-          user: {
-            firstName: "Дмитрий",
-            lastName: "Петров",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 14,
-        clubId: 5,
-        date: "2026-04-16T00:00:00.000Z",
-        startTime: "16:00",
-        endTime: "17:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 4,
-        createdAt: "2026-04-08T20:09:21.194Z",
-        club: {
-          id: 5,
-          name: "Театр Взлёт",
-        },
-        teacher: {
-          id: 4,
-          userId: 5,
-          specialty: "Актерское мастерство",
-          bio: null,
-          user: {
-            firstName: "Анастасия",
-            lastName: "Данилова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 3,
-        clubId: 1,
-        date: "2026-04-19T00:00:00.000Z",
-        startTime: "17:00",
-        endTime: "18:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 1,
-        createdAt: "2026-04-08T20:09:21.190Z",
-        club: {
-          id: 1,
-          name: "Музыкальная энциклопедия",
-        },
-        teacher: {
-          id: 1,
-          userId: 2,
-          specialty: "Музыка",
-          bio: null,
-          user: {
-            firstName: "Елена",
-            lastName: "Иванова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 6,
-        clubId: 2,
-        date: "2026-04-21T00:00:00.000Z",
-        startTime: "16:00",
-        endTime: "17:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 1,
-        createdAt: "2026-04-08T20:09:21.192Z",
-        club: {
-          id: 2,
-          name: "Музыкальные истории",
-        },
-        teacher: {
-          id: 1,
-          userId: 2,
-          specialty: "Музыка",
-          bio: null,
-          user: {
-            firstName: "Елена",
-            lastName: "Иванова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 9,
-        clubId: 3,
-        date: "2026-04-21T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 3,
-        createdAt: "2026-04-08T20:09:21.192Z",
-        club: {
-          id: 3,
-          name: "Калейдоскоп эмоций",
-        },
-        teacher: {
-          id: 3,
-          userId: 4,
-          specialty: "Психология",
-          bio: null,
-          user: {
-            firstName: "Мария",
-            lastName: "Соколова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 12,
-        clubId: 4,
-        date: "2026-04-22T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 3,
-        createdAt: "2026-04-08T20:09:21.193Z",
-        club: {
-          id: 4,
-          name: "Кактус",
-        },
-        teacher: {
-          id: 3,
-          userId: 4,
-          specialty: "Психология",
-          bio: null,
-          user: {
-            firstName: "Мария",
-            lastName: "Соколова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 15,
-        clubId: 5,
-        date: "2026-04-23T00:00:00.000Z",
-        startTime: "16:00",
-        endTime: "17:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 4,
-        createdAt: "2026-04-08T20:09:21.194Z",
-        club: {
-          id: 5,
-          name: "Театр Взлёт",
-        },
-        teacher: {
-          id: 4,
-          userId: 5,
-          specialty: "Актерское мастерство",
-          bio: null,
-          user: {
-            firstName: "Анастасия",
-            lastName: "Данилова",
-          },
-        },
-        attendances: [],
-      },
-      {
-        id: 18,
-        clubId: 6,
-        date: "2026-04-23T00:00:00.000Z",
-        startTime: "18:00",
-        endTime: "19:30",
-        room: null,
-        topic: null,
-        status: "SCHEDULED",
-        assignedTeacherId: 2,
-        createdAt: "2026-04-08T20:09:21.194Z",
-        club: {
-          id: 6,
-          name: "Фотокружок",
-        },
-        teacher: {
-          id: 2,
-          userId: 3,
-          specialty: "Фотография",
-          bio: null,
-          user: {
-            firstName: "Дмитрий",
-            lastName: "Петров",
-          },
-        },
-        attendances: [],
-      },
-    ]);
+    const [lessons, setLessons] = useState([]);
     const [clubs, setClubs] = useState([]);
     const [createLesson, setCreateLesson] = useState(false);
     const [editLesson, setEditLesson] = useState(false);
@@ -513,6 +29,164 @@ const Lessons = () => {
     const [teachers, setTeachers] = useState([]);
     const [selectedAttendance, setSelectedAttendance] = useState([]);
     const [attendanceModal, setAttendanceModal] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [creatingItem, setCreatingItem] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                let url = '/lessons?';
+                if (selectedClub) url += `clubId=${selectedClub}&`;
+                if (startDate) url += `dateFrom=${formatDateToISO(startDate)}&`;
+                if (endDate) url += `dateTo=${formatDateToISO(endDate)}&`;
+                const resLessons = await api.get(url);
+
+                setLessons(resLessons.data.data);
+            } catch (error) {
+                toast.error("Ошибка получения данных");
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [editLesson, createLesson, selectedClub, startDate, endDate, attendanceModal]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [resClubs, resTeachers] = await Promise.all([
+                    api.get('/clubs'),
+                    api.get('/users?role=TEACHER')
+                ])
+                setTeachers(resTeachers.data.data);
+                setClubs(resClubs.data.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        loadData();
+    }, [editLesson, createLesson]);
+
+    const handleCreate = async (lessonData) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                clubId: lessonData.clubId,
+                date: lessonData.date,
+                startTime: lessonData.startTime,
+                endTime: lessonData.endTime,
+                assignedTeacherId: lessonData.assignedTeacherId,
+                room: lessonData.room,
+                topic: lessonData.topic
+            };
+
+            await api.post('/lessons', { ...data });
+            toast.success('Урок добавлен');
+            setCreateLesson(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка создания урока');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleUpdate = async (lessonData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/lessons/${lessonData.id}`, {
+                clubId: lessonData.clubId,
+                date: formatDateToISO(lessonData.date),
+                startTime: lessonData.startTime,
+                endTime: lessonData.endTime,
+                assignedTeacherId: lessonData.assignedTeacherId,
+                room: lessonData.room,
+                topic: lessonData.topic
+            });
+
+            toast.success('Урок обновлен');
+            setEditLesson(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления урока');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleUpdateStatus = async (lessonId, status) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/lessons/${lessonId}/status`, { status });
+            toast.success('Статус урока изменён')
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления статуса урока');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleDelete = async (lessonId) => {
+        setSubmittingEdit(true);
+        try {
+            await api.delete(`/lessons/${lessonId}`);
+            toast.success('Урок удалён');
+            setEditLesson(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка удаления урока');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleMarkAttendance = async () => {
+        setSubmittingEdit(true);
+        try {
+            const attData = selectedAttendance.map((record) => ({ childId: record.child?.id || record.childId, isPresent: record.isPresent }));
+            await api.post(`/attendances`, { lessonId: selectedLesson.id, attendances: attData });
+            toast.success('Посещаемость отмечена');
+            setAttendanceModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка отметки посещаемости');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleFillAttendance = async (lesson) => {
+        try {
+            if (lesson.attendances.length === 0 && lesson.status === 'SCHEDULED') {
+                const url = `/subscriptions?clubId=${lesson.clubId}&status=ACTIVE`;
+                const res = await api.get(url);
+                const attendance = [];
+                res.data.data.map((sub) => {
+                    attendance.push({ child: sub.child, isPresent: false })
+                });
+                setSelectedAttendance(attendance);
+            } else {
+                setSelectedAttendance(lesson.attendances);
+            }
+            setSelectedLesson(lesson);
+            setAttendanceModal(true);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handlePresenceChange = (index) => {
+        const newAtt = [...selectedAttendance];
+        newAtt[index].isPresent = !selectedAttendance[index].isPresent;
+        setSelectedAttendance(newAtt);
+    };
+
+    if (loading) return <Loader />;
 
     const groupedLessons = {};
     const dates = [];
@@ -523,7 +197,6 @@ const Lessons = () => {
         }
         groupedLessons[l.date].push(l);
     });
-    console.log(groupedLessons);
 
     const lessonItems = dates.filter((d) => groupedLessons[d].length > 0).map((day) => (
         <div key={day} className={styles.day}>
@@ -536,11 +209,7 @@ const Lessons = () => {
                             setSelectedLesson(l);
                             setEditLesson(true);
                         }}
-                        onMarkAttendance={() => {
-                            setSelectedAttendance(l.attendance);
-                            setSelectedLesson(l);
-                            setAttendanceModal(true);
-                        }}
+                        onMarkAttendance={() => handleFillAttendance(l)}
                     /></li>
                 ))}
             </ul>
@@ -562,7 +231,7 @@ const Lessons = () => {
                 <div className={styles.inputs}>
                     <div className={styles.input}><Select
                         value={selectedClub || ''}
-                        placeholder={selectedClub ? '' : "Кружок"}
+                        placeholder={"Выберите"}
                         onChange={(e) => setSelectedClub(e.target.value)}
                         options={clubs.map((club) => (
                             {
@@ -598,8 +267,19 @@ const Lessons = () => {
                     setEditLesson(false);
                     setSelectedLesson(null);
                 }}
+                onSubmit={handleUpdate}
+                onStatusChange={handleUpdateStatus}
+                onDelete={handleDelete}
+                loading={submittingEdit}
             />
-            <CreateLessonModal clubs={clubs} teachers={teachers} isOpen={createLesson} onClose={() => setCreateLesson(false)} />
+            <CreateLessonModal
+                clubs={clubs}
+                teachers={teachers}
+                isOpen={createLesson}
+                onClose={() => setCreateLesson(false)}
+                onAdd={handleCreate}
+                loading={creatingItem}
+            />
             <AttendanceModal
                 lesson={selectedLesson}
                 attendance={selectedAttendance}
@@ -609,6 +289,8 @@ const Lessons = () => {
                     setSelectedAttendance(null);
                     setSelectedLesson(null);
                 }}
+                onStatusChange={handlePresenceChange}
+                onMarkAttendance={handleMarkAttendance}
             />
         </>
     );

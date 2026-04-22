@@ -35,6 +35,7 @@ const EditTeacherModal = ({ user, onSubmit, onDelete, isOpen, onClose, loading =
     const handleSubmit = async () => {
         if (!formData.firstName || !formData.lastName || !formData.phone || !formData.email) {
             toast.error('Заполните все поля');
+            return;
         }
         await onSubmit({...user, ...formData});
     };

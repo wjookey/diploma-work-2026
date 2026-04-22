@@ -42,6 +42,7 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusCh
     const handleSubmit = async () => {
         if (!formData.name) {
             toast.error("Введите название кружка");
+            return;
         }
         await onSubmit({ ...club, ...formData });
         await onStatusChange(club.id, formData.isActive);

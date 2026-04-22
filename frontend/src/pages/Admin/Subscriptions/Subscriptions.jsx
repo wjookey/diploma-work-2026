@@ -9,232 +9,15 @@ import CreateComboModal from '../../../components/CreateComboModal/CreateComboMo
 import CreateSubscriptionModal from '../../../components/CreateSubscriptionModal/CreateSubscriptionModal';
 import EditSubscriptionModal from '../../../components/EditSubscriptionModal/EditSubscriptionModal';
 import SubDetailed from '../../../components/SubDetailed/SubDetailed';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SUBSCRIPTION_STATUS } from '../../../utils/helper';
+import toast from "react-hot-toast";
+import api from "../../../api/axios";
+import Loader from "../../../components/Loader/Loader";
 
 const Subscriptions = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [subscriptions, setSubscriptions] = useState([
-      {
-        id: 6,
-        childId: 4,
-        clubId: 5,
-        clubServiceId: 18,
-        remainingLessons: 12,
-        usedFreezes: 0,
-        stateUpdateDate: null,
-        startDate: "2026-04-14T21:00:00.000Z",
-        endDate: null,
-        status: "ACTIVE",
-        createdAt: "2026-04-14T14:57:33.642Z",
-        updatedAt: "2026-04-14T14:57:33.642Z",
-        child: {
-          id: 4,
-          firstName: "Анастасия",
-          lastName: "Смирнова",
-        },
-        clubService: {
-          id: 18,
-          name: "Абонемент на 12 занятий (+2 заморозки)",
-          price: 10800,
-          subscriptionLessons: 12,
-          freezedLesson: 2,
-          clubId: 5,
-          type: "SUBSCRIPTION",
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.186Z",
-          club: {
-            id: 5,
-            name: "Театр Взлёт",
-          },
-        },
-        payment: null,
-      },
-      {
-        id: 5,
-        childId: 4,
-        clubId: 1,
-        clubServiceId: 3,
-        remainingLessons: 6,
-        usedFreezes: 0,
-        stateUpdateDate: null,
-        startDate: "2026-04-05T00:00:00.000Z",
-        endDate: null,
-        status: "ACTIVE",
-        createdAt: "2026-04-08T20:09:21.199Z",
-        updatedAt: "2026-04-08T20:09:21.199Z",
-        child: {
-          id: 4,
-          firstName: "Анастасия",
-          lastName: "Смирнова",
-        },
-        clubService: {
-          id: 3,
-          name: "Абонемент на 6 занятий",
-          price: 4500,
-          subscriptionLessons: 6,
-          freezedLesson: 0,
-          clubId: 1,
-          type: "SUBSCRIPTION",
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.172Z",
-          club: {
-            id: 1,
-            name: "Музыкальная энциклопедия",
-          },
-        },
-        payment: null,
-      },
-      {
-        id: 4,
-        childId: 2,
-        clubId: 5,
-        clubServiceId: 19,
-        remainingLessons: 6,
-        usedFreezes: 0,
-        stateUpdateDate: null,
-        startDate: "2026-04-06T00:00:00.000Z",
-        endDate: null,
-        status: "ACTIVE",
-        createdAt: "2026-04-08T20:09:21.198Z",
-        updatedAt: "2026-04-08T20:09:21.198Z",
-        child: {
-          id: 2,
-          firstName: "Алиса",
-          lastName: "Давыдова",
-        },
-        clubService: {
-          id: 19,
-          name: "Абонемент на 6 занятий",
-          price: 5400,
-          subscriptionLessons: 6,
-          freezedLesson: 0,
-          clubId: 5,
-          type: "SUBSCRIPTION",
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.186Z",
-          club: {
-            id: 5,
-            name: "Театр Взлёт",
-          },
-        },
-        payment: {
-          id: 3,
-          amount: 5400,
-        },
-      },
-      {
-        id: 3,
-        childId: 2,
-        clubId: 1,
-        clubServiceId: 2,
-        remainingLessons: 12,
-        usedFreezes: 0,
-        stateUpdateDate: null,
-        startDate: "2026-04-05T00:00:00.000Z",
-        endDate: null,
-        status: "ACTIVE",
-        createdAt: "2026-04-08T20:09:21.197Z",
-        updatedAt: "2026-04-08T20:09:21.197Z",
-        child: {
-          id: 2,
-          firstName: "Алиса",
-          lastName: "Давыдова",
-        },
-        clubService: {
-          id: 2,
-          name: "Абонемент на 12 занятий (+2 заморозки)",
-          price: 8400,
-          subscriptionLessons: 12,
-          freezedLesson: 2,
-          clubId: 1,
-          type: "SUBSCRIPTION",
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.171Z",
-          club: {
-            id: 1,
-            name: "Музыкальная энциклопедия",
-          },
-        },
-        payment: {
-          id: 2,
-          amount: 8400,
-        },
-      },
-      {
-        id: 2,
-        childId: 1,
-        clubId: 6,
-        clubServiceId: 23,
-        remainingLessons: 1,
-        usedFreezes: 0,
-        stateUpdateDate: null,
-        startDate: "2026-04-06T00:00:00.000Z",
-        endDate: null,
-        status: "ACTIVE",
-        createdAt: "2026-04-08T20:09:21.196Z",
-        updatedAt: "2026-04-08T20:09:21.196Z",
-        child: {
-          id: 1,
-          firstName: "Артём",
-          lastName: "Давыдов",
-        },
-        clubService: {
-          id: 23,
-          name: "Разовое занятие",
-          price: 800,
-          subscriptionLessons: 1,
-          freezedLesson: 0,
-          clubId: 6,
-          type: "SINGLE",
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.190Z",
-          club: {
-            id: 6,
-            name: "Фотокружок",
-          },
-        },
-        payment: null,
-      },
-      {
-        id: 1,
-        childId: 1,
-        clubId: 4,
-        clubServiceId: 14,
-        remainingLessons: 12,
-        usedFreezes: 0,
-        stateUpdateDate: null,
-        startDate: "2026-04-06T00:00:00.000Z",
-        endDate: null,
-        status: "ACTIVE",
-        createdAt: "2026-04-08T20:09:21.195Z",
-        updatedAt: "2026-04-08T20:09:21.195Z",
-        child: {
-          id: 1,
-          firstName: "Артём",
-          lastName: "Давыдов",
-        },
-        clubService: {
-          id: 14,
-          name: "Абонемент на 12 занятий (+2 заморозки)",
-          price: 8400,
-          subscriptionLessons: 12,
-          freezedLesson: 2,
-          clubId: 4,
-          type: "SUBSCRIPTION",
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.183Z",
-          club: {
-            id: 4,
-            name: "Кактус",
-          },
-        },
-        payment: {
-          id: 1,
-          amount: 8400,
-        },
-      },
-    ]);
+    const [subscriptions, setSubscriptions] = useState([]);
     const [families, setFamilies] = useState([]);
     const [children, setChildren] = useState([]);
     const [clubs, setClubs] = useState([]);
@@ -250,6 +33,137 @@ const Subscriptions = () => {
     const [selectedService, setSelectedService] = useState(null);
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [creatingItem, setCreatingItem] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                let url = '/subscriptions?';
+                if (selectedClub) url += `clubId=${selectedClub}&`;
+                if (selectedFamily) url += `familyId=${selectedFamily}&`;
+                if (selectedChild) url += `childId=${selectedChild}&`;
+                if (selectedStatus) url += `status=${selectedStatus}&`;
+                const res = await api.get(url);
+                setSubscriptions(res.data.data);
+            } catch (error) {
+                toast.error('Ошибка получения данных');
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [selectedFamily, selectedChild, selectedClub, selectedStatus, createSub, createCombo, editSub]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [resFam, resChild, resClub, resService] = await Promise.all([
+                    api.get('/families'),
+                    api.get('/children'),
+                    api.get('/clubs'),
+                    api.get('/clubServices'),
+                ]);
+
+                setFamilies(resFam.data.data);
+                setChildren(resChild.data.data);
+                setClubs(resClub.data.data);
+                setServices(resService.data.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        loadData();
+    }, []);
+
+    const handleCreate = async (subData) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                childId: subData.childId,
+                clubId: subData.clubId,
+                clubServiceId: subData.clubServiceId,
+            };
+
+            await api.post('/subscriptions', { ...data });
+            toast.success('Абонемент создан');
+            setCreateSub(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка создания абонемента');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleCreateCombo = async (subData) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                comboSubscriptions: subData,
+            };
+
+            await api.post('/subscriptions/combo', { ...data });
+            toast.success('Комбо абонемент создан');
+            setCreateCombo(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка создания комбо абонемента');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleUpdate = async (subData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/subscriptions/${subData.id}`, {
+                remainingLessons: subData.remainingLessons,
+                usedFreezes: subData.usedFreezes,
+            });
+            toast.success('Абонемент обновлён');
+            setEditSub(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления абонемента');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleCancel = async (subId) => {
+        setSubmittingEdit(true);
+        try {
+            await api.post(`/subscriptions/${subId}/cancel`);
+            toast.success('Абонемент отменён');
+            setEditSub(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка отмены абонемента');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleDelete = async (subId) => {
+        setSubmittingEdit(true);
+        try {
+            await api.delete(`/subscriptions/${subId}`);
+            toast.success('Абонемент удалён');
+            setEditSub(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка удаления абонемента');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    if (loading) return <Loader />;
 
     const subItems = subscriptions.map((sub) => (
         <li key={sub.id}>
@@ -343,8 +257,8 @@ const Subscriptions = () => {
             <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
             <SubDetailed
                 subscription={selectedSub}
-                service={selectedService}
-                payment={selectedPayment}
+                service={selectedSub?.clubService}
+                payment={selectedSub?.payment}
                 isOpen={watchSub}
                 onClose={() => {
                     setWatchSub(false);
@@ -354,15 +268,19 @@ const Subscriptions = () => {
                 }}
             />
             <EditSubscriptionModal
-                subscription={selectedSub || []}
-                children={children || []}
-                clubs={clubs || []}
-                services={services || []}
+                subscription={selectedSub}
+                children={children}
+                clubs={clubs}
+                services={services}
                 isOpen={editSub}
                 onClose={() => {
                     setSelectedSub(null);
                     setEditSub(false);
                 }}
+                onSubmit={handleUpdate}
+                onDelete={handleDelete}
+                onCancel={handleCancel}
+                loading={submittingEdit}
             />
             <CreateComboModal
                 children={children}
@@ -372,15 +290,19 @@ const Subscriptions = () => {
                 onClose={() => {
                     setCreateCombo(false);
                 }}
+                onAdd={handleCreateCombo}
+                loading={creatingItem}
             />
             <CreateSubscriptionModal
                 children={children}
                 clubs={clubs}
                 services={services}
                 isOpen={createSub}
+                onAdd={handleCreate}
                 onClose={() => {
                     setCreateSub(false);
                 }}
+                loading={creatingItem}
             />
         </>
     );

@@ -35,8 +35,8 @@ const CreateClubModal = ({ categories, teachers, isOpen, onClose, onAdd, loading
     const handleSubmit = async () => {
         if (!formData.name || !formData.classCategoryId || !formData.defaultTeacherId) {
             toast.error('Заполните все обязательные поля');
+            return;
         }
-        console.log(formData);
         await onAdd(formData);
     }
 
@@ -89,6 +89,7 @@ const CreateClubModal = ({ categories, teachers, isOpen, onClose, onAdd, loading
                         id={"maxStudents"}
                         value={formData.maxStudents || ''}
                         onChange={(e) => handleChange('maxStudents', e.target.value)}
+                        placeholder={"Максимальное число участников"}
                         type="number"
                     />
                 </div>    

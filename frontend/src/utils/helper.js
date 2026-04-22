@@ -68,3 +68,8 @@ export const REQUEST_STATUS = [
 export const getRequestStatus = (status) => {
     return REQUEST_STATUS.find((s) => s.value === status).label;
 }
+
+export const formatDateToISO = (date) => {
+    const dateISO = new Date(date);
+    return dateISO.toISOString();
+};

@@ -137,10 +137,9 @@ const Clients = () => {
                 }))
             };
 
-            const _res = await api.post('/families', payload);
+            await api.post('/families', payload);
             toast.success('Семья успешно создана');
             
-            // Очищаем форму
             setFamilyName('');
             setParentForm({ firstName: '', lastName: '', email: '', phone: '' });
             setParents([]);
@@ -148,9 +147,6 @@ const Clients = () => {
             setChildren([]);
             setIsCrFamModalOpen(false);
             
-            // Перезагружаем список семей
-            // const familiesRes = await api.get('/families');
-            // setFamilies(familiesRes.data.data);
         } catch (error) {
             toast.error(error.response?.data?.message || 'Ошибка создания семьи');
             console.error(error);
@@ -176,7 +172,6 @@ const Clients = () => {
             await api.post('/users', { ...payload.user, role: 'PARENT', familyId: selectedFamily.id });
             toast.success('Родитель добавлен к семье');
             
-            // Перезагружаем семью
             const familyRes = await api.get(`/families/${selectedFamily.id}`);
             setSelectedFamily(familyRes.data.data);
             setAddParent(false);
@@ -201,7 +196,6 @@ const Clients = () => {
             await api.post('/children', payload);
             toast.success('Ребенок добавлен к семье');
             
-            // Перезагружаем семью
             const familyRes = await api.get(`/families/${selectedFamily.id}`);
             setSelectedFamily(familyRes.data.data);
             setAddChild(false);
@@ -224,7 +218,6 @@ const Clients = () => {
             });
             toast.success('Данные родителя обновлены');
             
-            // Перезагружаем семью
             const familyRes = await api.get(`/families/${selectedFamily.id}`);
             setSelectedFamily(familyRes.data.data);
             setEditParent(false);
@@ -262,7 +255,6 @@ const Clients = () => {
             });
             toast.success('Данные ребенка обновлены');
             
-            // Перезагружаем семью
             const familyRes = await api.get(`/families/${selectedFamily.id}`);
             setSelectedFamily(familyRes.data.data);
             setEditChild(false);
@@ -280,7 +272,6 @@ const Clients = () => {
             await api.delete(`/children/${childId}`);
             toast.success('Ребенок удален');
             
-            // Перезагружаем семью
             const familyRes = await api.get(`/families/${selectedFamily.id}`);
             setSelectedFamily(familyRes.data.data);
             setEditChild(false);
@@ -298,9 +289,6 @@ const Clients = () => {
             await api.delete(`/families/${selectedFamily.id}`);
             toast.success('Семья удалена');
             
-            // Перезагружаем список семей
-            // const familiesRes = await api.get('/families');
-            // setFamilies(familiesRes.data.data);
             setEditFamily(false);
             setSelectedFamily(null);
         } catch (error) {
@@ -314,7 +302,7 @@ const Clients = () => {
     if (loading) return <Loader />;
 
     const famItems = families.map((fam) => (
-        <li key={fam.id}>
+        <li key={fam.id} className={styles.listItem}>
             <FamilyCard
                 familyName={fam.familyName}
                 parents={fam.parents}

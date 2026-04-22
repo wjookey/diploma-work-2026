@@ -7,138 +7,131 @@ import EditScheduleRecModal from '../../../components/EditScheduleRecModal/EditS
 import GenerateLessonsModal from '../../../components/GenerateLessonsModal/GenerateLessonsModal';
 import EmptyState from '../../../components/EmptyState/EmptyState';
 import { CalendarDays, Plus, Menu } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DAYS_OF_WEEK } from '../../../utils/helper';
+import api from '../../../api/axios';
+import Loader from '../../../components/Loader/Loader';
+import toast from 'react-hot-toast';
+import { formatDateToISO } from '../../../utils/helper';
 
 const Schedule = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [schedule, setSchedule] = useState([
-      {
-        id: 1,
-        clubId: 4,
-        dayOfWeek: 1,
-        startTime: "15:00",
-        endTime: "15:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-      {
-        id: 2,
-        clubId: 4,
-        dayOfWeek: 1,
-        startTime: "16:30",
-        endTime: "17:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-      {
-        id: 3,
-        clubId: 4,
-        dayOfWeek: 1,
-        startTime: "17:30",
-        endTime: "18:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-      {
-        id: 5,
-        clubId: 4,
-        dayOfWeek: 2,
-        startTime: "16:30",
-        endTime: "17:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-      {
-        id: 4,
-        clubId: 4,
-        dayOfWeek: 2,
-        startTime: "17:30",
-        endTime: "18:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-    ]);
+    const [schedule, setSchedule] = useState([]);
     const [clubs, setClubs] = useState([]);
     const [createSchedule, setCreateSchedule] = useState(false);
     const [editSchedule, setEditSchedule] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
     const [generateLessons, setGenerateLessons] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [creatingItem, setCreatingItem] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const res = await api.get('/schedule');
+                setSchedule(res.data.data);
+            } catch (error) {
+                toast.error("Ошибка получения данных");
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [editSchedule, createSchedule, generateLessons]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const res = await api.get('/clubs');
+                setClubs(res.data.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        loadData();
+    }, [createSchedule, editSchedule]);
+
+    const handleCreate = async (scheduleData) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                clubId: scheduleData.clubId,
+                dayOfWeek: scheduleData.dayOfWeek,
+                startTime: scheduleData.startTime,
+                endTime: scheduleData.endTime,
+                room: scheduleData.room
+            };
+
+            await api.post('/schedule', { ...data });
+            toast.success('Запись расписания добавлена');
+            setCreateSchedule(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка создания записи расписания');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleUpdate = async (scheduleData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/schedule/${scheduleData.id}`, {
+                clubId: scheduleData.clubId,
+                dayOfWeek: scheduleData.dayOfWeek,
+                startTime: scheduleData.startTime,
+                endTime: scheduleData.endTime,
+                room: scheduleData.room
+            });
+
+            toast.success('Запись расписания обновлена');
+            setEditSchedule(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления записи расписания');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleGenerateLessons = async (dateData) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                startDate: formatDateToISO(dateData.startDate),
+                endDate: formatDateToISO(dateData.endDate),
+            };
+
+            await api.post('/schedule/lessons/generate', { ...data });
+            toast.success('Уроки сгенерированы');
+            setGenerateLessons(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка генерации уроков');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleDelete = async (scheduleId) => {
+        setSubmittingEdit(true);
+        try {
+            await api.delete(`/schedule/${scheduleId}`);
+            toast.success('Запись расписания удалена');
+            setEditSchedule(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка удаления записи расписания');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    if (loading) return <Loader />;
 
     const groupedSchedule = {};
     DAYS_OF_WEEK.forEach((d) => groupedSchedule[d.value] = []);
@@ -193,15 +186,29 @@ const Schedule = () => {
             <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
             <EditScheduleRecModal
                 record={selectedSchedule}
-                clubs={clubs || []}
+                clubs={clubs}
                 isOpen={editSchedule}
                 onClose={() => {
                     setEditSchedule(false);
                     setSelectedSchedule(false);
                 }}
+                onSubmit={handleUpdate}
+                onDelete={handleDelete}
+                loading={submittingEdit}
             />
-            <CreateScheduleRecModal clubs={clubs} isOpen={createSchedule} onClose={() => setCreateSchedule(false)} />
-            <GenerateLessonsModal isOpen={generateLessons} onClose={() => setGenerateLessons(false)} />
+            <CreateScheduleRecModal
+                clubs={clubs}
+                isOpen={createSchedule}
+                onClose={() => setCreateSchedule(false)}
+                onAdd={handleCreate}
+                loading={creatingItem}
+            />
+            <GenerateLessonsModal
+                isOpen={generateLessons}
+                onClose={() => setGenerateLessons(false)}
+                onAdd={handleGenerateLessons}
+                loading={creatingItem}
+            />
         </>
     );
 }

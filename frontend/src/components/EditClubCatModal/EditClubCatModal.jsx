@@ -34,8 +34,10 @@ const EditClubCatModal = ({ category, onSubmit, onDelete, isOpen, onClose, onSta
     };
 
     const handleSubmit = async () => {
-        if (!formData.name) toast.error('Введите название кружка');
-        console.log(formData.isActive)
+        if (!formData.name) {
+            toast.error('Введите название категории');
+            return;
+        }
         await onSubmit({ ...category, ...formData });
         await onStatusChange(category.id, formData.isActive);
     };

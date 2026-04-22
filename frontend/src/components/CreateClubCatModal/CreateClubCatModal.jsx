@@ -26,7 +26,10 @@ const CreateClubCatModal = ({ isOpen, onClose, onAdd, loading = false }) => {
     };
 
     const handleAdd = () => {
-        if (!formData.name) toast.error("Введите название категории");
+        if (!formData.name) {
+            toast.error("Введите название категории");
+            return;
+        }
         onAdd(formData);
     }
 

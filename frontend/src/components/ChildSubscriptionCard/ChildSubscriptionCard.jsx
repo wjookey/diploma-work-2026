@@ -5,7 +5,7 @@ import { getSubscriptionType, getSubscriptionStatus } from '../../utils/helper';
 import toast from 'react-hot-toast';
 
 const ChildSubscriptionCard = ({ subDetails }) => {
-    const color = subDetails.status === 'ACTIVE' ? 'green' : subDetails.status === 'PENDIND' ? 'purple' : 'red';
+    const color = subDetails?.status === 'ACTIVE' ? 'green' : subDetails?.status === 'PENDIND' ? 'purple' : 'red';
     return (
         <div className={styles.wrapper}>
             <h3 className={styles.title}>{subDetails?.clubService?.club?.name}</h3>
