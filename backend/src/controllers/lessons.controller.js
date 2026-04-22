@@ -48,12 +48,12 @@ exports.getAll = async (req, res, next) => {
                     club: { select: { id: true, name: true } },
                     teacher: {
                         include: {
-                            user: { select: { firstName: true, lastName: true } },
+                            user: { select: { id: true, firstName: true, lastName: true } },
                         },
                     },
                     attendances: {
                         include: {
-                            child: { select: { firstName: true, lastName: true, birthDate: true } },
+                            child: { select: { id: true, firstName: true, lastName: true, birthDate: true } },
                         },
                     },
                 },
