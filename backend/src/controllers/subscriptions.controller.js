@@ -13,10 +13,9 @@ exports.getAll = async (req, res, next) => {
         if (clubServiceId) where.clubServiceId = parseInt(clubServiceId);
         if (status) where.status = status;
         if (req.user.role === 'PARENT') {
-            where.child = {};
-            where.child.familyId = req.user.parent.familyId;
+            where.child = { familyId: req.user.parent.familyId };
         } else if (familyId) {
-            where.familyId = parseInt(familyId);
+            where.child = { familyId: parseInt(familyId) };
         }
 
         const [subscriptions, total] = await Promise.all([
@@ -26,10 +25,32 @@ exports.getAll = async (req, res, next) => {
                     child: { select: { id: true, firstName: true, lastName: true } },
                     clubService: {
                         include: {
-                            club: { select: { id: true, name: true } },
+                            club: {
+                                include: {
+                                    clubCategory: true,
+                                    teacher: {
+                                        include: {
+                                            user: { select: { id: true, firstName: true, lastName: true } },
+                                        },
+                                    },
+                                },
+                            },
                         },
                     },
-                    payment: { select: { id: true, amount: true } },
+                    payment: {
+                        include: {
+                            subscription: {
+                                include: {
+                                    child: true,
+                                    clubService: {
+                                        include: {
+                                            club: true,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
                 orderBy: { createdAt: 'desc' },
                 skip,
@@ -188,7 +209,7 @@ exports.update = async (req, res, next) => {
             data: {
                 ...(remainingLessons !== undefined && { remainingLessons: parseInt(remainingLessons) }),
                 ...(usedFreezes !== undefined && { usedFreezes: parseInt(usedFreezes) }),
-                ...(remainingLessons !== undefined && {status: isExpired ? 'EXPIRED' : 'ACTIVE'}),
+                ...(remainingLessons !== undefined && { status: isExpired ? 'EXPIRED' : 'ACTIVE' }),
             },
             include: {
                 child: { select: { id: true, firstName: true, lastName: true } },

@@ -7,11 +7,16 @@ exports.getAll = async (req, res, next) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const where = {};
-        
         if (isActive !== undefined) where.isActive = isActive === 'true';
         if (clubId) where.clubId = parseInt(clubId);
         if (type) where.type = type;
-        if (search) where.name = { contains: search, mode: 'insensitive' };
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { club: { name: { contains: search, mode: 'insensitive' } } },
+                { club: { clubCategory: { name: { contains: search, mode: 'insensitive' } } } },
+            ];
+        }
 
         const [clubServices, total] = await Promise.all([
             prisma.clubService.findMany({

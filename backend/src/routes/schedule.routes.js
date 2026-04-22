@@ -27,8 +27,8 @@ router.delete('/:id', controller.remove);
 router.post(
     '/lessons/generate',
     [
-        body('startDate').notEmpty().withMessage('Enter the start time'),
-        body('endDate').notEmpty().withMessage('Enter the end time'),
+        body('startDate').isISO8601().withMessage('Enter the start time'),
+        body('endDate').isISO8601().withMessage('Enter the end time'),
     ],
     validate,
     controller.generateLessons
