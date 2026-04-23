@@ -24,13 +24,15 @@ const RequestCard = ({ request, onApprove, onReject, onCancel, isForParent = fal
                     <CalendarDays className={styles.icon} />
                     <p>{formatDate(request.createdAt)}</p>
                 </div>
-                {!isForParent ? (
-                    <div className={styles.buttons}>
-                        <Button variant='success' onClick={onApprove}>Одобрить</Button>
-                        <Button variant='danger' onClick={onReject}>Отклонить</Button>
-                    </div>
-                ) : (
-                    <Button variant='danger' onClick={onCancel}>Отменить</Button>
+                {request?.status === 'PENDING' && (
+                    !isForParent ? (
+                        <div className={styles.buttons}>
+                            <Button variant='success' onClick={onApprove}>Одобрить</Button>
+                            <Button variant='danger' onClick={onReject}>Отклонить</Button>
+                        </div>
+                    ) : (
+                        <Button variant='danger' onClick={onCancel}>Отменить</Button>
+                    )
                 )}
             </div>
         </Card>

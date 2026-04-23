@@ -18,6 +18,9 @@ const EditSubscriptionModal = ({ subscription, children, clubs, services, isOpen
     useEffect(() => {
         if (isOpen && subscription) {
             setFormData({
+                childId: subscription?.childId,
+                clubId: subscription?.clubId,
+                clubServiceId: subscription?.clubServiceId,
                 remainingLessons: subscription?.remainingLessons,
                 remainingFreezes: subscription?.clubService?.freezedLesson - subscription?.usedFreezes,
             });

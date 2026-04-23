@@ -231,7 +231,7 @@ const Lessons = () => {
                 <div className={styles.inputs}>
                     <div className={styles.input}><Select
                         value={selectedClub || ''}
-                        placeholder={"Выберите"}
+                        placeholder={"Кружок"}
                         onChange={(e) => setSelectedClub(e.target.value)}
                         options={clubs.map((club) => (
                             {

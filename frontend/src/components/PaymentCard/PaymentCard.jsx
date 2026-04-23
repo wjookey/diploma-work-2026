@@ -5,6 +5,12 @@ import Card from '../Card/Card';
 import { formatDate } from '../../utils/helper';
 
 const PaymentCard = ({ payment, isEditMode = true, isInModal = false, onEdit }) => {
+    if (!payment) return (
+        <Card isInModal={isInModal}>
+            <h3 className={styles.noPayment}>Нет данных об оплате</h3>
+        </Card>
+    );
+
     return (
         <Card isInModal={isInModal}>
             <div className={styles.wrapper}>
