@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import DangerModal from '../DangerModal/DangerModal';
 import toast from 'react-hot-toast';
 
-const EditParentModal = ({ parent, onSubmit, onDelete, isOpen, onClose, loading = false }) => {
+const EditParentModal = ({ parent, onSubmit, onDelete, isOpen, onClose, loading = false, isAdminMode = true }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -87,13 +87,13 @@ const EditParentModal = ({ parent, onSubmit, onDelete, isOpen, onClose, loading 
                         >
                             {loading ? 'Сохранение...' : 'Сохранить'}
                         </Button>
-                        <Button 
-                            variant='danger' 
+                        {isAdminMode && (<Button
+                            variant='danger'
                             onClick={() => setIsDangerModalOpen(true)}
                             disabled={loading}
                         >
                             Удалить родителя
-                        </Button>
+                        </Button>)}
                     </div>
                 </div>
             </Modal>

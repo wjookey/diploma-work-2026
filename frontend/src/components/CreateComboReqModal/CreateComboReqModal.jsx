@@ -3,8 +3,38 @@ import Modal from '../Modal/Modal';
 import Button from '../Button/Button';
 import Select from '../Select/Select';
 import Textarea from '../Textarea/Textarea';
+import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
-const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd }) => {
+const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd, loading = false }) => {
+    const [formData, setFormData] = useState([
+        { childId: null, clubId: null, clubServiceId: null, note: '' },
+        { childId: null, clubId: null, clubServiceId: null, note: '' },
+    ]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setFormData([
+                { childId: null, clubId: null, clubServiceId: null, note: '' },
+                { childId: null, clubId: null, clubServiceId: null, note: '' },
+            ]);
+        }
+    }, [isOpen]);
+
+    const handleChange = (index, field, value) => {
+        const newData = [...formData];
+        newData[index][field] = value;
+        setFormData(newData);
+    };
+
+    const handleSubmit = async () => {
+        if (!formData[0].childId || !formData[0].clubId || !formData[0].clubServiceId || !formData[1].childId || !formData[1].clubId || !formData[1].clubServiceId) {
+            toast.error('Заполните все обязательные поля');
+            return;
+        }
+        await onAdd(formData);
+    };
+
     return (
         <Modal title={'Новая заявка'} isOpen={isOpen} onClose={onClose}>
             <div className={styles.wrapper}>
@@ -14,30 +44,45 @@ const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd
                         label={"Ребёнок"}
                         id={"child"}
                         placeholder={'Выберите'}
+                        value={formData[0].childId || ''}
+                        onChange={(e) => handleChange(0, 'childId', e.target.value)}
                         options={children.map((child) => ({
                             value: child.id,
                             label: `${child.lastName} ${child.firstName}`
                         }))}
+                        required
                     />
                     <Select
                         label={"Кружок"}
                         id={"club"}
                         placeholder={'Выберите'}
+                        value={formData[0].clubId || ''}
+                        onChange={(e) => handleChange(0, 'clubId', e.target.value)}
                         options={clubs.map((club) => ({
                             value: club.id,
                             label: club.name
                         }))}
+                        required
                     />
                     <Select
                         label={"Услуга"}
                         id={"service"}
                         placeholder={'Выберите'}
-                        options={services.map((service) => ({
+                        value={formData[0].clubServiceId || ''}
+                        onChange={(e) => handleChange(0, 'clubServiceId', e.target.value)}
+                        options={services.filter((service) => service.clubId === parseInt(formData[0].clubId)).map((service) => ({
                             value: service.id,
                             label: service.name
                         }))}
+                        required
                     />
-                    <Textarea label={'Примечание'} id={"message"} />
+                    <Textarea
+                        label={'Примечание'}
+                        id={"message"}
+                        value={formData[0].note || ''}
+                        onChange={(e) => handleChange(0, 'note', e.target.value)}
+                        placeholder={"Примечание"}
+                    />
                 </div>   
                 <h3 className={styles.header}>2-й комбо абонемент</h3>
                 <div className={styles.inputs}>
@@ -45,32 +90,52 @@ const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd
                         label={"Ребёнок"}
                         id={"child"}
                         placeholder={'Выберите'}
+                        value={formData[1].childId || ''}
+                        onChange={(e) => handleChange(1, 'childId', e.target.value)}
                         options={children.map((child) => ({
                             value: child.id,
                             label: `${child.lastName} ${child.firstName}`
                         }))}
+                        required
                     />
                     <Select
                         label={"Кружок"}
                         id={"club"}
                         placeholder={'Выберите'}
+                        value={formData[1].clubId || ''}
+                        onChange={(e) => handleChange(1, 'clubId', e.target.value)}
                         options={clubs.map((club) => ({
                             value: club.id,
                             label: club.name
                         }))}
+                        required
                     />
                     <Select
                         label={"Услуга"}
                         id={"service"}
                         placeholder={'Выберите'}
-                        options={services.map((service) => ({
+                        value={formData[1].clubServiceId || ''}
+                        onChange={(e) => handleChange(1, 'clubServiceId', e.target.value)}
+                        options={services.filter((service) => service.clubId === parseInt(formData[1].clubId)).map((service) => ({
                             value: service.id,
                             label: service.name
                         }))}
                     />
-                    <Textarea label={'Примечание'} id={"message"} />
+                    <Textarea
+                        label={'Примечание'}
+                        id={"message"}
+                        value={formData[1].note || ''}
+                        onChange={(e) => handleChange(1, 'note', e.target.value)}
+                        placeholder={"Примечание"}
+                    />
                 </div>   
-                <Button variant='primary' onClick={onAdd}>Отправить</Button>
+                <Button
+                    variant='primary'
+                    onClick={handleSubmit}
+                    disabled={loading}
+                >
+                    {loading ? 'Отправление...' : 'Отправить'}
+                </Button>
             </div>
         </Modal>
     );

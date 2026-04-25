@@ -4,7 +4,7 @@ import Button from '../../../components/Button/Button';
 import Input from '../../../components/Input/Input';
 import { Search, Menu, Users, Plus } from 'lucide-react';
 import Sidebar from "../../../components/Sidebar/Sidebar";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import EmptyState from '../../../components/EmptyState/EmptyState';
 import FamilyModal from '../../../components/FamilyModal/FamilyModal';
 import EditParentModal from '../../../components/EditParentModal/EditParentModal';
@@ -12,53 +12,15 @@ import EditChildModal from '../../../components/EditChildModal/EditChildModal';
 import ChildSubscriptionModal from '../../../components/ChildSubscriptionsModal/ChildSubscriptionsModal';
 import CreateParentModal from '../../../components/CreateParentModal/CreateParentModal';
 import CreateChildModal from '../../../components/CreateChildModal/CreateChildModal';
+import toast from "react-hot-toast";
+import api from "../../../api/axios";
+import Loader from "../../../components/Loader/Loader";
+import { useAuth } from '../../../context/AuthContext';
 
 const MyFamily = () => {
+    const { user } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isCrFamModalOpen, setIsCrFamModalOpen] = useState(false);
-    const [search, setSearch] = useState('');
-    const [family, setFamily] = useState({
-        id: 1,
-        familyName: "Семья Давыдовых",
-        createdAt: "2026-04-08T20:09:21.153Z",
-        parents: [
-          {
-            id: 1,
-            userId: 6,
-            familyId: 1,
-            user: {
-              firstName: "Дмитрий",
-              lastName: "Давыдова",
-              phone: "89999999993",
-              email: "davydov@educrm.ru",
-            },
-          },
-          {
-            id: 2,
-            userId: 7,
-            familyId: 1,
-            user: {
-              firstName: "Александра",
-              lastName: "Давыдова",
-              phone: "89999999994",
-              email: "davydova@educrm.ru",
-            },
-          },
-        ],
-        children: [
-          {
-            firstName: "Артём",
-            lastName: "Давыдов",
-            birthDate: "2016-03-15T00:00:00.000Z",
-          },
-          {
-            firstName: "Алиса",
-            lastName: "Давыдова",
-            birthDate: "2018-07-22T00:00:00.000Z",
-          },
-        ],
-    });
-    const [selectedFamily, setSelectedFamily] = useState(null);
+    const [family, setFamily] = useState({});
     const [editFamily, setEditFamily] = useState(false);
     const [selectedParent, setSelectedParent] = useState(null);
     const [editParent, setEditParent] = useState(false);
@@ -68,6 +30,115 @@ const MyFamily = () => {
     const [watchChildSubs, setWatchChildSubs] = useState(false);
     const [addParent, setAddParent] = useState(false);
     const [addChild, setAddChild] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [creatingItem, setCreatingItem] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const res = await api.get(`/families/${user.parent.family.id}`);
+                setFamily(res.data.data);
+                console.log(family)
+            } catch (error) {
+                toast.error("Ошибка получения данных");
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [addChild, addParent, editChild, editParent]);
+
+    const handleAddParent = async (parentForm) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                user: {
+                    firstName: parentForm.firstName,
+                    lastName: parentForm.lastName,
+                    email: parentForm.email,
+                    phone: parentForm.phone,
+                    password: 'password123',
+                },
+                familyId: family.id,
+            };
+
+            await api.post('/users', { ...data.user, role: 'PARENT', familyId: data.familyId });
+            toast.success('Родитель добавлен к семье');
+
+            setAddParent(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка добавления родителя');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleAddChild = async (childForm) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                firstName: childForm.firstName,
+                lastName: childForm.lastName,
+                birthDate: childForm.birthDate || null,
+                familyId: family.id,
+            };
+
+            await api.post('/children', data);
+            toast.success('Ребенок добавлен к семье');
+
+            setAddChild(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка добавления родителя');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleUpdateParent = async (parentForm) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${parentForm.user.id}`, {
+                firstName: parentForm.user.firstName,
+                lastName: parentForm.user.lastName,
+                phone: parentForm.user.phone,
+                email: parentForm.user.email
+            });
+            toast.success('Данные родителя обновлены');
+            
+            setEditParent(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления родителя');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    const handleUpdateChild = async (childForm) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/children/${childForm.id}`, {
+                firstName: childForm.firstName,
+                lastName: childForm.lastName,
+                birthDate: childForm.birthDate || null
+            });
+            toast.success('Данные ребенка обновлены');
+            
+            setEditChild(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка обновления ребенка');
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
+    if (loading) return <Loader />;
 
     return (
         <>
@@ -80,14 +151,12 @@ const MyFamily = () => {
             <div className={styles.wrapper}>
                 <div className={styles.family}>
                     <FamilyCard
-                        familyName={family.familyName}
-                        parents={family.parents}
-                        children={family.children}
+                        familyName={family?.familyName}
+                        parents={family?.parents || []}
+                        children={family?.children || []}
                         onEdit={() => {
                             setEditFamily(true);
-                            setSelectedFamily(family);
                         }}
-                            
                         onWatchDetailed={(child) => {
                             setSelectedChildSubs(child?.subscriptions)
                             setWatchChildSubs(true)
@@ -98,13 +167,12 @@ const MyFamily = () => {
 
             <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
             <FamilyModal
-                familyName={selectedFamily?.familyName}
-                parents={selectedFamily?.parents || []}
-                children={selectedFamily?.children || []}
+                familyName={family?.familyName}
+                parents={family?.parents || []}
+                children={family?.children || []}
                 isOpen={editFamily}
                 onClose={() => {
                     setEditFamily(false);
-                    setSelectedFamily(null);
                 }}
                 onParentEdit={(parent) => {
                     setSelectedParent(parent);
@@ -120,23 +188,25 @@ const MyFamily = () => {
             />
             <EditParentModal
                 parent={selectedParent}
-                familyName={selectedFamily?.familyName}
-                families={[]}
                 isOpen={editParent}
                 onClose={() => {
                     setEditParent(false);
                     setSelectedParent(null);
                 }}
+                onSubmit={handleUpdateParent}
+                loading={submittingEdit}
+                isAdminMode={false}
             />
             <EditChildModal
                 child={selectedChild}
-                familyName={selectedFamily?.familyName}
-                families={[]}
                 isOpen={editChild}
                 onClose={() => {
                     setEditChild(false);
                     setSelectedChild(null);
                 }}
+                onSubmit={handleUpdateChild}
+                loading={submittingEdit}
+                isAdminMode={false}
             />
             <ChildSubscriptionModal
                 subscriptions={selectedChildSubs || []}
@@ -149,10 +219,14 @@ const MyFamily = () => {
             <CreateParentModal
                 isOpen={addParent}
                 onClose={() => setAddParent(false)}
+                onAdd={handleAddParent}
+                loading={creatingItem}
             />
             <CreateChildModal
                 isOpen={addChild}
                 onClose={() => setAddChild(false)}
+                onAdd={handleAddChild}
+                loading={creatingItem}
             />
         </>
     );

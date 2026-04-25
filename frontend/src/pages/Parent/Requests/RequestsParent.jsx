@@ -6,130 +6,121 @@ import { Menu, FileText, Plus } from "lucide-react";
 import RequestCard from '../../../components/RequestCard/RequestCard';
 import Select from "../../../components/Select/Select";
 import { REQUEST_STATUS } from "../../../utils/helper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CreateRequestModal from "../../../components/CreateRequestModal/CreateRequestModal";
+import CreateComboReqModal from '../../../components/CreateComboReqModal/CreateComboReqModal';
+import api from "../../../api/axios";
+import toast from "react-hot-toast";
+import Loader from "../../../components/Loader/Loader";
 
 const RequestsParent = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [requests, setRequests] = useState([
-      {
-        id: 2,
-        familyId: 3,
-        childId: 5,
-        clubServiceId: 21,
-        message: null,
-        status: "PENDING",
-        createdAt: "2026-04-08T20:09:21.202Z",
-        updatedAt: "2026-04-08T20:09:21.202Z",
-        family: {
-          id: 3,
-          familyName: "Семья Смирновых",
-          createdAt: "2026-04-08T20:09:21.159Z",
-          parents: [
-            {
-              id: 4,
-              userId: 9,
-              familyId: 3,
-              user: {
-                firstName: "Максим",
-                lastName: "Смирнов",
-                phone: "89999999990",
-                email: "smirnov@educrm.ru",
-              },
-            },
-            {
-              id: 5,
-              userId: 10,
-              familyId: 3,
-              user: {
-                firstName: "Ксения",
-                lastName: "Смирнова",
-                phone: "89999999991",
-                email: "smirnova@educrm.ru",
-              },
-            },
-          ],
-        },
-        child: {
-          id: 5,
-          firstName: "Мария",
-          lastName: "Смирнова",
-        },
-        clubService: {
-          id: 21,
-          name: "Абонемент на 12 занятий (+2 заморозки)",
-          price: 6000,
-          subscriptionLessons: 12,
-          freezedLesson: 2,
-          clubId: 6,
-          type: "SUBSCRIPTION",
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.188Z",
-          club: {
-            id: 6,
-            name: "Фотокружок",
-          },
-        },
-      },
-      {
-        id: 1,
-        familyId: 2,
-        childId: 3,
-        clubServiceId: 3,
-        message: null,
-        status: "PENDING",
-        createdAt: "2026-04-08T20:09:21.201Z",
-        updatedAt: "2026-04-08T20:09:21.201Z",
-        family: {
-          id: 2,
-          familyName: "Семья Самсоновых",
-          createdAt: "2026-04-08T20:09:21.157Z",
-          parents: [
-            {
-              id: 3,
-              userId: 8,
-              familyId: 2,
-              user: {
-                firstName: "Анастасия",
-                lastName: "Самсонова",
-                phone: "89999999992",
-                email: "samsonova@educrm.ru",
-              },
-            },
-          ],
-        },
-        child: {
-          id: 3,
-          firstName: "Владислав",
-          lastName: "Самсонов",
-        },
-        clubService: {
-          id: 3,
-          name: "Абонемент на 6 занятий",
-          price: 4500,
-          subscriptionLessons: 6,
-          freezedLesson: 0,
-          clubId: 1,
-          type: "SUBSCRIPTION",
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.172Z",
-          club: {
-            id: 1,
-            name: "Музыкальная энциклопедия",
-          },
-        },
-      },
-    ]);
+    const [requests, setRequests] = useState([]);
     const [children, setChildren] = useState([]);
     const [clubs, setClubs] = useState([]);
     const [selectedChild, setSelectedChild] = useState(null);
-    const [selectedClub, setSelectedClub] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [createRequest, setCreateRequest] = useState(false);
+    const [createCombo, setCreateCombo] = useState(false);
     const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [creatingItem, setCreatingItem] = useState(false);
+    const [processing, setProcessing] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                let url = '/subscriptionRequests?';
+                if (selectedChild) url += `childId=${selectedChild}&`;
+                if (selectedStatus) url += `status=${selectedStatus}&`;
+                const res = await api.get(url);
+                setRequests(res.data.data);
+            } catch (error) {
+                toast.error("Ошибка получения данных");
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [selectedChild, selectedStatus, processing, createRequest, createCombo]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [resChild, resClub, resService] = await Promise.all([
+                    api.get('/children'),
+                    api.get('/clubs'),
+                    api.get('/clubServices'),
+                ]);
+
+                setChildren(resChild.data.data);
+                setClubs(resClub.data.data);
+                setServices(resService.data.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        loadData();
+    }, []);
+
+    const handleCreateRequest = async (requestData) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                childId: requestData.childId,
+                clubServiceId: requestData.clubServiceId,
+                message: requestData.note || null
+            };
+
+            await api.post('/subscriptionRequests', data);
+            toast.success('Заявка создана');
+            setCreateRequest(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка создания заявки');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleCreateCombo = async (comboData) => {
+        setCreatingItem(true);
+        try {
+            const data = {
+                requests: comboData,
+            };
+
+            await api.post('/subscriptionRequests/combo', { ...data });
+            toast.success('Заявка создана');
+            setCreateCombo(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка создания заявки');
+            console.error(error);
+        } finally {
+            setCreatingItem(false);
+        }
+    };
+
+    const handleDeleteRequest = async (requestId) => {
+        setProcessing(true);
+        try {
+            await api.delete(`/subscriptionRequests/${requestId}`);
+            toast.success('Заявка отклонена');
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Ошибка отклонения заявки');
+            console.error(error);
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    if (loading) return <Loader />;
 
     const requestItems = requests.map((request) => (
-        <li key={request.id}><RequestCard request={request} isForParent={true} /></li>
+        <li key={request.id}><RequestCard request={request} onCancel={() => handleDeleteRequest(request.id)} isForParent={true} /></li>
     ));
 
     return (
@@ -139,7 +130,10 @@ const RequestsParent = () => {
                     <div className={styles.sidebarButton}><Button variant='primary' icon={Menu} onClick={() => setIsSidebarOpen(true)} /></div>
                     <h1 className={styles.pageName}>Заявки</h1>
                 </div>
-                <div className={styles.button}><Button variant='primary' onClick={() => setCreateRequest(true)}>Оставить заявку</Button></div>
+               <div className={styles.buttons}>
+                    <Button variant='primary' onClick={() => setCreateRequest(true)}>Оставить заявку</Button>
+                    <Button variant='primary' onClick={() => setCreateCombo(true)}>Оставить комбо заявку</Button>
+                </div>
             </div>
             <div className={styles.wrapper}>
                 <div className={styles.input}>
@@ -155,23 +149,13 @@ const RequestsParent = () => {
                         ))}
                     />
                     <Select
-                        value={selectedClub}
-                        placeholder={selectedClub ? '' : "Кружок"}
-                        onChange={(e) => setSelectedClub(e.target.value)}
-                        options={clubs.map((club) => (
-                            {
-                                value: club.id,
-                                label: club.name
-                            }
-                        ))}
-                    />
-                    <Select
                         value={selectedStatus}
                         placeholder={selectedStatus ? '' : "Статус"}
+                        value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value)}
                         options={REQUEST_STATUS.map((s) => (
                             {
-                                value: s.id,
+                                value: s.value,
                                 label: s.label
                             }
                         ))}
@@ -191,7 +175,24 @@ const RequestsParent = () => {
             </div>
 
             <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
-            <CreateRequestModal children={children} clubs={clubs} services={services} isOpen={createRequest} onClose={() => setCreateRequest(false)} />
+            <CreateRequestModal
+                children={children}
+                clubs={clubs}
+                services={services}
+                isOpen={createRequest}
+                onClose={() => setCreateRequest(false)}
+                onAdd={handleCreateRequest}
+                loading={creatingItem}
+            />
+            <CreateComboReqModal
+                children={children}
+                clubs={clubs}
+                services={services}
+                isOpen={createCombo}
+                onClose={() => setCreateCombo(false)}
+                onAdd={handleCreateCombo}
+                loading={creatingItem}
+            />
         </>
     );
 }
