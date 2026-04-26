@@ -7,12 +7,12 @@ const controller = require('../controllers/schedule.controller');
 const router = Router();
 
 router.use(authenticate);
-router.use(authorize('ADMIN'));
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
+router.get('/', authorize('ADMIN', 'TEACHER'), controller.getAll);
+router.get('/:id', authorize('ADMIN'), controller.getById);
 router.post(
     '/',
+    authorize('ADMIN'),
     [
         body('clubId').notEmpty().withMessage('Enter the club'),
         body('dayOfWeek').isInt({ min: 1, max: 7 }).withMessage('Enter the day of week from 1 to 7'),
@@ -22,8 +22,8 @@ router.post(
     validate,
     controller.create
 );
-router.put('/:id', controller.update);
-router.delete('/:id', controller.remove);
+router.put('/:id', authorize('ADMIN'), controller.update);
+router.delete('/:id', authorize('ADMIN'), controller.remove);
 router.post(
     '/lessons/generate',
     [
