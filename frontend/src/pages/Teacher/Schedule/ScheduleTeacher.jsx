@@ -7,138 +7,31 @@ import EditScheduleRecModal from '../../../components/EditScheduleRecModal/EditS
 import GenerateLessonsModal from '../../../components/GenerateLessonsModal/GenerateLessonsModal';
 import EmptyState from '../../../components/EmptyState/EmptyState';
 import { CalendarDays, Plus, Menu } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DAYS_OF_WEEK } from '../../../utils/helper';
+import toast from 'react-hot-toast';
+import api from '../../../api/axios';
 
 const Schedule = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [schedule, setSchedule] = useState([
-      {
-        id: 1,
-        clubId: 4,
-        dayOfWeek: 1,
-        startTime: "15:00",
-        endTime: "15:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-      {
-        id: 2,
-        clubId: 4,
-        dayOfWeek: 1,
-        startTime: "16:30",
-        endTime: "17:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-      {
-        id: 3,
-        clubId: 4,
-        dayOfWeek: 1,
-        startTime: "17:30",
-        endTime: "18:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-      {
-        id: 5,
-        clubId: 4,
-        dayOfWeek: 2,
-        startTime: "16:30",
-        endTime: "17:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-      {
-        id: 4,
-        clubId: 4,
-        dayOfWeek: 2,
-        startTime: "17:30",
-        endTime: "18:30",
-        room: null,
-        club: {
-          id: 4,
-          name: "Кактус",
-          description: null,
-          classCategoryId: 2,
-          defaultTeacherId: 3,
-          maxStudents: null,
-          isActive: true,
-          createdAt: "2026-04-08T20:09:21.164Z",
-          teacher: {
-            id: 3,
-            userId: 4,
-            specialty: "Психология",
-            bio: null,
-          },
-        },
-      },
-    ]);
-    const [clubs, setClubs] = useState([]);
-    const [createSchedule, setCreateSchedule] = useState(false);
-    const [editSchedule, setEditSchedule] = useState(false);
-    const [selectedSchedule, setSelectedSchedule] = useState(null);
-    const [generateLessons, setGenerateLessons] = useState(false);
+    const [schedule, setSchedule] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const res = await api.get('/schedule');
+                setSchedule(res.data.data);
+            } catch (error) {
+                toast.error('Ошибка получения данных');
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
+    }, []);
 
     const groupedSchedule = {};
     DAYS_OF_WEEK.forEach((d) => groupedSchedule[d.value] = []);
@@ -181,24 +74,11 @@ const Schedule = () => {
                     <EmptyState
                         icon={CalendarDays}
                         title={'Нет записей расписания'}
-                        description={'Создайте первую запись'}
-                        action={<Button icon={Plus} onClick={() => setCreateSchedule(true)}>Добавить запись</Button>}
                     />
                 )}
             </div>
 
             <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
-            <EditScheduleRecModal
-                record={selectedSchedule}
-                clubs={clubs || []}
-                isOpen={editSchedule}
-                onClose={() => {
-                    setEditSchedule(false);
-                    setSelectedSchedule(false);
-                }}
-            />
-            <CreateScheduleRecModal clubs={clubs} isOpen={createSchedule} onClose={() => setCreateSchedule(false)} />
-            <GenerateLessonsModal isOpen={generateLessons} onClose={() => setGenerateLessons(false)} />
         </>
     );
 }

@@ -32,6 +32,10 @@ const CreateLessonModal = ({ clubs, teachers, isOpen, onClose, onAdd, loading = 
     }, [isOpen]);
 
     const handleChange = (field, value) => {
+        if (field === 'clubId') {
+            const club = clubs.find((club) => club.id === parseInt(value));
+            setFormData(prev => ({ ...prev, assignedTeacherId: club.defaultTeacherId }));
+        }
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
