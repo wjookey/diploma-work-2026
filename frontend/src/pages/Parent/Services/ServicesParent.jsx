@@ -24,7 +24,7 @@ const ServicesParent = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const url = search ? `/clubServices?isActive=true&search=${encodeURIComponent(search)}` : '/clubServices?isActive=true';
+                const url = search ? `/clubServices?search=${encodeURIComponent(search)}&isActive=true` : '/clubServices?isActive=true';
                 const res = await api.get(url);
                 setServices(res.data.data);
             } catch (error) {
@@ -41,15 +41,13 @@ const ServicesParent = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [resChild, resClub, resService] = await Promise.all([
+                const [resChild, resClub] = await Promise.all([
                     api.get('/children'),
                     api.get('/clubs'),
-                    api.get('/clubServices'),
                 ]);
 
                 setChildren(resChild.data.data);
                 setClubs(resClub.data.data);
-                setServices(resService.data.data);
             } catch (error) {
                 console.error(error);
             }

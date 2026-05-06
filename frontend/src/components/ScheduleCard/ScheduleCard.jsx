@@ -20,7 +20,7 @@ const ScheduleCard = ({ record, isEditMode = true, onEdit, isInModal = false }) 
                         </div>
                         <div className={styles.room}>
                             <MapPin className={styles.icon} />
-                            <p>{record.room !== null ? record.room : '-'}</p>
+                            <p>{record.room ? record.room : '-'}</p>
                         </div>
                     </div>
                 </div>

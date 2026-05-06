@@ -16,7 +16,6 @@ router.post(
     [
         body('firstName').notEmpty().withMessage('Enter child\'s name'),
         body('lastName').notEmpty().withMessage('Enter child\'s surname'),
-        body('birthDate').optional().isISO8601().withMessage('Enter correct birth date (YYYY-MM-DD)')
     ],
     validate,
     controller.create

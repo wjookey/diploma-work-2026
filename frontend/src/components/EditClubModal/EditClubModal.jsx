@@ -101,6 +101,7 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusCh
                             id={"maxStudents"}
                             value={formData.maxStudents}
                             onChange={(e) => handleChange('maxStudents', e.target.value)}
+                            type="number"
                         />
                         <Select
                             label={"Статус"}

@@ -72,7 +72,7 @@ const RequestsParent = () => {
             const data = {
                 childId: requestData.childId,
                 clubServiceId: requestData.clubServiceId,
-                message: requestData.note || null
+                message: null
             };
 
             await api.post('/subscriptionRequests', data);
@@ -169,7 +169,8 @@ const RequestsParent = () => {
                     <EmptyState
                         icon={FileText}
                         title={'Нет заявок'}
-                        description={'Дождитесь получения заявки'}
+                        description={'Создайте первую заявку'}
+                        action={<Button icon={Plus} onClick={() => setCreateRequest(true)}>Оставить заявку</Button>}
                     />
                 )}
             </div>

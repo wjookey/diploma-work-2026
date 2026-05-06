@@ -25,7 +25,16 @@ router.post(
     validate,
     controller.create
 );
-router.put('/:id', authorize('ADMIN', 'PARENT'), controller.update);
+router.put(
+    '/:id',
+    authorize('ADMIN', 'PARENT'),
+    [
+        body('phone').optional().isMobilePhone('ru-RU').withMessage('Enter correct phone number'),
+        body('email').optional().isEmail().withMessage('Enter correct email'),
+    ],
+    validate,
+    controller.update
+);
 router.delete('/:id', authorize('ADMIN'), controller.remove);
 
 module.exports = router;

@@ -71,6 +71,7 @@ const EditTeacherModal = ({ user, onSubmit, onDelete, isOpen, onClose, loading =
                             icon={Phone} 
                             value={formData.phone}
                             onChange={(e) => handleChange('phone', e.target.value)}
+                            type="tel"
                         />
                         <Input 
                             label={"Почта"} 
@@ -78,6 +79,7 @@ const EditTeacherModal = ({ user, onSubmit, onDelete, isOpen, onClose, loading =
                             icon={Mail} 
                             value={formData.email}
                             onChange={(e) => handleChange('email', e.target.value)}
+                            type="email"
                         />
                     </div>
                     <div className={styles.buttons}>

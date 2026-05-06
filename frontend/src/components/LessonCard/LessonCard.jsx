@@ -26,7 +26,7 @@ const LessonCard = ({ lesson, isEditMode = true, isInModal = false, isMarkAttMod
                             </div>
                             <div className={styles.room}>
                                 <MapPin className={styles.icon} />
-                                <p>{lesson?.room !== null ? lesson?.room : '-'}</p>
+                                <p>{lesson?.room ? lesson?.room : '-'}</p>
                             </div>
                         </div>
                     </div>

@@ -25,7 +25,15 @@ exports.login = async (req, res, next) => {
             where: { email },
             include: {
                 teacher: { select: { id: true } },
-                parent: { select: { id: true } },
+                parent: {
+                    include: {
+                        family: {
+                            include: {
+                                children: { select: { id: true, firstName: true, lastName: true, birthDate: true } },
+                            },
+                        },
+                    },
+                },
             },
         });
 
@@ -124,11 +132,9 @@ exports.getMe = async (req, res, next) => {
                 createdAt: true,
                 teacher: { select: { id: true, specialty: true, bio: true } },
                 parent: {
-                    select: {
-                        id: true,
+                    include: {
                         family: {
-                            select: {
-                                id: true,
+                            include: {
                                 children: { select: { id: true, firstName: true, lastName: true, birthDate: true } },
                             },
                         },

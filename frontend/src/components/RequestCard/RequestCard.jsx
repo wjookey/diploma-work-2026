@@ -4,6 +4,8 @@ import Card from '../Card/Card';
 import { CalendarDays } from 'lucide-react';
 import ParentCard from '../ParentCard/ParentCard';
 import { formatDate } from '../../utils/helper';
+import Tag from '../Tag/Tag';
+import { getRequestStatus } from '../../utils/helper';
 
 const RequestCard = ({ request, onApprove, onReject, onCancel, isForParent = false }) => {
     const parentsItems = request.family.parents.map((parent) => (
@@ -34,6 +36,12 @@ const RequestCard = ({ request, onApprove, onReject, onCancel, isForParent = fal
                         <Button variant='danger' onClick={onCancel}>Отменить</Button>
                     )
                 )}
+                {request?.status !== 'PENDING' &&
+                    <Tag
+                        text={getRequestStatus(request?.status)}
+                        color={request?.status === 'APPROVED' ? 'green' : 'red'}
+                    />
+                }
             </div>
         </Card>
     );

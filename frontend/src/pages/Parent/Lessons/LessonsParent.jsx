@@ -4,7 +4,7 @@ import Button from '../../../components/Button/Button';
 import Sidebar from '../../../components/Sidebar/Sidebar';
 import EmptyState from '../../../components/EmptyState/EmptyState';
 import { AlarmClock, Plus, Menu } from 'lucide-react';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { formatDate, formatDateToISO } from '../../../utils/helper';
 import Select from '../../../components/Select/Select';
 import Input from '../../../components/Input/Input';
@@ -49,7 +49,6 @@ const LessonsParent = () => {
         }
         groupedLessons[l.date].push(l);
     });
-    console.log(groupedLessons);
 
     const lessonItems = dates.filter((d) => groupedLessons[d].length > 0).map((day) => (
         <div key={day} className={styles.day}>

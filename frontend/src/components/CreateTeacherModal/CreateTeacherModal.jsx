@@ -64,6 +64,7 @@ const CreateTeacherModal = ({ isOpen, onClose, onAdd, loading = false }) => {
                         value={formData.phone}
                         onChange={(e) => handleChange('phone', e.target.value)}
                         placeholder={"Телефон"}
+                        type="tel"
                     />
                     <Input
                         label={"Почта"}
@@ -72,6 +73,7 @@ const CreateTeacherModal = ({ isOpen, onClose, onAdd, loading = false }) => {
                         value={formData.email}
                         onChange={(e) => handleChange('email', e.target.value)}
                         placeholder={"Почта"}
+                        type="email"
                     />
                 </div>    
                 <Button variant='primary' onClick={handleSubmit}>{loading ? 'Добавление...' : 'Добавить'}</Button>

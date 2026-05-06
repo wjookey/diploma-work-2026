@@ -132,7 +132,7 @@ const Clients = () => {
                 children: children.map(c => ({
                     firstName: c.firstName,
                     lastName: c.lastName,
-                    birthDate: c.birthDate || null,
+                    birthDate: c.birthDate ? c.birthDate : null,
                     note: ''
                 }))
             };

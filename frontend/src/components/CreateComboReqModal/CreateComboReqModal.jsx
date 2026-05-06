@@ -2,21 +2,20 @@ import styles from './CreateComboReqModal.module.scss';
 import Modal from '../Modal/Modal';
 import Button from '../Button/Button';
 import Select from '../Select/Select';
-import Textarea from '../Textarea/Textarea';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd, loading = false }) => {
     const [formData, setFormData] = useState([
-        { childId: null, clubId: null, clubServiceId: null, note: '' },
-        { childId: null, clubId: null, clubServiceId: null, note: '' },
+        { childId: null, clubId: null, clubServiceId: null, note: null },
+        { childId: null, clubId: null, clubServiceId: null, note: null },
     ]);
 
     useEffect(() => {
         if (!isOpen) {
             setFormData([
-                { childId: null, clubId: null, clubServiceId: null, note: '' },
-                { childId: null, clubId: null, clubServiceId: null, note: '' },
+                { childId: null, clubId: null, clubServiceId: null, note: null },
+                { childId: null, clubId: null, clubServiceId: null, note: null },
             ]);
         }
     }, [isOpen]);
@@ -58,7 +57,7 @@ const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd
                         placeholder={'Выберите'}
                         value={formData[0].clubId || ''}
                         onChange={(e) => handleChange(0, 'clubId', e.target.value)}
-                        options={clubs.map((club) => ({
+                        options={clubs.filter((club) => club.isActive === true).map((club) => ({
                             value: club.id,
                             label: club.name
                         }))}
@@ -70,18 +69,11 @@ const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd
                         placeholder={'Выберите'}
                         value={formData[0].clubServiceId || ''}
                         onChange={(e) => handleChange(0, 'clubServiceId', e.target.value)}
-                        options={services.filter((service) => service.clubId === parseInt(formData[0].clubId)).map((service) => ({
+                        options={services.filter((service) => service.clubId === parseInt(formData[0].clubId) && service.isActive === true).map((service) => ({
                             value: service.id,
                             label: service.name
                         }))}
                         required
-                    />
-                    <Textarea
-                        label={'Примечание'}
-                        id={"message"}
-                        value={formData[0].note || ''}
-                        onChange={(e) => handleChange(0, 'note', e.target.value)}
-                        placeholder={"Примечание"}
                     />
                 </div>   
                 <h3 className={styles.header}>2-й комбо абонемент</h3>
@@ -104,7 +96,7 @@ const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd
                         placeholder={'Выберите'}
                         value={formData[1].clubId || ''}
                         onChange={(e) => handleChange(1, 'clubId', e.target.value)}
-                        options={clubs.map((club) => ({
+                        options={clubs.filter((club) => club.isActive === true).map((club) => ({
                             value: club.id,
                             label: club.name
                         }))}
@@ -116,17 +108,10 @@ const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd
                         placeholder={'Выберите'}
                         value={formData[1].clubServiceId || ''}
                         onChange={(e) => handleChange(1, 'clubServiceId', e.target.value)}
-                        options={services.filter((service) => service.clubId === parseInt(formData[1].clubId)).map((service) => ({
+                        options={services.filter((service) => service.clubId === parseInt(formData[1].clubId) && service.isActive === true).map((service) => ({
                             value: service.id,
                             label: service.name
                         }))}
-                    />
-                    <Textarea
-                        label={'Примечание'}
-                        id={"message"}
-                        value={formData[1].note || ''}
-                        onChange={(e) => handleChange(1, 'note', e.target.value)}
-                        placeholder={"Примечание"}
                     />
                 </div>   
                 <Button

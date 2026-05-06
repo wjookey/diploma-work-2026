@@ -2,7 +2,6 @@ import styles from './CreateRequestModal.module.scss';
 import Modal from '../Modal/Modal';
 import Button from '../Button/Button';
 import Select from '../Select/Select';
-import Textarea from '../Textarea/Textarea';
 import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 
@@ -10,8 +9,7 @@ const CreateRequestModal = ({ children, clubs, services, isOpen, onClose, onAdd,
     const [formData, setFormData] = useState({
         childId: null,
         clubId: null,
-        clubServiceId: null,
-        note: ''
+        clubServiceId: null
     });
 
     useEffect(() => {
@@ -19,8 +17,7 @@ const CreateRequestModal = ({ children, clubs, services, isOpen, onClose, onAdd,
             setFormData({
                 childId: null,
                 clubId: null,
-                clubServiceId: null,
-                note: ''
+                clubServiceId: null
             });
         }
     }, [isOpen]);
@@ -59,7 +56,7 @@ const CreateRequestModal = ({ children, clubs, services, isOpen, onClose, onAdd,
                         placeholder={'Выберите'}
                         value={formData.clubId}
                         onChange={(e) => handleChange('clubId', e.target.value)}
-                        options={clubs.map((club) => ({
+                        options={clubs.filter((club) => club.isActive === true).map((club) => ({
                             value: club.id,
                             label: club.name
                         }))}
@@ -71,18 +68,11 @@ const CreateRequestModal = ({ children, clubs, services, isOpen, onClose, onAdd,
                         placeholder={'Выберите'}
                         value={formData.clubServiceId}
                         onChange={(e) => handleChange('clubServiceId', e.target.value)}
-                        options={services.filter((service) => service.clubId === parseInt(formData.clubId)).map((service) => ({
+                        options={services.filter((service) => service.clubId === parseInt(formData.clubId) && service.isActive === true).map((service) => ({
                             value: service.id,
                             label: `${service.name} - ${service.price} руб`
                         }))}
                         required
-                    />
-                    <Textarea
-                        label={'Примечание'}
-                        id={"message"}
-                        value={formData.note}
-                        onChange={(e) => handleChange('note', e.target.value)}
-                        placeholder={"Примечание"}
                     />
                 </div>   
                 <Button

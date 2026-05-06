@@ -37,9 +37,8 @@ const MyFamily = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const res = await api.get(`/families/${user.parent.family.id}`);
+                const res = await api.get(`/families/${user.parent.family?.id}`);
                 setFamily(res.data.data);
-                console.log(family)
             } catch (error) {
                 toast.error("Ошибка получения данных");
                 console.error(error);
@@ -49,7 +48,7 @@ const MyFamily = () => {
         }
 
         loadData();
-    }, [addChild, addParent, editChild, editParent]);
+    }, [editFamily, addChild, addParent, editChild, editParent]);
 
     const handleAddParent = async (parentForm) => {
         setCreatingItem(true);
@@ -83,7 +82,7 @@ const MyFamily = () => {
             const data = {
                 firstName: childForm.firstName,
                 lastName: childForm.lastName,
-                birthDate: childForm.birthDate || null,
+                birthDate: childForm.birthDate ? childForm.birthDate : null,
                 familyId: family.id,
             };
 

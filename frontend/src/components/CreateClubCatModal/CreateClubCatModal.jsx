@@ -48,9 +48,9 @@ const CreateClubCatModal = ({ isOpen, onClose, onAdd, loading = false }) => {
                     <Textarea
                         label={"Описание"}
                         id={"description"}
-                        value={formData.descpription}
+                        value={formData.description}
                         onChange={(e) => handleChange('description', e.target.value)}
-                        placeholder="Название"
+                        placeholder="Описание"
                     />
                 </div>    
                 <Button

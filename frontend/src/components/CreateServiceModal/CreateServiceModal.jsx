@@ -93,6 +93,7 @@ const CreateServiceModal = ({ clubs, isOpen, onClose, onAdd, loading = false }) 
                         onChange={(e) => handleChange('price', e.target.value)}
                         placeholder={"Цена"}
                         required
+                        type="number"
                     />
                     <div className={styles.details}>
                         <Input
@@ -102,6 +103,7 @@ const CreateServiceModal = ({ clubs, isOpen, onClose, onAdd, loading = false }) 
                             onChange={(e) => handleChange('subscriptionLessons', e.target.value)}
                             placeholder={"Количество занятий"}
                             required
+                            type="number"
                         />
                         <Input
                             label={"Количество заморозок"}
@@ -110,6 +112,7 @@ const CreateServiceModal = ({ clubs, isOpen, onClose, onAdd, loading = false }) 
                             onChange={(e) => handleChange('freezedLesson', e.target.value)}
                             placeholder={"Количество заморозок"}
                             required
+                            type="number"
                         />
                     </div>
                 </div>   

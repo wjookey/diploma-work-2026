@@ -5,7 +5,7 @@ import AttendanceRecord from '../AttendanceRecord/AttendanceRecord';
 import Modal from '../Modal/Modal';
 import { formatDate } from '../../utils/helper';
 
-const AttendanceModal = ({ lesson, attendance, onStatusChange, onMarkAttendance, isOpen, onClose }) => {
+const AttendanceModal = ({ lesson, attendance, onStatusChange, onMarkAttendance, isOpen, onClose, loading }) => {
     const attendanceItems = attendance?.map((record, index) => (
         <AttendanceRecord key={record.child.id} name={`${record.child.lastName} ${record.child.firstName}`} isPresent={record.isPresent} onToggle={() => onStatusChange(index)} />
     ));
@@ -16,7 +16,13 @@ const AttendanceModal = ({ lesson, attendance, onStatusChange, onMarkAttendance,
                 {attendanceItems}
             </div>
             <div className={styles.button}>
-                <Button variant='primary' onClick={onMarkAttendance}>Отметить</Button>
+                <Button
+                    variant='primary'
+                    onClick={onMarkAttendance}
+                    disabled={loading || !attendanceItems || !attendanceItems.length}
+                >
+                    {loading ? 'Отметка посещаемости...' : 'Отметить'}
+                </Button>
             </div>
         </Modal>
     );

@@ -24,7 +24,7 @@ const PaymentCard = ({ payment, isEditMode = true, isInModal = false, onEdit }) 
                         </div>
                         <div className={styles.amount}>
                             <CreditCard className={styles.icon} />
-                            <p>{payment?.amount} руб {payment?.paymentMethod !== undefined ? `- ${payment?.paymentMethod}` : ''}</p>
+                            <p>{payment?.amount} руб {payment?.paymentMethod ? `- ${payment?.paymentMethod}` : ''}</p>
                         </div>
                         <div className={styles.note}>
                             <MessageSquare className={styles.icon} />

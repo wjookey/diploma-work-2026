@@ -138,7 +138,7 @@ const Subscriptions = () => {
     const handleCancel = async (subId) => {
         setSubmittingEdit(true);
         try {
-            await api.post(`/subscriptions/${subId}/cancel`);
+            await api.put(`/subscriptions/${subId}/cancel`);
             toast.success('Абонемент отменён');
             setEditSub(false);
         } catch (error) {

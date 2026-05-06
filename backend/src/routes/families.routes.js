@@ -24,8 +24,6 @@ router.post(
         body('children').isArray({ min: 1 }).withMessage('At least one child is required'),
         body('children.*.firstName').notEmpty().withMessage('Enter first name for child'),
         body('children.*.lastName').notEmpty().withMessage('Enter last name for child'),
-        body('children.*.birthDate').optional().isISO8601().withMessage('Enter correct birth date (YYYY-MM-DD)'),
-        body('children.*.note').optional().isString().withMessage('Note must be a string'),
     ],
     validate,
     controller.create

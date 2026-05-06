@@ -32,7 +32,7 @@ const EditSubscriptionModal = ({ subscription, children, clubs, services, isOpen
     };
 
     const handleSubmit = async () => {
-        if (formData.remainingFreezes === undefined || formData.remainingLessons === undefined) {
+        if (!formData.remainingFreezes && formData.remainingFreezes !== 0 || !formData.remainingLessons && formData.remainingLessons !== 0) {
             toast.error("Заполните все обязательные поля");
             return;
         }
@@ -98,6 +98,7 @@ const EditSubscriptionModal = ({ subscription, children, clubs, services, isOpen
                                 value={formData.remainingLessons}
                                 onChange={(e) => handleChange('remainingLessons', e.target.value)}
                                 disabled={subscription?.status === 'PENDING' || subscription?.status === 'CANCELLED'}
+                                type="number"
                             />
                             <Input
                                 label={"Осталось заморозок"}
@@ -105,6 +106,7 @@ const EditSubscriptionModal = ({ subscription, children, clubs, services, isOpen
                                 value={formData.remainingFreezes}
                                 onChange={(e) => handleChange('remainingFreezes', e.target.value)}
                                 disabled={subscription?.status === 'PENDING' || subscription?.status === 'CANCELLED'}
+                                type="number"
                             />
                         </div>
                     </div>   

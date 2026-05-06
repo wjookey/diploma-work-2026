@@ -19,7 +19,6 @@ const LessonsTeacher = () => {
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [teachers, setTeachers] = useState([]);
     const [selectedAttendance, setSelectedAttendance] = useState([]);
     const [attendanceModal, setAttendanceModal] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -42,7 +41,7 @@ const LessonsTeacher = () => {
         }
 
         loadData();
-    }, [startDate, endDate]);
+    }, [startDate, endDate, attendanceModal]);
 
     const handleMarkAttendance = async () => {
         setSubmittingEdit(true);
@@ -96,7 +95,6 @@ const LessonsTeacher = () => {
         }
         groupedLessons[l.date].push(l);
     });
-    console.log(groupedLessons);
 
     const lessonItems = dates.filter((d) => groupedLessons[d].length > 0).map((day) => (
         <div key={day} className={styles.day}>
@@ -162,6 +160,7 @@ const LessonsTeacher = () => {
                 }}
                 onStatusChange={handlePresenceChange}
                 onMarkAttendance={handleMarkAttendance}
+                loading={submittingEdit}
             />
         </>
     );

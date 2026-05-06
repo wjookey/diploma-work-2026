@@ -42,7 +42,7 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete,
     };
 
     const handleSubmit = async () => {
-        if (!formData.name || !formData.clubId || !formData.type || formData.price === undefined || formData.subscriptionLessons === undefined || formData.freezedLesson === undefined) {
+        if (!formData.name || !formData.clubId || !formData.type || !formData.price || !formData.subscriptionLessons && formData.subscriptionLessons !== 0 || !formData.freezedLesson && formData.freezedLesson !== 0) {
             toast.error("Заполните все поля");
             return;
         }
@@ -108,6 +108,7 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete,
                             onChange={(e) => handleChange('price', e.target.value)}
                             placeholder={"Цена"}
                             required
+                            type="number"
                         />
                         <div className={styles.details}>
                             <Input
@@ -117,6 +118,7 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete,
                                 onChange={(e) => handleChange('subscriptionLessons', e.target.value)}
                                 placeholder={"Количество занятий"}
                                 required
+                                type="number"
                             />
                             <Input
                                 label={"Количество заморозок"}
@@ -125,6 +127,7 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete,
                                 onChange={(e) => handleChange('freezedLesson', e.target.value)}
                                 placeholder={"Количество заморозок"}
                                 required
+                                type="number"
                             />
                         </div>
                         <Select

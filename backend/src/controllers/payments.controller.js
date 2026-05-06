@@ -46,7 +46,7 @@ exports.getAll = async (req, res, next) => {
                         },
                     },
                 },
-                orderBy: { createdAt: 'desc' },
+                orderBy: { paymentDate: 'desc' },
                 skip,
                 take: parseInt(limit),
             }),
