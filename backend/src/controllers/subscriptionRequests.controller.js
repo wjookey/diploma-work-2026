@@ -38,7 +38,7 @@ exports.getAll = async (req, res, next) => {
                         },
                     },
                 },
-                orderBy: { createdAt: 'desc' },
+                orderBy: { createdAt: 'asc' },
                 skip,
                 take: parseInt(limit),
             }),

@@ -16,6 +16,7 @@ import CreateChildModal from '../../../components/CreateChildModal/CreateChildMo
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import Loader from '../../../components/Loader/Loader';
+import Pagination from '../../../components/Pagination/Pagination';
 
 const Clients = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -42,13 +43,30 @@ const Clients = () => {
     const [children, setChildren] = useState([]);
     const [creatingFamily, setCreatingFamily] = useState(false);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1,
+    });
     
     useEffect(() => {
         const loadData = async () => {
             try {
-                const url = search ? `/families?search=${encodeURIComponent(search)}` : '/families';
+                const url = search
+                    ? `/families?search=${encodeURIComponent(search)}&page=${pagination.page}&limit=${pagination.limit}`
+                    : `/families?page=${pagination.page}&limit=${pagination.limit}`;
                 const res = await api.get(url);
                 setFamilies(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка загрузки данных клиентов");
                 console.error(error);
@@ -58,7 +76,7 @@ const Clients = () => {
         }
 
         loadData();
-    }, [search, editFamily, isCrFamModalOpen]);
+    }, [search, editFamily, isCrFamModalOpen, pagination.page]);
 
     const handleParentFormChange = (field, value) => {
         setParentForm(prev => ({ ...prev, [field]: value }));
@@ -299,6 +317,10 @@ const Clients = () => {
         }
     };
 
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
     if (loading) return <Loader />;
 
     const famItems = families.map((fam) => (
@@ -335,7 +357,14 @@ const Clients = () => {
                 </div>
                 {famItems.length > 0 ? (
                     <div className={styles.families}>
-                        <ul className={styles.list}>{famItems}</ul>
+                        <>
+                            <ul className={styles.list}>{famItems}</ul>
+                            <Pagination
+                                pagination={pagination}
+                                onPageChange={handlePageChange}
+                            />
+                        </>
+                        
                     </div>
                 ) : (
                     <EmptyState

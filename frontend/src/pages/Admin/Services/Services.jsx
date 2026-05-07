@@ -11,6 +11,7 @@ import Sidebar from '../../../components/Sidebar/Sidebar';
 import api from '../../../api/axios';
 import toast from 'react-hot-toast';
 import { Loader } from 'lucide-react';
+import Pagination from '../../../components/Pagination/Pagination';
 
 const Services = () => {
     const [search, setSearch] = useState('');
@@ -23,13 +24,29 @@ const Services = () => {
     const [loading, setLoading] = useState(true);
     const [creatingItem, setCreatingItem] = useState(false);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1,
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const url = search ? `/clubServices?search=${encodeURIComponent(search)}` : '/clubServices';
+                const url = search
+                    ? `/clubServices?search=${encodeURIComponent(search)}&page=${pagination.page}&limit=${pagination.limit}`
+                    : `/clubServices?page=${pagination.page}&limit=${pagination.limit}`;
                 const res = await api.get(url);
                 setServices(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка загрузки данных");
                 console.error(error);
@@ -39,7 +56,7 @@ const Services = () => {
         }
 
         loadData();
-    }, [search, createSerModal, editServiceModal]);
+    }, [search, createSerModal, editServiceModal, pagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -126,6 +143,10 @@ const Services = () => {
         }
     }
 
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
     if (loading) return <Loader />;
 
     const serviceItems = services.map((service) => (
@@ -155,7 +176,13 @@ const Services = () => {
                 </div>
                 {serviceItems.length > 0 ? (
                     <div className={styles.services}>
-                        <ul className={styles.list}>{serviceItems}</ul>
+                        <>
+                            <ul className={styles.list}>{serviceItems}</ul>
+                            <Pagination
+                                pagination={pagination}
+                                onPageChange={handlePageChange}
+                            />
+                        </>
                     </div>
                 ) : (
                     <EmptyState

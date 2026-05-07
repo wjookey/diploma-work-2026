@@ -14,6 +14,7 @@ import { SUBSCRIPTION_STATUS } from '../../../utils/helper';
 import toast from "react-hot-toast";
 import api from "../../../api/axios";
 import Loader from "../../../components/Loader/Loader";
+import Pagination from '../../../components/Pagination/Pagination';
 
 const Subscriptions = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -36,17 +37,32 @@ const Subscriptions = () => {
     const [loading, setLoading] = useState(true);
     const [creatingItem, setCreatingItem] = useState(false);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1,
+    });
+
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                let url = '/subscriptions?';
+                let url = `/subscriptions?page=${pagination.page}&limit=${pagination.limit}&`;
                 if (selectedClub) url += `clubId=${selectedClub}&`;
                 if (selectedFamily) url += `familyId=${selectedFamily}&`;
                 if (selectedChild) url += `childId=${selectedChild}&`;
                 if (selectedStatus) url += `status=${selectedStatus}&`;
                 const res = await api.get(url);
                 setSubscriptions(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error('Ошибка получения данных');
                 console.error(error);
@@ -56,7 +72,7 @@ const Subscriptions = () => {
         }
 
         loadData();
-    }, [selectedFamily, selectedChild, selectedClub, selectedStatus, createSub, createCombo, editSub]);
+    }, [selectedFamily, selectedChild, selectedClub, selectedStatus, createSub, createCombo, editSub, pagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -163,6 +179,10 @@ const Subscriptions = () => {
         }
     };
 
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
     if (loading) return <Loader />;
 
     const subItems = subscriptions.map((sub) => (
@@ -241,9 +261,16 @@ const Subscriptions = () => {
                     /></div>
                 </div>
                 {subItems.length > 0 ? (
-                    <div className={styles.subscriptions}>
-                        <ul className={styles.list}>{subItems}</ul>
-                    </div>
+                    <>
+                        <div className={styles.subscriptions}>
+                            <ul className={styles.list}>{subItems}</ul>
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
+                    
                 ) : (
                     <EmptyState
                         icon={BookOpen}

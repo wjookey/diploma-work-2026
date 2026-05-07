@@ -14,6 +14,7 @@ import EmptyState from "../../../components/EmptyState/EmptyState";
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import Loader from '../../../components/Loader/Loader';
+import Pagination from '../../../components/Pagination/Pagination';
 
 const Clubs = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -30,18 +31,57 @@ const Clubs = () => {
     const [creatingItem, setCreatingItem] = useState(false);
     const [teachers, setTeachers] = useState([]);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    const [catPagination, setCatPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
+    
+    const [clubPagination, setClubPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
     
     useEffect(() => {
         const loadData = async () => {
+            setLoading(true);
             try {
-                const urlClub = search ? `/clubs?search=${encodeURIComponent(search)}` : '/clubs';
-                const urlCat = search ? `/clubCategories?search=${encodeURIComponent(search)}` : '/clubCategories';
+                const urlCat = search 
+                    ? `/clubCategories?search=${encodeURIComponent(search)}&page=${catPagination.page}&limit=${catPagination.limit}` 
+                    : `/clubCategories?page=${catPagination.page}&limit=${catPagination.limit}`;
+                
+                const urlClub = search 
+                    ? `/clubs?search=${encodeURIComponent(search)}&page=${clubPagination.page}&limit=${clubPagination.limit}` 
+                    : `/clubs?page=${clubPagination.page}&limit=${clubPagination.limit}`;
+                
                 const [resClub, resCat] = await Promise.all([
                     api.get(urlClub),
                     api.get(urlCat),
                 ]);
+                
                 setClubs(resClub.data.data);
+                if (resClub.data.pagination) {
+                    setClubPagination({
+                        page: resClub.data.pagination.page,
+                        limit: resClub.data.pagination.limit,
+                        total: resClub.data.pagination.total,
+                        totalPages: resClub.data.pagination.totalPages
+                    });
+                }
+                
                 setCategories(resCat.data.data);
+                if (resCat.data.pagination) {
+                    setCatPagination({
+                        page: resCat.data.pagination.page,
+                        limit: resCat.data.pagination.limit,
+                        total: resCat.data.pagination.total,
+                        totalPages: resCat.data.pagination.totalPages
+                    });
+                }
             } catch (error) {
                 toast.error('Ошибка получения данных');
                 console.error(error);
@@ -51,7 +91,7 @@ const Clubs = () => {
         }
 
         loadData();
-    }, [search, createCatModal, createClubModal, isEditCat, isEditClub]);
+    }, [search, createCatModal, createClubModal, isEditCat, isEditClub, catPagination.page, clubPagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -224,6 +264,14 @@ const Clubs = () => {
         </li>
     ));
 
+    const handleCatPageChange = (newPage) => {
+        setCatPagination(prev => ({ ...prev, page: newPage }));
+    };
+
+    const handleClubPageChange = (newPage) => {
+        setClubPagination(prev => ({ ...prev, page: newPage }));
+    };
+
     if (loading) return <Loader />;
 
     return (
@@ -245,7 +293,13 @@ const Clubs = () => {
                 <div className={styles.categories}>
                     <h2 className={styles.subheader}>Категории кружков</h2>
                     {categoryItems.length > 0 ? (
-                        <ul className={styles.list}>{categoryItems}</ul>
+                        <>
+                            <ul className={styles.list}>{categoryItems}</ul>
+                            <Pagination 
+                                pagination={catPagination} 
+                                onPageChange={handleCatPageChange}
+                            />
+                        </>
                     ) : (
                         <EmptyState
                             icon={Palette}
@@ -258,7 +312,13 @@ const Clubs = () => {
                 <div className={styles.clubs}>
                     <h2 className={styles.subheader}>Кружки</h2>
                     {clubItems.length > 0 ? (
-                        <ul className={styles.list}>{clubItems}</ul>
+                        <>
+                            <ul className={styles.list}>{clubItems}</ul>
+                            <Pagination 
+                                pagination={clubPagination} 
+                                onPageChange={handleClubPageChange}
+                            />
+                        </>
                     ) : (
                         <EmptyState
                             icon={Palette}

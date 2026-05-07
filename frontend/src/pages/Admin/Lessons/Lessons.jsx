@@ -15,6 +15,7 @@ import AttendanceModal from '../../../components/AttendanceModal/AttendanceModal
 import toast from "react-hot-toast";
 import api from "../../../api/axios";
 import Loader from "../../../components/Loader/Loader";
+import Pagination from '../../../components/Pagination/Pagination';
 
 const Lessons = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,7 +25,7 @@ const Lessons = () => {
     const [editLesson, setEditLesson] = useState(false);
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [selectedClub, setSelectedClub] = useState(null);
-    const [startDate, setStartDate] = useState('');
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState('');
     const [teachers, setTeachers] = useState([]);
     const [selectedAttendance, setSelectedAttendance] = useState([]);
@@ -32,17 +33,31 @@ const Lessons = () => {
     const [loading, setLoading] = useState(true);
     const [creatingItem, setCreatingItem] = useState(false);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1,
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                let url = '/lessons?';
+                let url = `/lessons?page=${pagination.page}&limit=${pagination.limit}&`;
                 if (selectedClub) url += `clubId=${selectedClub}&`;
                 if (startDate) url += `dateFrom=${formatDateToISO(startDate)}&`;
                 if (endDate) url += `dateTo=${formatDateToISO(endDate)}&`;
                 const resLessons = await api.get(url);
 
                 setLessons(resLessons.data.data);
+                if (resLessons.data.pagination) {
+                    setPagination({
+                        page: resLessons.data.pagination.page,
+                        limit: resLessons.data.pagination.limit,
+                        total: resLessons.data.pagination.total,
+                        totalPages: resLessons.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка получения данных");
                 console.error(error);
@@ -52,7 +67,7 @@ const Lessons = () => {
         }
 
         loadData();
-    }, [editLesson, createLesson, selectedClub, startDate, endDate, attendanceModal]);
+    }, [editLesson, createLesson, selectedClub, startDate, endDate, attendanceModal, pagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -186,6 +201,10 @@ const Lessons = () => {
         setSelectedAttendance(newAtt);
     };
 
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
     if (loading) return <Loader />;
 
     const groupedLessons = {};
@@ -244,9 +263,15 @@ const Lessons = () => {
                     <div className={styles.input}><Input value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date"/></div>
                 </div>
                 {lessonItems.length > 0 ? (
-                    <div className={styles.lessonsBlock}>
-                        {lessonItems}
-                    </div>
+                    <>
+                        <div className={styles.lessonsBlock}>
+                            {lessonItems}
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
                 ) : (
                     <EmptyState
                         icon={AlarmClock}

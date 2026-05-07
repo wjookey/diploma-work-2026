@@ -11,6 +11,7 @@ import EditTeacherModal from '../../../components/EditTeacherModal/EditTeacherMo
 import Loader from '../../../components/Loader/Loader';
 import api from '../../../api/axios';
 import toast from 'react-hot-toast';
+import Pagination from "../../../components/Pagination/Pagination";
 
 const Teachers = () => {
     const [search, setSearch] = useState('');
@@ -22,13 +23,29 @@ const Teachers = () => {
     const [loading, setLoading] = useState(true);
     const [creatingTeacher, setCreatingTeacher] = useState(false);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1,
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const url = search ? `/users?role=TEACHER&search=${encodeURIComponent(search)}` : '/users?role=TEACHER';
+                const url = search
+                    ? `/users?role=TEACHER&search=${encodeURIComponent(search)}&page=${pagination.page}&limit=${pagination.limit}`
+                    : `/users?role=TEACHER&page=${pagination.page}&limit=${pagination.limit}`;
                 const res = await api.get(url);
                 setTeachers(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка загрузки данных преподавателей");
                 console.error(error);
@@ -38,7 +55,7 @@ const Teachers = () => {
         }
 
         loadData();
-    }, [search, createTeacherModal, editModal]);
+    }, [search, createTeacherModal, editModal, pagination.page]);
 
     const handleCreateTeacher = async (teacherData) => {
         setCreatingTeacher(true);
@@ -95,6 +112,10 @@ const Teachers = () => {
         }
     }
 
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
     if (loading) return <Loader />;
 
     const teacherItems = teachers.map((teacher) => (
@@ -124,7 +145,14 @@ const Teachers = () => {
                 </div>
                 {teacherItems.length > 0 ? (
                     <div className={styles.teachers}>
-                        <ul className={styles.list}>{teacherItems}</ul>
+                        <>
+                            <ul className={styles.list}>{teacherItems}</ul>
+                            <Pagination
+                                pagination={pagination}
+                                onPageChange={handlePageChange}
+                            />
+                        </>
+                        
                     </div>
                 ) : (
                     <EmptyState

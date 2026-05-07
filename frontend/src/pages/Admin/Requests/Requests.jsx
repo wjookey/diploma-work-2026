@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import api from "../../../api/axios";
 import Loader from "../../../components/Loader/Loader";
+import Pagination from "../../../components/Pagination/Pagination";
 
 const Requests = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -18,19 +19,33 @@ const Requests = () => {
     const [clubs, setClubs] = useState([]);
     const [selectedChild, setSelectedChild] = useState(null);
     const [selectedClub, setSelectedClub] = useState(null);
-    const [selectedStatus, setSelectedStatus] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState('PENDING');
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1,
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                let url = '/subscriptionRequests?';
+                let url = `/subscriptionRequests?page=${pagination.page}&limit=${pagination.limit}&`;
                 if (selectedChild) url += `childId=${selectedChild}&`;
                 if (selectedClub) url += `clubId=${selectedClub}&`;
                 if (selectedStatus) url += `status=${selectedStatus}&`;
                 const res = await api.get(url);
                 setRequests(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error('Ошибка получения данных');
                 console.error(error);
@@ -40,7 +55,7 @@ const Requests = () => {
         }
 
         loadData();
-    }, [selectedChild, selectedClub, selectedStatus, processing]);
+    }, [selectedChild, selectedClub, selectedStatus, processing, pagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -83,6 +98,10 @@ const Requests = () => {
         } finally {
             setProcessing(false);
         }
+    };
+
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
     };
 
     if (loading) return <Loader />;
@@ -136,9 +155,15 @@ const Requests = () => {
                     />
                 </div>
                 {requestItems.length > 0 ? (
-                    <div className={styles.requests}>
-                        <ul className={styles.list}>{requestItems}</ul>
-                    </div>
+                    <>
+                        <div className={styles.requests}>
+                            <ul className={styles.list}>{requestItems}</ul>
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
                 ) : (
                     <EmptyState
                         icon={FileText}
