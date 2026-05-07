@@ -8,7 +8,7 @@ const authenticate = async (req, res, next) => {
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            throw new AppError('Authorization is required', 401);
+            throw new AppError('Необходима авторизация', 401);
         }
 
         const token = authHeader.split(' ')[1];
@@ -29,16 +29,16 @@ const authenticate = async (req, res, next) => {
         });
 
         if (!user) {
-            throw new AppError('User is not fount or deactivated', 401);
+            throw new AppError('Пользователь не найден', 401);
         }
 
         req.user = user;
         next();
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
-            return next(new AppError('Token expired', 401));
+            return next(new AppError('Токен истёк', 401));
         }
-        return next(new AppError('Invalid token', 401));
+        return next(new AppError('Некорректный токен', 401));
     }
 };
 

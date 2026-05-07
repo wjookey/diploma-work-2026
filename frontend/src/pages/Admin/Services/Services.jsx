@@ -186,6 +186,7 @@ const Services = () => {
                 onSubmit={handleUpdate}
                 onDelete={handleDelete}
                 onStatusChange={handleUpdateStatus}
+                loading={submittingEdit}
             />
         </>
     );

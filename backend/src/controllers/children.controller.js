@@ -98,7 +98,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!child) throw new AppError('Child is not found', 404);
+        if (!child) throw new AppError('Ребёнок не найден', 404);
 
         if (req.user.role === 'PARENT' && child.familyId !== req.user.parent.familyId) {
             throw new AppError('Forbidden', 403);

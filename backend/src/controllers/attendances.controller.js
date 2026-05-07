@@ -76,7 +76,7 @@ exports.getByLesson = async (req, res, next) => {
                 },
             },
         });
-        if (!lesson) throw new AppError('Lesson is not found', 404);
+        if (!lesson) throw new AppError('Урок не найден', 404);
 
         res.json({ success: true, data: lesson });
     } catch (error) {
@@ -94,7 +94,7 @@ exports.markAttendance = async (req, res, next) => {
             where: { id: parseInt(lessonId) },
         });
 
-        if (lesson.date.toDateString() !== new Date().toDateString()) throw new AppError('Attendance can be updated on the day of the lesson', 403);
+        if (lesson.date.toDateString() !== new Date().toDateString()) throw new AppError('Посещаемость может быть отмечена только в день проведения занятия', 403);
 
         const results = [];
 

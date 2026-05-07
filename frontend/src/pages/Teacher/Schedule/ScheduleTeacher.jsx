@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { DAYS_OF_WEEK } from '../../../utils/helper';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
+import Loader from '../../../components/Loader/Loader';
 
 const Schedule = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -47,15 +48,13 @@ const Schedule = () => {
                     <li key={rec.id} className={styles.card}><ScheduleCard
                         record={rec}
                         isEditMode={false}
-                        onEdit={() => {
-                            setSelectedSchedule(rec);
-                            setEditSchedule(true);
-                        }}
                     /></li>
                 ))}
             </ul>
         </div>
     ));
+
+    if (loading) return <Loader />;
 
     return (
         <>

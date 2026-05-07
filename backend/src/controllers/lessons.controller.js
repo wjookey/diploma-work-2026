@@ -89,7 +89,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!lesson) throw new AppError('Lesson is not found', 404);
+        if (!lesson) throw new AppError('Урок не найден', 404);
 
         res.json({ success: true, data: lesson });
     } catch (error) {
@@ -105,7 +105,7 @@ exports.create = async (req, res, next) => {
             where: { id: parseInt(clubId) },
         });
 
-        if (!club) throw new AppError('Club is not found', 404);
+        if (!club) throw new AppError('Кружок не найден', 404);
 
         const lesson = await prisma.lesson.create({
             data: {
@@ -145,7 +145,7 @@ exports.createWeekLessons = async (req, res, next) => {
                     where: { id: parseInt(lesson.clubId) },
                 });
 
-                if (!club) throw new AppError('Club is not found', 404);
+                if (!club) throw new AppError('Кружок не найден', 404);
 
                 lessons.push({
                     clubId: parseInt(lesson.clubId),

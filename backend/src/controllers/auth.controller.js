@@ -38,12 +38,12 @@ exports.login = async (req, res, next) => {
         });
 
         if (!user) {
-            throw new AppError('Incorrect email or password', 401);
+            throw new AppError('Некорректная почта или пароль', 401);
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            throw new AppError('Incorrect email or password', 401);
+            throw new AppError('Некорректная почта или пароль', 401);
         }
 
         const accessToken = generateToken(user.id, "access");
@@ -75,7 +75,7 @@ exports.register = async (req, res, next) => {
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) {
-            throw new AppError('User already exists', 409);
+            throw new AppError('Пользователь с введёнными данными уже существует', 409);
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
@@ -156,7 +156,7 @@ exports.changePassword = async (req, res, next) => {
 
         const isValid = await bcrypt.compare(currentPassword, user.password);
         if (!isValid) {
-            throw new AppError('Incorrect current password', 400);
+            throw new AppError('Некорректный текущий пароль', 400);
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 12);
@@ -165,7 +165,7 @@ exports.changePassword = async (req, res, next) => {
             data: { password: hashedPassword },
         });
 
-        res.json({ success: true, message: 'Password is changed successfully' });
+        res.json({ success: true, message: 'Пароль успешно изменён' });
     } catch (error) {
         next(error);
     }
@@ -176,7 +176,7 @@ exports.refreshToken = async (req, res, next) => {
         const { refreshToken } = req.body;
 
         if (!refreshToken) {
-            throw new AppError('Refresh Token is required', 401);
+            throw new AppError('Необходим токен обновления', 401);
         }
 
         const decoded = jwt.verify(refreshToken, config.jwtRefreshSecret);
@@ -186,13 +186,13 @@ exports.refreshToken = async (req, res, next) => {
         });
 
         if (!user || !user.refreshToken) {
-            throw new AppError('Invalid refresh token', 401);
+            throw new AppError('Некорректный токен обновления', 401);
         }
 
         const hashedIncomingToken = hashToken(refreshToken);
 
         if (hashedIncomingToken !== user.refreshToken) {
-            throw new AppError('Invalid refresh token', 401);
+            throw new AppError('Некорректный токен обновления', 401);
         }
 
         const accessToken = generateToken(user.id, "access");

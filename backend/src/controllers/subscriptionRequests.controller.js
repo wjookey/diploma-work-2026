@@ -70,7 +70,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!subscriptionRequest) throw new AppError('Request is not found', 404);
+        if (!subscriptionRequest) throw new AppError('Заявка не найдена', 404);
 
         res.json({ success: true, data: subscriptionRequest });
     } catch (error) {
@@ -90,13 +90,13 @@ exports.create = async (req, res, next) => {
             where: { id: parseInt(childId), familyId: req.user.parent.familyId },
         });
 
-        if (!child) throw new AppError('Child is not found', 404);
+        if (!child) throw new AppError('Ребёнок не найден', 404);
 
         const clubService = await prisma.clubService.findUnique({
             where: { id: parseInt(clubServiceId) },
         });
 
-        if (!clubService) throw new AppError('Club service is not found', 404);
+        if (!clubService) throw new AppError('Услуга не найдена', 404);
 
         const subscriptionRequest = await prisma.subscriptionRequest.create({
             data: {
@@ -137,13 +137,13 @@ exports.createCombo = async (req, res, next) => {
                     where: { id: parseInt(request.childId), familyId: req.user.parent.familyId },
                 });
 
-                if (!child) throw new AppError('Child is not found', 404);
+                if (!child) throw new AppError('Ребёнок не найден', 404);
 
                 const clubService = await tx.clubService.findUnique({
                     where: { id: parseInt(request.clubServiceId) },
                 });
 
-                if (!clubService) throw new AppError('Club service is not found', 404);
+                if (!clubService) throw new AppError('Услуга не найдена', 404);
 
                 const createdRequest = await tx.subscriptionRequest.create({
                     data: {
@@ -178,7 +178,7 @@ exports.update = async (req, res, next) => {
             where: { id: parseInt(childId), familyId: req.user.parent.familyId },
         });
 
-        if (!child) throw new AppError('Child is not found', 404);
+        if (!child) throw new AppError('Ребёнок не найден', 404);
 
         const subscriptionRequest = await prisma.subscriptionRequest.update({
             where: { id: parseInt(req.params.id) },
@@ -214,9 +214,9 @@ exports.approve = async (req, res, next) => {
             },
         });
 
-        if (!request) throw new AppError('Request is not found', 404);
+        if (!request) throw new AppError('Заявка не найдена', 404);
 
-        if (request.status !== 'PENDING') throw new AppError('Request is already processed', 400);
+        if (request.status !== 'PENDING') throw new AppError('Заявка уже обработана', 400);
 
         const activeSubscription = await prisma.subscription.findFirst({
             where: {
@@ -260,9 +260,9 @@ exports.reject = async (req, res, next) => {
             where: { id: requestId },
         });
 
-        if (!request) throw new AppError('Request is not found', 404);
+        if (!request) throw new AppError('Заявка не найдена', 404);
 
-        if (request.status !== 'PENDING') throw new AppError('Request is already processed', 400);
+        if (request.status !== 'PENDING') throw new AppError('Заявка уже обработана', 400);
 
         await prisma.subscriptionRequest.update({
             where: { id: requestId },
@@ -285,9 +285,9 @@ exports.remove = async (req, res, next) => {
             where: { id: parseInt(req.params.id) }
         });
 
-        if (!request) throw new AppError('Request is not found', 404);
+        if (!request) throw new AppError('Заявка не найдена', 404);
 
-        if (request.status !== 'PENDING') throw new AppError('You cannot remove processed request', 400);
+        if (request.status !== 'PENDING') throw new AppError('Вы не можете удалить уже обработанную заявку', 400);
 
         await prisma.subscriptionRequest.delete({
             where: { id: parseInt(req.params.id) },

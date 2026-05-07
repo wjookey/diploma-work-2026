@@ -116,7 +116,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!user) throw new AppError('User is not found', 404);
+        if (!user) throw new AppError('Пользователь не найден', 404);
 
         res.json({ success: true, data: user });
     } catch (error) {

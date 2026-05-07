@@ -93,7 +93,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!subscription) throw new AppError('Subscription is not found', 404);
+        if (!subscription) throw new AppError('Абонемент не найден', 404);
 
         if (req.user.role === 'PARENT' && subscription.child.familyId !== req.user.parent.familyId) {
             throw new AppError('Forbidden', 403);
@@ -114,7 +114,7 @@ exports.create = async (req, res, next) => {
         });
 
         if (!clubService) {
-            throw new AppError('Club service is not found', 404);
+            throw new AppError('Услуга не найдена', 404);
         }
 
         const activeSubscriptionCount = await prisma.subscription.count({
@@ -162,7 +162,7 @@ exports.createCombo = async (req, res, next) => {
                     where: { id: parseInt(comboSubscription.clubServiceId) }
                 });
 
-                if (!clubService) throw new AppError('Club service is not found', 404);
+                if (!clubService) throw new AppError('Услуга не найдена', 404);
 
                 const activeSubscriptionCount = await tx.subscription.count({
                     where: { clubId: clubService.clubId, childId: parseInt(comboSubscription.childId), status: 'ACTIVE' },

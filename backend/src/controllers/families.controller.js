@@ -84,7 +84,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!family) throw new AppError('Family is not found', 404);
+        if (!family) throw new AppError('Семья не найдена', 404);
 
         if (req.user.role === 'PARENT' && family.id !== req.user.parent.familyId) {
             throw new AppError('Forbidden', 403);
@@ -197,7 +197,7 @@ exports.remove = async (req, res, next) => {
                 },
             });
 
-            if (!family) throw new AppError('Family is not found', 404);
+            if (!family) throw new AppError('Семья не найдена', 404);
 
             const userIds = family.parents.map((p) => p.userId);
 

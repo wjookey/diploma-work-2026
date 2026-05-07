@@ -77,7 +77,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!payment) throw new AppError('Payment is not found', 404);
+        if (!payment) throw new AppError('Оплата не найдена', 404);
 
         res.json({ success: true, data: payment });
     } catch (error) {
@@ -93,7 +93,7 @@ exports.create = async (req, res, next) => {
             where: { subscriptionId: parseInt(subscriptionId) },
         });
 
-        if (existingPayment) throw new AppError('Payment already exists for this subscription', 400);
+        if (existingPayment) throw new AppError('Выбранный абонемент уже оплачен', 400);
 
         const subscription = await prisma.subscription.findUnique({
             where: { id: parseInt(subscriptionId) },
@@ -102,7 +102,7 @@ exports.create = async (req, res, next) => {
             },
         });
 
-        if (!subscription) throw new AppError('Subscription is not found', 404);
+        if (!subscription) throw new AppError('Абонемент не найден', 404);
 
         const payment = await prisma.payment.create({
             data: {

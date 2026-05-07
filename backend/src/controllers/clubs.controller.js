@@ -79,7 +79,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!club) throw new AppError('Club is not found', 404);
+        if (!club) throw new AppError('Кружок не найден', 404);
 
         res.json({ success: true, data: club });
     } catch (error) {
@@ -169,7 +169,7 @@ exports.remove = async (req, res, next) => {
             },
         });
 
-        if (currentSubscriptions !== 0) throw new AppError('There are current subscriptions connected to this club', 409);
+        if (currentSubscriptions !== 0) throw new AppError('Вы не можете совершить это действие, так как к данному кружку привязаны абонементы', 409);
 
         const currentRequests = await prisma.subscriptionRequest.count({
             where: {
@@ -180,7 +180,7 @@ exports.remove = async (req, res, next) => {
             },
         });
 
-        if (currentRequests !== 0) throw new AppError('There are current requests connected to this club category', 409);
+        if (currentRequests !== 0) throw new AppError('Вы не можете совершить это действие, так как к данному кружку привязаны заявки', 409);
 
         await prisma.club.delete({
             where: { id: parseInt(req.params.id) },

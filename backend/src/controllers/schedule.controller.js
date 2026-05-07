@@ -59,7 +59,7 @@ exports.create = async (req, res, next) => {
             },
         });
         
-        if (!club) throw new AppError('Club is not found', 404);
+        if (!club) throw new AppError('Кружок не найден', 404);
 
         const schedule = await prisma.schedule.create({
             data: {
@@ -128,7 +128,7 @@ exports.generateLessons = async (req, res, next) => {
         const end = new Date(endDate);
 
         if (start > end) {
-            throw new AppError('startDate must be before or equal to endDate', 400);
+            throw new AppError('Дата начала должна быть раньше даты конца', 400);
         }
 
         const schedule = await prisma.schedule.findMany({
@@ -137,7 +137,7 @@ exports.generateLessons = async (req, res, next) => {
             },
         });
 
-        if (schedule.length === 0) throw new AppError('Schedule is empty', 404);
+        if (schedule.length === 0) throw new AppError('Расписание отсутствует', 404);
 
         const lessons = [];
         for (const record of schedule) {
@@ -162,7 +162,7 @@ exports.generateLessons = async (req, res, next) => {
             }
         }
 
-        if (lessons.length === 0) throw new AppError('Nothing to generate', 400);
+        if (lessons.length === 0) throw new AppError('Нет уроков для генерации', 400);
 
         const createdLessons = await prisma.lesson.createMany({
             data: lessons,

@@ -75,7 +75,7 @@ exports.getById = async (req, res, next) => {
             },
         });
 
-        if (!clubService) throw new AppError('Club service is not found', 404);
+        if (!clubService) throw new AppError('Услуга не найдена', 404);
 
         res.json({ success: true, data: clubService });
     } catch (error) {
@@ -92,7 +92,7 @@ exports.create = async (req, res, next) => {
         });
 
         if (!club) {
-            throw new AppError('Club is not found', 404);
+            throw new AppError('Кружок не найден', 404);
         }
 
         const clubService = await prisma.clubService.create({
@@ -163,7 +163,7 @@ exports.remove = async (req, res, next) => {
             },
         });
 
-        if (currentSubscriptions !== 0) throw new AppError('There are current subscriptions connected to this club service', 409);
+        if (currentSubscriptions !== 0) throw new AppError('Вы не можете совершить это действие, так как к данной услуге привязаны абонементы', 409);
 
         const currentRequests = await prisma.subscriptionRequest.count({
             where: {
@@ -172,7 +172,7 @@ exports.remove = async (req, res, next) => {
             },
         });
 
-        if (currentRequests !== 0) throw new AppError('There are current requests connected to this club category', 409);
+        if (currentRequests !== 0) throw new AppError('Вы не можете совершить это действие, так как к данной услуге привязаны заявки', 409);
 
         await prisma.clubService.delete({
             where: { id: parseInt(req.params.id) },

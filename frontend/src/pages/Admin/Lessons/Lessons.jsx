@@ -291,6 +291,7 @@ const Lessons = () => {
                 }}
                 onStatusChange={handlePresenceChange}
                 onMarkAttendance={handleMarkAttendance}
+                loading={submittingEdit}
             />
         </>
     );

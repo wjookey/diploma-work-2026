@@ -5,7 +5,7 @@ import AttendanceRecord from '../AttendanceRecord/AttendanceRecord';
 import Modal from '../Modal/Modal';
 import { formatDate } from '../../utils/helper';
 
-const AttendanceModal = ({ lesson, attendance, onStatusChange, onMarkAttendance, isOpen, onClose, loading }) => {
+const AttendanceModal = ({ lesson, attendance, onStatusChange, onMarkAttendance, isOpen, onClose, loading = false }) => {
     const attendanceItems = attendance?.map((record, index) => (
         <AttendanceRecord key={record.child.id} name={`${record.child.lastName} ${record.child.firstName}`} isPresent={record.isPresent} onToggle={() => onStatusChange(index)} />
     ));

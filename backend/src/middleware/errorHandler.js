@@ -11,16 +11,16 @@ class AppError extends Error {
 
 const errorHandler = (err, req, res, _next) => {
     let statusCode = err.statusCode || 500;
-    let message = err.message || "Internal server error";
+    let message = err.message || "Внутренняя ошибка сервера";
 
     // Prisma errors handler
     if (err.code === 'P2002') {
         statusCode = 409;
-        message = 'The record with given data already exists';
+        message = 'Запись с введёнными данными уже существует';
     }
     if (err.code === 'P2025') {
         statusCode = 404;
-        message = 'The record is not foung';
+        message = 'Запись не найдена';
     }
 
     // JWT errors handler
