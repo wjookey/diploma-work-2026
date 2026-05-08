@@ -11,6 +11,7 @@ import { SUBSCRIPTION_STATUS } from '../../../utils/helper';
 import api from '../../../api/axios';
 import toast from 'react-hot-toast';
 import Loader from '../../../components/Loader/Loader';
+import Pagination from '../../../components/Pagination/Pagination';
 
 const SubscriptionsParent = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,15 +24,29 @@ const SubscriptionsParent = () => {
     const [selectedService, setSelectedService] = useState(null);
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                let url = '/subscriptions?';
+                let url = `/subscriptions?page=${pagination.page}&limit=${pagination.limit}&`;
                 if (selectedChild) url += `childId=${selectedChild}&`;
                 if (selectedStatus) url += `status=${selectedStatus}&`;
                 const res = await api.get(url);
                 setSubscriptions(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка получения данных");
                 console.error(error);
@@ -41,7 +56,7 @@ const SubscriptionsParent = () => {
         }
 
         loadData();
-    }, [selectedChild, selectedStatus]);
+    }, [selectedChild, selectedStatus, pagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -55,6 +70,10 @@ const SubscriptionsParent = () => {
 
         loadData();
     }, []);
+
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
 
     if (loading) return <Loader />;
 
@@ -107,9 +126,15 @@ const SubscriptionsParent = () => {
                     /></div>
                 </div>
                 {subItems.length > 0 ? (
-                    <div className={styles.subscriptions}>
-                        <ul className={styles.list}>{subItems}</ul>
-                    </div>
+                    <>
+                        <div className={styles.subscriptions}>
+                            <ul className={styles.list}>{subItems}</ul>
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
                 ) : (
                     <EmptyState
                         icon={BookOpen}

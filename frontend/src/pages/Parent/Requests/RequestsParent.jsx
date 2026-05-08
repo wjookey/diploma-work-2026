@@ -12,6 +12,7 @@ import CreateComboReqModal from '../../../components/CreateComboReqModal/CreateC
 import api from "../../../api/axios";
 import toast from "react-hot-toast";
 import Loader from "../../../components/Loader/Loader";
+import Pagination from "../../../components/Pagination/Pagination";
 
 const RequestsParent = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -19,22 +20,36 @@ const RequestsParent = () => {
     const [children, setChildren] = useState([]);
     const [clubs, setClubs] = useState([]);
     const [selectedChild, setSelectedChild] = useState(null);
-    const [selectedStatus, setSelectedStatus] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState('PENDING');
     const [createRequest, setCreateRequest] = useState(false);
     const [createCombo, setCreateCombo] = useState(false);
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [creatingItem, setCreatingItem] = useState(false);
     const [processing, setProcessing] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                let url = '/subscriptionRequests?';
+                let url = `/subscriptionRequests?page=${pagination.page}&limit=${pagination.limit}&`;
                 if (selectedChild) url += `childId=${selectedChild}&`;
                 if (selectedStatus) url += `status=${selectedStatus}&`;
                 const res = await api.get(url);
                 setRequests(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка получения данных");
                 console.error(error);
@@ -44,7 +59,7 @@ const RequestsParent = () => {
         }
 
         loadData();
-    }, [selectedChild, selectedStatus, processing, createRequest, createCombo]);
+    }, [selectedChild, selectedStatus, processing, createRequest, createCombo, pagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -117,6 +132,10 @@ const RequestsParent = () => {
         }
     };
 
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
     if (loading) return <Loader />;
 
     const requestItems = requests.map((request) => (
@@ -162,9 +181,16 @@ const RequestsParent = () => {
                     />
                 </div>
                 {requestItems.length > 0 ? (
-                    <div className={styles.requests}>
-                        <ul className={styles.list}>{requestItems}</ul>
-                    </div>
+                    <>
+                        <div className={styles.requests}>
+                            <ul className={styles.list}>{requestItems}</ul>
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
+                    
                 ) : (
                     <EmptyState
                         icon={FileText}

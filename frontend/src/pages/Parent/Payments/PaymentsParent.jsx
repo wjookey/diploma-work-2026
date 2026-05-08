@@ -12,6 +12,7 @@ import api from '../../../api/axios';
 import toast from 'react-hot-toast';
 import Loader from '../../../components/Loader/Loader';
 import { formatDateToISO } from '../../../utils/helper';
+import Pagination from '../../../components/Pagination/Pagination';
 
 const PaymentsParent = () => {
     const [startDate, setStartDate] = useState('');
@@ -19,16 +20,29 @@ const PaymentsParent = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [createRequest, setCreateRequest] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                let url = '/payments?';
+                let url = `/payments?page=${pagination.page}&limit=${pagination.limit}&`;
                 if (startDate) url += `dateFrom=${formatDateToISO(startDate)}&`;
                 if (endDate) url += `dateTo=${formatDateToISO(endDate)}&`;
                 const res = await api.get(url);
                 setPayments(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка получения данных");
                 console.error(error);
@@ -38,7 +52,11 @@ const PaymentsParent = () => {
         };
 
         loadData();
-    }, [startDate, endDate]);
+    }, [startDate, endDate, pagination.page]);
+
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
 
     if (loading) return <Loader />;
     
@@ -65,9 +83,15 @@ const PaymentsParent = () => {
                     <Input value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date"/>
                 </div>
                 {paymentItems.length > 0 ? (
-                    <div className={styles.payments}>
-                        <ul className={styles.list}>{paymentItems}</ul>
-                    </div>
+                    <>
+                        <div className={styles.payments}>
+                            <ul className={styles.list}>{paymentItems}</ul>
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
                 ) : (
                     <EmptyState
                         icon={CreditCard}

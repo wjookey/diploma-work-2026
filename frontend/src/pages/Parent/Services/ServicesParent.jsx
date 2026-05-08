@@ -10,6 +10,7 @@ import CreateRequestModal from '../../../components/CreateRequestModal/CreateReq
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import Loader from '../../../components/Loader/Loader';
+import Pagination from '../../../components/Pagination/Pagination';
 
 const ServicesParent = () => {
     const [search, setSearch] = useState('');
@@ -20,13 +21,29 @@ const ServicesParent = () => {
     const [clubs, setClubs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [creatingItem, setCreatingItem] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const url = search ? `/clubServices?search=${encodeURIComponent(search)}&isActive=true` : '/clubServices?isActive=true';
+                const url = search
+                    ? `/clubServices?search=${encodeURIComponent(search)}&isActive=true&page=${pagination.page}&limit=${pagination.limit}`
+                    : `/clubServices?isActive=true&page=${pagination.page}&limit=${pagination.limit}`;
                 const res = await api.get(url);
                 setServices(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка загрузки данных");
                 console.error(error);
@@ -36,7 +53,7 @@ const ServicesParent = () => {
         }
 
         loadData();
-    }, [search]);
+    }, [search, pagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -77,6 +94,10 @@ const ServicesParent = () => {
         }
     };
 
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
     const serviceItems = services.map((service) => (
         <li key={service.id}>
             <ClubServiceCard
@@ -102,9 +123,15 @@ const ServicesParent = () => {
                     <Input icon={Search} placeholder={'Поиск по названию'} value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
                 {serviceItems.length > 0 ? (
-                    <div className={styles.services}>
-                        <ul className={styles.list}>{serviceItems}</ul>
-                    </div>
+                    <>
+                        <div className={styles.services}>
+                            <ul className={styles.list}>{serviceItems}</ul>
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
                 ) : (
                     <EmptyState
                         icon={Clipboard}

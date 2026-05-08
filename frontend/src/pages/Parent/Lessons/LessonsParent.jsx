@@ -11,22 +11,37 @@ import Input from '../../../components/Input/Input';
 import toast from "react-hot-toast";
 import api from "../../../api/axios";
 import Loader from "../../../components/Loader/Loader";
+import Pagination from '../../../components/Pagination/Pagination';
 
 const LessonsParent = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [lessons, setLessons] = useState([]);
-    const [startDate, setStartDate] = useState('');
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState('');
     const [loading, setLoading] = useState(true);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                let url = '/lessons?';
+                let url = `/lessons?page=${pagination.page}&limit=${pagination.limit}&`;
                 if (startDate) url += `dateFrom=${formatDateToISO(startDate)}&`;
                 if (endDate) url += `dateTo=${formatDateToISO(endDate)}&`;
                 const res = await api.get(url);
                 setLessons(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error("Ошибка получения данных");
                 console.error(error);
@@ -36,7 +51,11 @@ const LessonsParent = () => {
         }
 
         loadData();
-    }, [startDate, endDate]);
+    }, [startDate, endDate, pagination.page]);
+
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
+    };
 
     if (loading) return <Loader />;
 
@@ -93,9 +112,15 @@ const LessonsParent = () => {
                     </div>
                 </div>
                 {lessonItems.length > 0 ? (
-                    <div className={styles.lessonsBlock}>
-                        {lessonItems}
-                    </div>
+                    <>
+                        <div className={styles.lessonsBlock}>
+                            {lessonItems}
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
                 ) : (
                     <EmptyState
                         icon={AlarmClock}
