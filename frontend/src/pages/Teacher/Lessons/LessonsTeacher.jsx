@@ -12,26 +12,41 @@ import AttendanceModal from '../../../components/AttendanceModal/AttendanceModal
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import Loader from '../../../components/Loader/Loader';
+import Pagination from '../../../components/Pagination/Pagination';
 
 const LessonsTeacher = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [lessons, setLessons] = useState([]);
     const [selectedLesson, setSelectedLesson] = useState(null);
-    const [startDate, setStartDate] = useState('');
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState('');
     const [selectedAttendance, setSelectedAttendance] = useState([]);
     const [attendanceModal, setAttendanceModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                let url = '/lessons?';
+                let url = `/lessons?page=${pagination.page}&limit=${pagination.limit}&`;
                 if (startDate) url += `dateFrom=${startDate}&`;
                 if (endDate) url += `dateTo=${endDate}&`;
                 const res = await api.get(url);
                 setLessons(res.data.data);
+                if (res.data.pagination) {
+                    setPagination({
+                        page: res.data.pagination.page,
+                        limit: res.data.pagination.limit,
+                        total: res.data.pagination.total,
+                        totalPages: res.data.pagination.totalPages,
+                    });
+                }
             } catch (error) {
                 toast.error('Ошибка получения данных');
                 console.error(error);
@@ -41,7 +56,7 @@ const LessonsTeacher = () => {
         }
 
         loadData();
-    }, [startDate, endDate, attendanceModal]);
+    }, [startDate, endDate, attendanceModal, pagination.page]);
 
     const handleMarkAttendance = async () => {
         setSubmittingEdit(true);
@@ -82,6 +97,10 @@ const LessonsTeacher = () => {
         const newAtt = [...selectedAttendance];
         newAtt[index].isPresent = !selectedAttendance[index].isPresent;
         setSelectedAttendance(newAtt);
+    };
+
+    const handlePageChange = (newPage) => {
+        setPagination(prev => ({ ...prev, page: newPage }));
     };
 
     if (loading) return <Loader />;
@@ -137,9 +156,16 @@ const LessonsTeacher = () => {
                     </div>
                 </div>
                 {lessonItems.length > 0 ? (
-                    <div className={styles.lessonsBlock}>
-                        {lessonItems}
-                    </div>
+                    <>
+                        <div className={styles.lessonsBlock}>
+                            {lessonItems}
+                        </div>
+                        <Pagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
+                    
                 ) : (
                     <EmptyState
                         icon={AlarmClock}
