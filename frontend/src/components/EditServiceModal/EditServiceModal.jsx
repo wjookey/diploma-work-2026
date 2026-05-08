@@ -7,6 +7,7 @@ import { getSubscriptionType } from "../../utils/helper";
 import toast from 'react-hot-toast';
 import DangerModal from '../DangerModal/DangerModal';
 import { useState, useEffect } from 'react';
+import Radiobutton from '../Radiobutton/Radiobutton';
 
 const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete, onStatusChange, loading = false }) => {
     const [formData, setFormData] = useState({
@@ -16,7 +17,8 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete,
         price: null,
         subscriptionLessons: null,
         freezedLesson: null,
-        isActive: false
+        isActive: false,
+        isCombo: false,
     });
     const [isDangerModalOpen, setIsDangerModalOpen] = useState(false);
 
@@ -29,13 +31,14 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete,
                 price: service.price,
                 subscriptionLessons: service.subscriptionLessons,
                 freezedLesson: service.freezedLesson,
-                isActive: service.isActive
+                isActive: service.isActive,
+                isCombo: service.isCombo,
             });
         }
     }, [isOpen, service]);
 
     const handleChange = (field, value) => {
-        if (field === 'isActive') {
+        if (field === 'isActive' || field === 'isCombo') {
             value = value === 'true' || value === true;
         }
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -101,6 +104,12 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete,
                             }))}
                             required
                         />
+                        <Radiobutton
+                            label={"Комбо абонемент"}
+                            value={formData.isCombo}
+                            name={"isCombo"}
+                            onChange={(e) => handleChange('isCombo', e.target.value)}
+                        />
                         <Input
                             label={"Цена"}
                             id={"price"}
@@ -130,17 +139,11 @@ const EditServiceModal = ({ service, clubs, isOpen, onClose, onSubmit, onDelete,
                                 type="number"
                             />
                         </div>
-                        <Select
-                            label={"Статус"}
-                            id={"status"}
-                            placeholder={"Выберите"}
+                        <Radiobutton
+                            label={"Активно"}
                             value={formData.isActive}
+                            name={"isActive"}
                             onChange={(e) => handleChange('isActive', e.target.value)}
-                            options={[
-                                { value: false, label: "Не активная" },
-                                { value: true, label: "Активная" },
-                            ]}
-                            required
                         />
                     </div>    
                     <div className={styles.buttons}>

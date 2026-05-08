@@ -85,7 +85,7 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const { name, price, subscriptionLessons, freezedLesson, clubId, type } = req.body;
+        const { name, price, subscriptionLessons, freezedLesson, clubId, type, isCombo } = req.body;
 
         const club = await prisma.club.findUnique({
             where: { id: parseInt(clubId) },
@@ -103,6 +103,7 @@ exports.create = async (req, res, next) => {
                 freezedLesson: freezedLesson ? parseInt(freezedLesson) : 0,
                 clubId: parseInt(clubId),
                 type,
+                isCombo,
             },
             include: {
                 club: { select: { id: true, name: true } },
@@ -117,7 +118,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { name, price, subscriptionLessons, freezedLesson, type } = req.body;
+        const { name, price, subscriptionLessons, freezedLesson, type, isCombo } = req.body;
 
         const clubService = await prisma.clubService.update({
             where: { id: parseInt(req.params.id) },
@@ -127,6 +128,7 @@ exports.update = async (req, res, next) => {
                 ...(subscriptionLessons && { subscriptionLessons: parseInt(subscriptionLessons) }),
                 ...(freezedLesson !== undefined && { freezedLesson: parseInt(freezedLesson) }),
                 ...(type && { type }),
+                ...(isCombo !== undefined && { isCombo }),
             },
             include: {
                 club: { select: { id: true, name: true } },

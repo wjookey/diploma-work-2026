@@ -69,7 +69,7 @@ const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd
                         placeholder={'Выберите'}
                         value={formData[0].clubServiceId || ''}
                         onChange={(e) => handleChange(0, 'clubServiceId', e.target.value)}
-                        options={services.filter((service) => service.clubId === parseInt(formData[0].clubId) && service.isActive === true).map((service) => ({
+                        options={services.filter((service) => service.clubId === parseInt(formData[0].clubId) && service.isActive === true && service.isCombo === true).map((service) => ({
                             value: service.id,
                             label: service.name
                         }))}
@@ -108,7 +108,7 @@ const CreateComboReqModal = ({ children, clubs, services, isOpen, onClose, onAdd
                         placeholder={'Выберите'}
                         value={formData[1].clubServiceId || ''}
                         onChange={(e) => handleChange(1, 'clubServiceId', e.target.value)}
-                        options={services.filter((service) => service.clubId === parseInt(formData[1].clubId) && service.isActive === true).map((service) => ({
+                        options={services.filter((service) => service.clubId === parseInt(formData[1].clubId) && service.isActive === true && service.isCombo === true).map((service) => ({
                             value: service.id,
                             label: service.name
                         }))}

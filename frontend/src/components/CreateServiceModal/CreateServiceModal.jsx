@@ -6,12 +6,14 @@ import Select from '../Select/Select';
 import { getSubscriptionType } from '../../utils/helper';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import Radiobutton from '../Radiobutton/Radiobutton';
 
 const CreateServiceModal = ({ clubs, isOpen, onClose, onAdd, loading = false }) => {
     const [formData, setFormData] = useState({
         name: '',
         clubId: null,
         type: '',
+        isCombo: false,
         price: null,
         subscriptionLessons: null,
         freezedLesson: null,
@@ -23,6 +25,7 @@ const CreateServiceModal = ({ clubs, isOpen, onClose, onAdd, loading = false }) 
                 name: '',
                 clubId: null,
                 type: '',
+                isCombo: false,
                 price: null,
                 subscriptionLessons: null,
                 freezedLesson: null,
@@ -31,6 +34,9 @@ const CreateServiceModal = ({ clubs, isOpen, onClose, onAdd, loading = false }) 
     }, [isOpen]);
 
     const handleChange = (field, value) => {
+        if (field === 'isCombo') {
+            value = value === true || value === 'true';
+        }
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -85,6 +91,12 @@ const CreateServiceModal = ({ clubs, isOpen, onClose, onAdd, loading = false }) 
                             label: type.label
                         }))}
                         required
+                    />
+                    <Radiobutton
+                        label={"Комбо абонемент"}
+                        value={formData.isCombo}
+                        name={"isCombo"}
+                        onChange={(e) => handleChange('isCombo', e.target.value)}
                     />
                     <Input
                         label={"Цена"}

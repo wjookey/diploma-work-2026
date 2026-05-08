@@ -121,8 +121,13 @@ exports.create = async (req, res, next) => {
             where: { childId: parseInt(childId), clubId: clubService.clubId, status: 'ACTIVE' },
         });
 
-        let date = new Date();
-        date = new Date(new Date(date.setDate(date.getDate() + 1)).setHours(0, 0, 0, 0));
+        let date = new Date()
+        date = new Date(Date.UTC(
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate() + 1,
+            0, 0, 0, 0
+        ));
 
         const subscription = await prisma.subscription.create({
             data: {
@@ -168,8 +173,13 @@ exports.createCombo = async (req, res, next) => {
                     where: { clubId: clubService.clubId, childId: parseInt(comboSubscription.childId), status: 'ACTIVE' },
                 });
 
-                let date = new Date;
-                date = new Date(new Date(date.setDate(date.getDate() + 1)).setHours(0, 0, 0, 0));
+                let date = new Date()
+                date = new Date(Date.UTC(
+                    date.getUTCFullYear(),
+                    date.getUTCMonth(),
+                    date.getUTCDate() + 1,
+                    0, 0, 0, 0
+                ));
 
                 const createdSubscription = await tx.subscription.create({
                     data: {
@@ -222,6 +232,39 @@ exports.update = async (req, res, next) => {
             },
         });
 
+        if (isExpired) {
+            const pendingSubscription = await prisma.subscription.findFirst({
+                where: {
+                    clubId: subscription.clubId,
+                    childId: subscription.childId,
+                    status: 'PENDING',
+                },
+            });
+
+            const activeSubscriptionCount = await prisma.subscription.count({
+                where: {
+                    clubId: subscription.clubId,
+                    childId: subscription.childId,
+                    status: 'ACTIVE',
+                },
+            });
+
+            let date = new Date()
+            date = new Date(Date.UTC(
+                date.getUTCFullYear(),
+                date.getUTCMonth(),
+                date.getUTCDate() + 1,
+                0, 0, 0, 0
+            ));
+
+            if (pendingSubscription && activeSubscriptionCount === 0) {
+                await prisma.subscription.update({
+                    where: { id: pendingSubscription.id },
+                    data: { status: 'ACTIVE', startDate: date },
+                });
+            }
+        }
+
         res.json({ success: true, data: subscription });
     } catch (error) {
         next(error);
@@ -257,8 +300,13 @@ exports.cancel = async (req, res, next) => {
             },
         });
 
-        let date = new Date();
-        date = new Date(new Date(date.setDate(date.getDate() + 1)).setHours(0, 0, 0, 0));
+        let date = new Date()
+        date = new Date(Date.UTC(
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate() + 1,
+            0, 0, 0, 0
+        ));
 
         if (pendingSubscription && activeSubscriptionCount === 0) {
             await prisma.subscription.update({
@@ -275,9 +323,44 @@ exports.cancel = async (req, res, next) => {
 
 exports.remove = async (req, res, next) => {
     try {
+        const sub = await prisma.subscription.findUnique({
+            where: { id: parseInt(req.params.id) },
+        });
+
         await prisma.subscription.delete({
             where: { id: parseInt(req.params.id) },
         });
+
+        const pendingSubscription = await prisma.subscription.findFirst({
+            where: {
+                clubId: sub.clubId,
+                childId: sub.childId,
+                status: 'PENDING',
+            },
+        });
+
+        const activeSubscriptionCount = await prisma.subscription.count({
+            where: {
+                clubId: sub.clubId,
+                childId: sub.childId,
+                status: 'ACTIVE',
+            },
+        });
+
+        let date = new Date()
+        date = new Date(Date.UTC(
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate() + 1,
+            0, 0, 0, 0
+        ));
+
+        if (pendingSubscription && activeSubscriptionCount === 0) {
+            await prisma.subscription.update({
+                where: { id: pendingSubscription.id },
+                data: { status: 'ACTIVE', startDate: date },
+            });
+        }
 
         res.json({ success: true, message: 'Subscription is deleted' });
     } catch (error) {

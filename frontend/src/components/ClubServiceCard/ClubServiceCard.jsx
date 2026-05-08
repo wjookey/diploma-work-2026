@@ -33,6 +33,7 @@ const ClubServiceCard = ({ clubService, isEditMode = true, onEdit, isInModal = f
                                 <p>Заморозок: {clubService?.freezedLesson}</p>
                             </div>
                         </div>
+                        <span className={styles.isCombo}>Комбо абонемент: {clubService.isCombo ? "да" : "нет"}</span>
                         <div className={styles.price}>
                             <CreditCard className={styles.icon} />
                             <p>{clubService?.price} руб</p>

@@ -7,6 +7,7 @@ import Textarea from '../Textarea/Textarea';
 import toast from 'react-hot-toast';
 import DangerModal from '../DangerModal/DangerModal';
 import { useState, useEffect } from 'react';
+import Radiobutton from '../Radiobutton/Radiobutton';
  
 const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusChange, onSubmit, onDelete, loading = false }) => {
     const [formData, setFormData] = useState({
@@ -103,16 +104,11 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusCh
                             onChange={(e) => handleChange('maxStudents', e.target.value)}
                             type="number"
                         />
-                        <Select
-                            label={"Статус"}
-                            id={"status"}
-                            placeholder={"Выберите"}
+                        <Radiobutton
+                            label={"Активно"}
                             value={formData.isActive}
+                            name={"isActive"}
                             onChange={(e) => handleChange('isActive', e.target.value)}
-                            options={[
-                                { value: false, label: "Не активный" },
-                                { value: true, label: "Активный" },
-                            ]}
                         />
                     </div>    
                     <div className={styles.buttons}>

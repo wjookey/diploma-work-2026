@@ -7,7 +7,7 @@ import Card from '../Card/Card';
 import { getSubscriptionType, getSubscriptionStatus, getSubPaymentStatus } from '../../utils/helper';
 
 const SubscriptionCard = ({ subscription, isEditMode = true, onEdit, onWatchDetailed }) => {
-    const typeColor = subscription.status === 'ACTIVE' ? 'green' : subscription.status === 'PENDIND' ? 'purple' : 'red';
+    const typeColor = subscription.status === 'ACTIVE' ? 'green' : subscription.status === 'PENDING' ? 'purple' : 'red';
     const paymentColor = subscription.payment === null ? 'red' : 'green';
     return (
         <Card>

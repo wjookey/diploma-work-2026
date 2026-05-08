@@ -150,6 +150,7 @@ model ClubService {
   subscriptionLessons Int @map("subscription_lessons")
   freezedLesson Int @default(0) @map("freezed_lessons")
   clubId Int @map("club_id")
+  isCombo Boolean @default(false) @map("is_combo")
   type ServiceType
   isActive Boolean @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
