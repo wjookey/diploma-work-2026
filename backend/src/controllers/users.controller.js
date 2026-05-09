@@ -192,6 +192,16 @@ exports.update = async (req, res, next) => {
             if (req.user.parent.familyId !== parent.parent.familyId) throw new AppError('Forbidden', 403);
         }
 
+        if (req.user.role === 'TEACHER') {
+            const teacher = await prisma.user.findUnique({
+                where: { id: parseInt(req.params.id) },
+            });
+
+            if (req.user.id !== teacher.id) {
+                throw new AppError('Forbidden', 403);
+            }
+        }
+
         const user = await prisma.user.update({
             where: { id: userId },
             data: {

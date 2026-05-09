@@ -10,12 +10,17 @@ import RecentRequests from '../../../components/RecentRequests/RecentRequests';
 import api from '../../../api/axios';
 import toast from 'react-hot-toast';
 import Loader from '../../../components/Loader/Loader';
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const Dashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [stats, setStats] = useState(null);
     const [recent, setRecent] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -36,6 +41,20 @@ const Dashboard = () => {
 
         loadData();
     }, []);
+
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
 
     if (loading) return <Loader />;
 
@@ -67,7 +86,21 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
+                loading={submittingEdit}
+            />
         </>
     );
 }

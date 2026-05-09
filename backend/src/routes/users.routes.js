@@ -27,7 +27,6 @@ router.post(
 );
 router.put(
     '/:id',
-    authorize('ADMIN', 'PARENT'),
     [
         body('phone').optional().isMobilePhone('ru-RU').withMessage('Enter correct phone number'),
         body('email').optional().isEmail().withMessage('Enter correct email'),

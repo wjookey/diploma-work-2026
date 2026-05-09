@@ -12,6 +12,8 @@ import api from '../../../api/axios';
 import toast from 'react-hot-toast';
 import Loader from '../../../components/Loader/Loader';
 import Pagination from '../../../components/Pagination/Pagination';
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const SubscriptionsParent = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -30,6 +32,9 @@ const SubscriptionsParent = () => {
         total: 0,
         totalPages: 1
     });
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -73,6 +78,20 @@ const SubscriptionsParent = () => {
 
     const handlePageChange = (newPage) => {
         setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
     };
 
     if (loading) return <Loader />;
@@ -143,7 +162,14 @@ const SubscriptionsParent = () => {
                 )}
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
             <SubDetailed
                 subscription={selectedSub}
                 service={selectedService}
@@ -155,6 +181,13 @@ const SubscriptionsParent = () => {
                     setSelectedService(false);
                     setSelectedPayment(false);
                 }}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
+                loading={submittingEdit}
             />
         </>
     );

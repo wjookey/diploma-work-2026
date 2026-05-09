@@ -12,11 +12,16 @@ import { DAYS_OF_WEEK } from '../../../utils/helper';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import Loader from '../../../components/Loader/Loader';
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const Schedule = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [schedule, setSchedule] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -33,6 +38,20 @@ const Schedule = () => {
 
         loadData();
     }, []);
+
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
 
     const groupedSchedule = {};
     DAYS_OF_WEEK.forEach((d) => groupedSchedule[d.value] = []);
@@ -77,7 +96,21 @@ const Schedule = () => {
                 )}
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
+                loading={submittingEdit}
+            />
         </>
     );
 }

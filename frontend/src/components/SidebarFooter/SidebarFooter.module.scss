@@ -11,13 +11,13 @@
 
     .profileInfo {
         display: flex;
-        flex-direction: column;
         width: 100%;
         text-align: left;
         padding: 10px 16px;
         background-color: $neutral-2;
         border-radius: 8px;
-        
+        justify-content: space-between;
+        align-items: center;
 
         .name {
             font-size: 16px;
@@ -28,6 +28,10 @@
         .email {
             font-size: 14px;
             color: $neutral-7;
+        }
+
+        .editButton {
+            width: 40px;
         }
     }
     .button {

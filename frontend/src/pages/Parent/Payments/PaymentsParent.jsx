@@ -13,6 +13,8 @@ import toast from 'react-hot-toast';
 import Loader from '../../../components/Loader/Loader';
 import { formatDateToISO } from '../../../utils/helper';
 import Pagination from '../../../components/Pagination/Pagination';
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const PaymentsParent = () => {
     const [startDate, setStartDate] = useState('');
@@ -26,6 +28,9 @@ const PaymentsParent = () => {
         total: 0,
         totalPages: 1
     });
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
+    const [submittingEdit, setSubmittingEdit] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -56,6 +61,20 @@ const PaymentsParent = () => {
 
     const handlePageChange = (newPage) => {
         setPagination(prev => ({ ...prev, page: newPage }));
+    };
+
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
     };
 
     if (loading) return <Loader />;
@@ -101,7 +120,21 @@ const PaymentsParent = () => {
                 )}
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
+                loading={submittingEdit}
+            />
         </>
     );
 }

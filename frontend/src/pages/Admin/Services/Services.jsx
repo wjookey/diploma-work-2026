@@ -12,6 +12,8 @@ import api from '../../../api/axios';
 import toast from 'react-hot-toast';
 import { Loader } from 'lucide-react';
 import Pagination from '../../../components/Pagination/Pagination';
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const Services = () => {
     const [search, setSearch] = useState('');
@@ -30,6 +32,8 @@ const Services = () => {
         total: 0,
         totalPages: 1,
     });
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -149,6 +153,20 @@ const Services = () => {
         setPagination(prev => ({ ...prev, page: newPage }));
     };
 
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
     if (loading) return <Loader />;
 
     const serviceItems = services.map((service) => (
@@ -196,7 +214,14 @@ const Services = () => {
                 )}
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
             <CreateServiceModal
                 clubs={clubs}
                 isOpen={createSerModal}
@@ -215,6 +240,13 @@ const Services = () => {
                 onSubmit={handleUpdate}
                 onDelete={handleDelete}
                 onStatusChange={handleUpdateStatus}
+                loading={submittingEdit}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
                 loading={submittingEdit}
             />
         </>

@@ -12,6 +12,8 @@ import Loader from '../../../components/Loader/Loader';
 import api from '../../../api/axios';
 import toast from 'react-hot-toast';
 import Pagination from "../../../components/Pagination/Pagination";
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const Teachers = () => {
     const [search, setSearch] = useState('');
@@ -29,6 +31,8 @@ const Teachers = () => {
         total: 0,
         totalPages: 1,
     });
+    const { user } = useAuth();
+    const [editUserModal, setEditUserModal] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -116,6 +120,20 @@ const Teachers = () => {
         setPagination(prev => ({ ...prev, page: newPage }));
     };
 
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditUserModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
     if (loading) return <Loader />;
 
     const teacherItems = teachers.map((teacher) => (
@@ -164,7 +182,14 @@ const Teachers = () => {
                 )}
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditUserModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
             <CreateTeacherModal
                 isOpen={createTeacherModal}
                 onClose={() => setCreateTeacherModal(false)}
@@ -180,6 +205,13 @@ const Teachers = () => {
                 }}
                 onSubmit={handleUpdateTeacher}
                 onDelete={handleDeleteTeacher}
+                loading={submittingEdit}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editUserModal}
+                onClose={() => setEditUserModal(false)}
                 loading={submittingEdit}
             />
         </>

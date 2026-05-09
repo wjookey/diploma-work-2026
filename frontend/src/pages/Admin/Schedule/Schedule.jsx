@@ -13,6 +13,8 @@ import api from '../../../api/axios';
 import Loader from '../../../components/Loader/Loader';
 import toast from 'react-hot-toast';
 import { formatDateToISO } from '../../../utils/helper';
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const Schedule = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -25,6 +27,8 @@ const Schedule = () => {
     const [loading, setLoading] = useState(true);
     const [creatingItem, setCreatingItem] = useState(false);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -131,6 +135,20 @@ const Schedule = () => {
         }
     };
 
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
     if (loading) return <Loader />;
 
     const groupedSchedule = {};
@@ -183,7 +201,14 @@ const Schedule = () => {
                 )}
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
             <EditScheduleRecModal
                 record={selectedSchedule}
                 clubs={clubs}
@@ -208,6 +233,13 @@ const Schedule = () => {
                 onClose={() => setGenerateLessons(false)}
                 onAdd={handleGenerateLessons}
                 loading={creatingItem}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
+                loading={submittingEdit}
             />
         </>
     );

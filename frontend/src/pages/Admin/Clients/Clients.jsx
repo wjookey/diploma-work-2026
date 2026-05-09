@@ -17,6 +17,8 @@ import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import Loader from '../../../components/Loader/Loader';
 import Pagination from '../../../components/Pagination/Pagination';
+import { useAuth } from '../../../context/AuthContext';
+import EditProfile from '../../../components/EditProfile/EditProfile';
 
 const Clients = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -43,6 +45,9 @@ const Clients = () => {
     const [children, setChildren] = useState([]);
     const [creatingFamily, setCreatingFamily] = useState(false);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
 
     const [pagination, setPagination] = useState({
         page: 1,
@@ -321,6 +326,20 @@ const Clients = () => {
         setPagination(prev => ({ ...prev, page: newPage }));
     };
 
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
     if (loading) return <Loader />;
 
     const famItems = families.map((fam) => (
@@ -376,12 +395,18 @@ const Clients = () => {
                 )}
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
             <CreateFamilyModal 
                 isOpen={isCrFamModalOpen} 
                 onClose={() => {
                     setIsCrFamModalOpen(false);
-                    // Очищаем форму при закрытии
                     setFamilyName('');
                     setParentForm({ firstName: '', lastName: '', email: '', phone: '' });
                     setParents([]);
@@ -465,6 +490,13 @@ const Clients = () => {
                 isOpen={addChild}
                 onClose={() => setAddChild(false)}
                 onAdd={handleAddChildToFamily}
+                loading={submittingEdit}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
                 loading={submittingEdit}
             />
         </>

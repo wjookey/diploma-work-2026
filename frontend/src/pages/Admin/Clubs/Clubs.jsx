@@ -15,6 +15,8 @@ import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import Loader from '../../../components/Loader/Loader';
 import Pagination from '../../../components/Pagination/Pagination';
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const Clubs = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,6 +33,9 @@ const Clubs = () => {
     const [creatingItem, setCreatingItem] = useState(false);
     const [teachers, setTeachers] = useState([]);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
 
     const [catPagination, setCatPagination] = useState({
         page: 1,
@@ -240,6 +245,20 @@ const Clubs = () => {
         }
     };
 
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
     const categoryItems = categories.map((cat) => (
         <li key={cat.id}>
             <ClubCategoryCard
@@ -330,7 +349,14 @@ const Clubs = () => {
                 </div>
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
             <CreateClubCatModal
                 isOpen={createCatModal}
                 onClose={() => setCreateCatModal(false)}
@@ -369,6 +395,13 @@ const Clubs = () => {
                 onSubmit={handleUpdateClub}
                 onStatusChange={handleUpdateClubStatus}
                 onDelete={handleDeleteClub}
+                loading={submittingEdit}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
                 loading={submittingEdit}
             />
         </>

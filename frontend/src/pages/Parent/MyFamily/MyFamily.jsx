@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import api from "../../../api/axios";
 import Loader from "../../../components/Loader/Loader";
 import { useAuth } from '../../../context/AuthContext';
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const MyFamily = () => {
     const { user } = useAuth();
@@ -33,6 +34,7 @@ const MyFamily = () => {
     const [loading, setLoading] = useState(true);
     const [creatingItem, setCreatingItem] = useState(false);
     const [submittingEdit, setSubmittingEdit] = useState(false);
+    const [editModal, setEditModal] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -137,6 +139,20 @@ const MyFamily = () => {
         }
     };
 
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
     if (loading) return <Loader />;
 
     return (
@@ -164,7 +180,14 @@ const MyFamily = () => {
                 </div>
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
             <FamilyModal
                 familyName={family?.familyName}
                 parents={family?.parents || []}
@@ -226,6 +249,13 @@ const MyFamily = () => {
                 onClose={() => setAddChild(false)}
                 onAdd={handleAddChild}
                 loading={creatingItem}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
+                loading={submittingEdit}
             />
         </>
     );

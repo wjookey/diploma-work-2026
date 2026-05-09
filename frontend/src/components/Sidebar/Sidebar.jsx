@@ -44,7 +44,7 @@ const parentLinks = [
     { to: "/requests", icon: FileText, label: "Заявки" },
 ];
 
-const Sidebar = ({ isOpen, onToggle }) => {
+const Sidebar = ({ isOpen, onToggle, onEdit }) => {
     const { user, logout } = useAuth();
 
     const links = user?.role === 'ADMIN' ? adminLinks : user?.role === 'TEACHER' ? teacherLinks : parentLinks;
@@ -67,15 +67,20 @@ const Sidebar = ({ isOpen, onToggle }) => {
 
     return (
         <div className={styles.wrapper}>
-        <div
-            className={`${styles.darkBackground} ${isOpen ? styles.open : styles.close}`}
-            onClick={onToggle}
-        />
-        <aside className={`${styles.sidebar} ${!isOpen ? styles.isClosed : ""}`}>
-            <SidebarHeader onClose={onToggle} />
-            <nav className={styles.links}>{sidebarLinks}</nav>
-            <SidebarFooter onClick={logout} name={`${user.lastName} ${user.firstName}`} email={user.email} />
-        </aside>
+            <div
+                className={`${styles.darkBackground} ${isOpen ? styles.open : styles.close}`}
+                onClick={onToggle}
+            />
+            <aside className={`${styles.sidebar} ${!isOpen ? styles.isClosed : ""}`}>
+                <SidebarHeader onClose={onToggle} />
+                <nav className={styles.links}>{sidebarLinks}</nav>
+                <SidebarFooter
+                    onClick={logout}
+                    name={`${user.lastName} ${user.firstName}`}
+                    email={user.email}
+                    onEdit={onEdit}
+                />
+            </aside>
         </div>
     );
 };

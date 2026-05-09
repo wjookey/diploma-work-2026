@@ -16,6 +16,8 @@ import toast from "react-hot-toast";
 import api from "../../../api/axios";
 import Loader from "../../../components/Loader/Loader";
 import Pagination from '../../../components/Pagination/Pagination';
+import { useAuth } from "../../../context/AuthContext";
+import EditProfile from "../../../components/EditProfile/EditProfile";
 
 const Lessons = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -39,6 +41,8 @@ const Lessons = () => {
         total: 0,
         totalPages: 1,
     });
+    const { user } = useAuth();
+    const [editModal, setEditModal] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -205,6 +209,20 @@ const Lessons = () => {
         setPagination(prev => ({ ...prev, page: newPage }));
     };
 
+    const handleUserUpdate = async (formData) => {
+        setSubmittingEdit(true);
+        try {
+            await api.put(`/users/${user.id}`, formData);
+            toast.success('Данные обновлены');
+            setEditModal(false);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Ошибка обновления данных");
+            console.error(error);
+        } finally {
+            setSubmittingEdit(false);
+        }
+    };
+
     if (loading) return <Loader />;
 
     const groupedLessons = {};
@@ -282,7 +300,14 @@ const Lessons = () => {
                 )}
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(false)}
+                onEdit={() => {
+                    setEditModal(true);
+                    setIsSidebarOpen(false);
+                }}
+            />
             <EditLessonModal
                 lesson={selectedLesson}
                 clubs={clubs}
@@ -316,6 +341,13 @@ const Lessons = () => {
                 }}
                 onStatusChange={handlePresenceChange}
                 onMarkAttendance={handleMarkAttendance}
+                loading={submittingEdit}
+            />
+            <EditProfile
+                user={user}
+                onSubmit={handleUserUpdate}
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
                 loading={submittingEdit}
             />
         </>
