@@ -7,37 +7,23 @@ const controller = require('../controllers/auth.controller');
 const router = Router();
 
 router.post(
-    '/login',
+    '/requestCode',
     [
         body('email').isEmail().withMessage('Enter correct email'),
-        body('password').notEmpty().withMessage('Enter the password'),
     ],
     validate,
-    controller.login
+    controller.requestCode
 );
 router.post(
-    '/register',
+    '/verifyCode',
     [
         body('email').isEmail().withMessage('Enter correct email'),
-        body('password').isLength({ min: 6 }).withMessage('Password should be at least 6 symbols'),
-        body('firstName').notEmpty().withMessage('Enter first name'),
-        body('lastName').notEmpty().withMessage('Enter last name'),
-        body('phone').isMobilePhone('ru-RU').withMessage('Enter phone number'),
+        body('code').isLength({ min: 6 }).withMessage('Code should be at least 6 symbols'),
     ],
     validate,
-    controller.register
+    controller.verifyCode
 )
 router.get('/me', authenticate, controller.getMe);
-router.put(
-    '/password',
-    authenticate,
-    [
-        body('currentPassword').notEmpty().withMessage('Enter current password'),
-        body('newPassword').isLength({ min: 6 }).withMessage('New password should be at least 6 symbols'),
-    ],
-    validate,
-    controller.changePassword
-);
 router.post('/refresh', controller.refreshToken);
 router.post('/logout', authenticate, controller.logout);
 

@@ -3,7 +3,7 @@ import Button from '../Button/Button';
 import Input from '../Input/Input';
 import { Mail, Lock } from 'lucide-react';
 
-const LoginForm = ({loading, onButtonClick, onEmailChange, onPasswordChange}) => {
+const LoginForm = ({loading, onSubmit, onCodeRequest, onEmailChange, onPasswordChange}) => {
     return (
         <div className={styles.layout}>
             <div className={styles.textBlock}>
@@ -15,10 +15,13 @@ const LoginForm = ({loading, onButtonClick, onEmailChange, onPasswordChange}) =>
             <div className={styles.formBlock}>
                 <div className={styles.inputsBlock}>
                     <Input label="Почта" id="login-email" icon={Mail} onChange={onEmailChange} required />
-                    <Input label="Пароль" id="login-password" icon={Lock} onChange={onPasswordChange} required type="password"/>
+                    <Input label="Код" id="login-password" icon={Lock} onChange={onPasswordChange} required/>
                 </div>
                 <div className={styles.button}>
-                    <Button variant='primary' loading={loading} onClick={onButtonClick}>Войти</Button>
+                    <Button variant='primary' loading={loading} onClick={onSubmit}>Войти</Button>
+                </div>
+                <div className={styles.button}>
+                    <Button variant='outline' loading={loading} onClick={onCodeRequest}>Получить код</Button>
                 </div>
             </div>
       </div>

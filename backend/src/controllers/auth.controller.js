@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const prisma = require('../config/prisma');
 const config = require('../config');
 const { AppError } = require('../middleware/errorHandler');
+const { generateVerificationCode, sendVerificationCode } = require('../services/emailService');
 
 const generateToken = (userId, tokenType) => {
     const jwtSecret = tokenType === "access" ? config.jwtAccessSecret : config.jwtRefreshSecret;
@@ -17,19 +18,27 @@ const hashToken = (token) => {
     return crypto.createHash('sha256').update(token).digest('hex');
 };
 
-exports.login = async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
+const hashCode = (code) => {
+    return crypto.createHash('sha256').update(code).digest('hex');
+};
 
-        const user = await prisma.user.findUnique({
+exports.requestCode = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        const code = generateVerificationCode();
+        const hashedCode = hashCode(code);
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+        let user = await prisma.user.findUnique({
             where: { email },
             include: {
-                teacher: { select: { id: true } },
+                teacher: true,
                 parent: {
                     include: {
                         family: {
                             include: {
-                                children: { select: { id: true, firstName: true, lastName: true, birthDate: true } },
+                                children: true,
                             },
                         },
                     },
@@ -38,23 +47,145 @@ exports.login = async (req, res, next) => {
         });
 
         if (!user) {
-            throw new AppError('Некорректная почта или пароль', 401);
+            const familyName = "Семья ...";
+            user = await prisma.user.create({
+                data: {
+                    firstName: "Имя",
+                    lastName: "Фамилия",
+                    email,
+                    phone: "Телефон",
+                    role: 'PARENT',
+                    verificationCode: hashedCode,
+                    codeExpiresAt: expiresAt,
+                    parent: {
+                        create: {
+                            family: {
+                                create: {
+                                    familyName,
+                                },
+                            },
+                        },
+                    },
+                },
+                include: {
+                    parent: {
+                        include: {
+                            family: {
+                                include: {
+                                    children: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        } else {
+            user = await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    verificationCode: hashedCode,
+                    codeExpiresAt: expiresAt,
+                },
+                include: {
+                    teacher: true,
+                    parent: {
+                        include: {
+                            family: {
+                                include: {
+                                    children: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            throw new AppError('Некорректная почта или пароль', 401);
+        await sendVerificationCode(email, code);
+
+        res.json({
+            succes: true,
+            message: "Verification code has been sent to email",
+            ...(process.env.NODE_ENV === 'development' && { debugCode: code }),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.verifyCode = async (req, res, next) => {
+    try {
+        const { email, code } = req.body;
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            include: {
+                teacher: true,
+                parent: {
+                    include: {
+                        family: {
+                            include: {
+                                children: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!user) {
+            throw new AppError('Пользователь не найден. Запросите код заново.', 404);
         }
+
+        const hashedInputCode = hashCode(code);
+        const isValidCode = user.verificationCode === hashedInputCode;
+        const isNotExpired = user.codeExpiresAt && user.codeExpiresAt > new Date();
+
+        if (!isValidCode) {
+            throw new AppError('Неверный код подтверждения', 401);
+        }
+        
+        if (!isNotExpired) {
+            throw new AppError('Код подтверждения истек. Запросите новый код.', 401);
+        }
+
+        const updateData = {
+            verificationCode: null,
+            codeExpiresAt: null,
+        };
+
+        let isNewUser = false;
+
+        if (user.firstName === "Имя" || user.lastName === "Фамилия" || user.phone === "Телефон") {
+            isNewUser = true;
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: user.id },
+            data: updateData,
+            include: {
+                teacher: true,
+                parent: {
+                    include: {
+                        family: {
+                            include: {
+                                children: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
         const accessToken = generateToken(user.id, "access");
         const refreshToken = generateToken(user.id, "refresh");
-        
+
         await prisma.user.update({
             where: { id: user.id },
             data: { refreshToken: hashToken(refreshToken) },
         });
 
-        const { password: _, ...userData } = user;
+        const { password: _, verificationCode: __, codeExpiresAt: ___, ...userData } = updatedUser;
 
         res.json({
             success: true,
@@ -62,55 +193,7 @@ exports.login = async (req, res, next) => {
                 user: userData,
                 accessToken,
                 refreshToken,
-            },
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
-exports.register = async (req, res, next) => {
-    try {
-        const { email, password, firstName, lastName, phone } = req.body;
-
-        const existingUser = await prisma.user.findUnique({ where: { email } });
-        if (existingUser) {
-            throw new AppError('Пользователь с введёнными данными уже существует', 409);
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 12);
-
-        const user = await prisma.user.create({
-            data: {
-                email,
-                password: hashedPassword,
-                firstName,
-                lastName,
-                phone,
-                role: 'PARENT',
-                parent: { create: { family: { create: { familyName: lastName } } } },
-            },
-            include: {
-                parent: { select: { id: true, family: { select: { id: true,  familyName: true } } } },
-            },
-        });
-
-        const accessToken = generateToken(user.id, "access");
-        const refreshToken = generateToken(user.id, "refresh");
-
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { refreshToken: hashToken(refreshToken) },
-        });
-
-        const { password: _, ...userData } = user;
-
-        res.status(201).json({
-            success: true,
-            data: {
-                user: userData,
-                accessToken,
-                refreshToken,
+                isNewUser,
             },
         });
     } catch (error) {
@@ -144,28 +227,6 @@ exports.getMe = async (req, res, next) => {
         });
 
         res.json({ success: true, data: user });
-    } catch (error) {
-        next(error);
-    }
-};
-
-exports.changePassword = async (req, res, next) => {
-    try {
-        const { currentPassword, newPassword } = req.body;
-        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
-
-        const isValid = await bcrypt.compare(currentPassword, user.password);
-        if (!isValid) {
-            throw new AppError('Некорректный текущий пароль', 400);
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 12);
-        await prisma.user.update({
-            where: { id: req.user.id },
-            data: { password: hashedPassword },
-        });
-
-        res.json({ success: true, message: 'Пароль успешно изменён' });
     } catch (error) {
         next(error);
     }

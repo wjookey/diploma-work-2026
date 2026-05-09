@@ -6,6 +6,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isNewUser, setIsNewUser] = useState(false);
 
     const loadUser = useCallback(async () => {
         const accessToken = localStorage.getItem('accessToken');
@@ -33,30 +34,23 @@ export const AuthProvider = ({ children }) => {
         loadUser();
     }, [loadUser]);
 
-    const login = async (email, password) => {
-        const { data } = await api.post('/auth/login', { email, password });
-        const { accessToken, refreshToken, user } = data.data;
+    const requestCode = async (email) => {
+        const { data } = await api.post('/auth/requestCode', { email });
+        return data;
+    };
+
+    const verifyCode = async (email, code) => {
+        const { data } = await api.post('/auth/verifyCode', { email, code });
+        const { user, accessToken, refreshToken, isNewUser } = data.data;
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('user', JSON.stringify(user));
 
         setUser(user);
+        setIsNewUser(isNewUser);
 
-        return user;
-    };
-
-    const register = async (formData) => {
-        const { data } = await api.post('/auth/register', formData);
-        const { accessToken, refreshToken, user } = data.data;
-
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("user", JSON.stringify(user));
-
-        setUser(user);
-
-        return user;
+        return { user, isNewUser };
     };
 
     const logout = async () => {
@@ -74,7 +68,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider
-            value={{ user, loading, login, register, logout, loadUser }}
+            value={{ user, isNewUser, loading, requestCode, verifyCode, logout, loadUser }}
         >
             {children}
         </AuthContext.Provider>

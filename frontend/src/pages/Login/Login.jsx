@@ -7,17 +7,17 @@ import toast from 'react-hot-toast';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { requestCode, verifyCode } = useAuth();
 
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await login(email, password);
+            await verifyCode(email, code);
             toast.success('Добро пожаловать!');
             navigate('/');
         } catch (err) {
@@ -25,7 +25,19 @@ const Login = () => {
         } finally {
             setLoading(false);
         }
-    }
+    };
+
+    const handleRequestCode = async () => {
+        setLoading(true);
+        try {
+            await requestCode(email);
+            toast.success('Код отправлен на почту');
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Ошибка получения кода");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className={styles.wrapper}>
@@ -37,8 +49,9 @@ const Login = () => {
             <LoginForm
                 loading={loading}
                 onEmailChange={(e) => setEmail(e.target.value)}
-                onPasswordChange={(e) => setPassword(e.target.value)}
-                onButtonClick={handleSubmit}
+                onPasswordChange={(e) => setCode(e.target.value)}
+                onSubmit={handleSubmit}
+                onCodeRequest={handleRequestCode}
             />
         </div>
     );
