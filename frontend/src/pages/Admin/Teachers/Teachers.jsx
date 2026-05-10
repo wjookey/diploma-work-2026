@@ -69,7 +69,6 @@ const Teachers = () => {
                 lastName: teacherData.lastName,
                 email: teacherData.email,
                 phone: teacherData.phone,
-                password: 'password123',
             }
 
             await api.post('/users', { ...user, role: 'TEACHER' });

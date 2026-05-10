@@ -14,8 +14,8 @@ router.post(
     '/',
     authorize('ADMIN'),
     [
-        body('name').notEmpty().withMessage('Enter club category').trim(),
-        body('description').optional().isString().withMessage('Description must be string')
+        body('name').notEmpty().withMessage('Введите название категории занятий').trim(),
+        body('description').optional().isString().withMessage('Описание должно быть строкой')
     ],
     validate,
     controller.create

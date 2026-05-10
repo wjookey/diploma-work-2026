@@ -14,8 +14,8 @@ router.post(
     '/',
     authorize('ADMIN', 'PARENT'),
     [
-        body('firstName').notEmpty().withMessage('Enter child\'s name'),
-        body('lastName').notEmpty().withMessage('Enter child\'s surname'),
+        body('firstName').notEmpty().withMessage('Введите имя ребёнка'),
+        body('lastName').notEmpty().withMessage('Введите фамилию ребёнка'),
     ],
     validate,
     controller.create

@@ -14,11 +14,11 @@ router.post(
     '/',
     authorize('ADMIN'),
     [
-        body('name').notEmpty().withMessage('Enter club name').trim(),
-        body('description').optional().isString().withMessage('Description must be string').trim(),
-        body('classCategoryId').toInt().isInt({ gt: 0 }).withMessage('classCategoryId must be a positive integer'),
-        body('defaultTeacherId').toInt().isInt({ gt: 0 }).withMessage('defaultTeacherId must be a positive integer'),
-        body('maxStudents').if((value) => value !== null && value !== '').toInt().isInt({ min: 0 }).withMessage('maxStudents must be a non-negative integer'),
+        body('name').notEmpty().withMessage('Введите название кружка').trim(),
+        body('description').optional().isString().withMessage('Описание должно быть строкой').trim(),
+        body('classCategoryId').toInt().isInt({ gt: 0 }).withMessage('ID категории должно быть положительным числом'),
+        body('defaultTeacherId').toInt().isInt({ gt: 0 }).withMessage('ID учителя должно быть положительным числом'),
+        body('maxStudents').if((value) => value !== null && value !== '').toInt().isInt({ min: 0 }).withMessage('Максимальное число детей должно быть положительным числом'),
     ],
     validator,
     controller.create

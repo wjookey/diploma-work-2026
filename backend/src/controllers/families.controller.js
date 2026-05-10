@@ -107,12 +107,10 @@ exports.create = async (req, res, next) => {
 
             const createdParents = [];
             for (const parent of parents) {
-                const hashedPassword = await bcrypt.hash(parent.user.password, 12);
 
                 const createdUser = await tx.user.create({
                     data: {
                         email: parent.user.email,
-                        password: hashedPassword,
                         firstName: parent.user.firstName,
                         lastName: parent.user.lastName,
                         phone: parent.user.phone,

@@ -14,10 +14,10 @@ router.post(
     '/',
     authorize('ADMIN'),
     [
-        body('clubId').notEmpty().withMessage('Enter the club'),
-        body('dayOfWeek').isInt({ min: 1, max: 7 }).withMessage('Enter the day of week from 1 to 7'),
-        body('startTime').notEmpty().withMessage('Enter the start time'),
-        body('endTime').notEmpty().withMessage('Enter the end time'),
+        body('clubId').notEmpty().withMessage('Выберите кружок'),
+        body('dayOfWeek').isInt({ min: 1, max: 7 }).withMessage('День недели может быть в диапазоне [1, 7]'),
+        body('startTime').notEmpty().withMessage('Введите время начала'),
+        body('endTime').notEmpty().withMessage('Введите время конца'),
     ],
     validate,
     controller.create
@@ -27,8 +27,8 @@ router.delete('/:id', authorize('ADMIN'), controller.remove);
 router.post(
     '/lessons/generate',
     [
-        body('startDate').isISO8601().withMessage('Enter the start time'),
-        body('endDate').isISO8601().withMessage('Enter the end time'),
+        body('startDate').isISO8601().withMessage('Введите дату начала'),
+        body('endDate').isISO8601().withMessage('Введите дату конца'),
     ],
     validate,
     controller.generateLessons

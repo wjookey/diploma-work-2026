@@ -15,8 +15,8 @@ router.post(
     '/',
     authorize('ADMIN'),
     [
-        body('subscriptionId').notEmpty().withMessage('Enter subscription'),
-        body('paymentDate').optional().isISO8601().withMessage('Enter correct payment date (YYYY-MM-DD)'),
+        body('subscriptionId').notEmpty().withMessage('Выберите абонемент для оплаты'),
+        body('paymentDate').optional().isISO8601().withMessage('Дата должна быть в формате YYYY-MM-DD'),
     ],
     validate,
     controller.create

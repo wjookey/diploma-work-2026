@@ -9,8 +9,8 @@ const router = Router();
 router.post(
     '/requestCode',
     [
-        body('email').isEmail().withMessage('Enter correct email'),
-        body('phone').optional({ checkFalsy: true }).isMobilePhone('ru-RU').withMessage('Enter correct phone number'),
+        body('email').isEmail().withMessage('Введите корректную почту'),
+        body('phone').optional({ checkFalsy: true }).isMobilePhone('ru-RU').withMessage('Введите корректный номер телефона'),
     ],
     validate,
     controller.requestCode
@@ -18,7 +18,7 @@ router.post(
 router.post(
     '/verifyCode',
     [
-        body('email').isEmail().withMessage('Enter correct email'),
+        body('email').isEmail().withMessage('Введите корректную почту'),
         body('code').isLength({ min: 6 }).withMessage('Код должен включать 6 символов'),
     ],
     validate,

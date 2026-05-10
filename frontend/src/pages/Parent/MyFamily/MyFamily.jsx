@@ -61,7 +61,6 @@ const MyFamily = () => {
                     lastName: parentForm.lastName,
                     email: parentForm.email,
                     phone: parentForm.phone,
-                    password: 'password123',
                 },
                 familyId: family.id,
             };

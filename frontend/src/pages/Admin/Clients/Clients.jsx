@@ -149,7 +149,6 @@ const Clients = () => {
                         lastName: p.lastName,
                         email: p.email,
                         phone: p.phone,
-                        password: 'password123'
                     }
                 })),
                 children: children.map(c => ({
@@ -187,7 +186,6 @@ const Clients = () => {
                     lastName: parentData.lastName,
                     email: parentData.email,
                     phone: parentData.phone,
-                    password: 'password123'
                 },
                 familyId: selectedFamily.id
             };

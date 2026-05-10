@@ -14,8 +14,8 @@ router.get('/lesson/:lessonId', controller.getByLesson);
 router.post(
     '/',
     [
-        body('lessonId').notEmpty().withMessage('Enter lesson'),
-        body('attendances').isArray({ min: 1 }).withMessage('Enter the list of attendances'),
+        body('lessonId').notEmpty().withMessage('Выберите занятие'),
+        body('attendances').isArray({ min: 1 }).withMessage('Введите данные посещаемости'),
     ],
     validate,
     controller.markAttendance

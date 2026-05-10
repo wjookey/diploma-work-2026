@@ -14,12 +14,12 @@ router.post(
     '/',
     authorize('ADMIN'),
     [
-        body('name').notEmpty().withMessage('Enter service name').trim(),
-        body('price').isFloat({ gt: 0 }).withMessage('Price must be a number greater than 0'),
-        body('subscriptionLessons').isInt({ min: 0 }).withMessage('subscriptionLessons must be a non-negative integer'),
-        body('freezedLesson').isInt({ min: 0 }).withMessage('freezedLesson must be a non-negative integer'),
-        body('clubId').isInt({ gt: 0 }).withMessage('clubId must be a positive integer'),
-        body('type').isIn(['TRIAL', 'SINGLE', 'SUBSCRIPTION', 'CAMP', 'AFTERSCHOOL']).withMessage('Type must be a valid ServiceType'),
+        body('name').notEmpty().withMessage('Введите название услуги').trim(),
+        body('price').isFloat({ gte: 0 }).withMessage('Цена за услугу должна быть больше или равна 0'),
+        body('subscriptionLessons').isInt({ min: 0 }).withMessage('Количество занятий должно быть неотрицательным числом'),
+        body('freezedLesson').isInt({ min: 0 }).withMessage('Количество заморозок должно быть неотрицательным числом'),
+        body('clubId').isInt({ gt: 0 }).withMessage('ID кружка должно быть положительным числом'),
+        body('type').isIn(['TRIAL', 'SINGLE', 'SUBSCRIPTION', 'CAMP', 'AFTERSCHOOL']).withMessage('Неизвестный тип услуги'),
     ],
     validate,
     controller.create

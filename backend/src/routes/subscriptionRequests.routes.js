@@ -14,8 +14,8 @@ router.post(
     '/',
     authorize('PARENT'),
     [
-        body('childId').notEmpty().withMessage('Enter the child'),
-        body('clubServiceId').notEmpty().withMessage('Enter the club service'),
+        body('childId').notEmpty().withMessage('Выберите ребёнка'),
+        body('clubServiceId').notEmpty().withMessage('Выберите услугу'),
     ],
     validate,
     controller.create
@@ -24,9 +24,9 @@ router.post(
     '/combo',
     authorize('PARENT'),
     [
-        body('requests').isArray({ min: 2, max: 2 }).withMessage('request must be an array of 2 objects'),
-        body('requests.*.childId').notEmpty().withMessage('Enter the child'),
-        body('requests.*.clubServiceId').notEmpty().withMessage('Enter the club service'),
+        body('requests').isArray({ min: 2, max: 2 }).withMessage('Комбо абонемент должен быть массивом из двух объектов'),
+        body('requests.*.childId').notEmpty().withMessage('Выберите ребёнка'),
+        body('requests.*.clubServiceId').notEmpty().withMessage('Выберите услугу'),
     ],
     validate,
     controller.createCombo

@@ -126,13 +126,10 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const { email, password, firstName, lastName, phone, role, specialty, bio, familyId } = req.body;
-
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const { email, firstName, lastName, phone, role, specialty, bio, familyId } = req.body;
 
         const data = {
             email,
-            password: hashedPassword,
             firstName,
             lastName,
             phone,

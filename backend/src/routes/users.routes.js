@@ -14,13 +14,12 @@ router.post(
     '/',
     authorize('ADMIN', 'PARENT'),
     [
-        body('email').isEmail().withMessage('Enter correct email'),
-        body('password').isLength({ min: 6 }).withMessage('Password should be at least 6 symbols'),
-        body('firstName').notEmpty().withMessage('Enter first name'),
-        body('lastName').notEmpty().withMessage('Enter last name'),
-        body('phone').isMobilePhone('ru-RU').withMessage('Enter phone number'),
-        body('role').isIn(['ADMIN', 'TEACHER', 'PARENT']).withMessage('Incorrect role'),
-        body('familyId').optional().notEmpty().withMessage('Enter family'),
+        body('email').isEmail().withMessage('Введите корректную почту'),
+        body('firstName').notEmpty().withMessage('Введите имя'),
+        body('lastName').notEmpty().withMessage('Введите фамилию'),
+        body('phone').isMobilePhone('ru-RU').withMessage('Введите корректный номер телефона'),
+        body('role').isIn(['ADMIN', 'TEACHER', 'PARENT']).withMessage('Неизвестная роль'),
+        body('familyId').optional().notEmpty().withMessage('Выберите семью'),
     ],
     validate,
     controller.create
@@ -28,8 +27,8 @@ router.post(
 router.put(
     '/:id',
     [
-        body('phone').optional().isMobilePhone('ru-RU').withMessage('Enter correct phone number'),
-        body('email').optional().isEmail().withMessage('Enter correct email'),
+        body('phone').optional().isMobilePhone('ru-RU').withMessage('Введите корректный номер телефона'),
+        body('email').optional().isEmail().withMessage('Введите корректную почту'),
     ],
     validate,
     controller.update
