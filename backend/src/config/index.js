@@ -16,4 +16,5 @@ module.exports = {
         password: process.env.YANDEX_PASSWORD,
         fromName: process.env.EMAIL_FROM_NAME,
     },
+    botToken: process.env.BOT_TOKEN,
 }

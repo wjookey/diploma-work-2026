@@ -1,13 +1,30 @@
 import styles from './Login.module.scss';
 import LoginForm from '../../components/LoginForm/LoginFrom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { requestCode, verifyCode } = useAuth();
+    const { requestCode, verifyCode, telegramAuthAuto, isTelegramWebApp } = useAuth();
+
+    useEffect(() => {
+        const login = async () => {
+            if (isTelegramWebApp) {
+                try {
+                    const res = await telegramAuthAuto();
+                    if (res.user) {
+                        navigate("/");
+                    }
+                } catch {
+                    toast.error("Аккаунт Telegram не привязан. Войдите через email.");
+                }
+            }
+        };
+
+        login();
+    }, [isTelegramWebApp]);
 
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');

@@ -47,6 +47,7 @@ model User {
   lastName String @map("last_name")
   phone String @unique
   role Role @default(PARENT)
+  telegramId String? @map("telegram_id") @unique
   verificationCode String? @map("verification_code")
   codeExpiresAt DateTime? @map("code_expires_at")
   refreshToken String? @map("refresh_token")

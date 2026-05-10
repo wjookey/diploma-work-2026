@@ -7,7 +7,7 @@ const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
-app.use(cors({ origin: config.clientUrl, credentials: true }));
+app.use(cors({ origin: [config.clientUrl, 'https://bfe9360f6a73a4.lhr.life'], credentials: true })); // для тестового запуска
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

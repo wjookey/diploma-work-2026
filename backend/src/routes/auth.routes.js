@@ -6,6 +6,7 @@ const controller = require('../controllers/auth.controller');
 
 const router = Router();
 
+router.post('/tgAuth', controller.telegramAuthAuto);
 router.post(
     '/requestCode',
     [

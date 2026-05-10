@@ -5,6 +5,7 @@ const prisma = require('../config/prisma');
 const config = require('../config');
 const { AppError } = require('../middleware/errorHandler');
 const { generateVerificationCode, sendVerificationCode } = require('../services/emailService');
+const { verifyByHash } = require('../services/telegramAuthService');
 
 const generateToken = (userId, tokenType) => {
     const jwtSecret = tokenType === "access" ? config.jwtAccessSecret : config.jwtRefreshSecret;
@@ -20,6 +21,61 @@ const hashToken = (token) => {
 
 const hashCode = (code) => {
     return crypto.createHash('sha256').update(code).digest('hex');
+};
+
+exports.telegramAuthAuto = async (req, res, next) => {
+    try {
+        const { initData } = req.body;
+        const botToken = config.botToken;
+        
+        verifyByHash(initData, botToken);
+
+        const urlParams = new URLSearchParams(initData);
+        const userJson = urlParams.get('user');
+        const telegramUser = JSON.parse(userJson);
+
+        let user = await prisma.user.findUnique({
+            where: { telegramId: String(telegramUser.id) },
+            include: {
+                teacher: true,
+                parent: {
+                    include: {
+                        family: {
+                            include: {
+                                children: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!user) {
+            throw new AppError('Пользователь не найден', 404);
+        }
+
+        const accessToken = generateToken(user.id, "access");
+        const refreshToken = generateToken(user.id, "refresh");
+
+        user = await prisma.user.update({
+            where: { id: user.id },
+            data: { refreshToken: hashToken(refreshToken) },
+        });
+
+        const { password: _, verificationCode: __, codeExpiresAt: ___, ...userData } = user;
+
+        res.json({
+            success: true,
+            data: {
+                user: userData,
+                accessToken,
+                refreshToken,
+            },
+        });
+
+    } catch (error) {
+        next(error);
+    }
 };
 
 exports.requestCode = async (req, res, next) => {
@@ -158,10 +214,27 @@ exports.verifyCode = async (req, res, next) => {
             codeExpiresAt: null,
         };
 
-        let isNewUser = false;
+        if (req.body.initData) {
+            try {
+                const botToken = config.botToken;
+                verifyByHash(req.body.initData, botToken);
 
-        if (user.firstName === "Имя" || user.lastName === "Фамилия" || user.phone === "Телефон") {
-            isNewUser = true;
+                const urlParams = new URLSearchParams(req.body.initData);
+                const userJson = urlParams.get('user');
+                const telegramUser = JSON.parse(userJson);
+
+                const existingUserWithTg = await prisma.user.findUnique({
+                    where: { telegramId: String(telegramUser.id) },
+                });
+
+                if (existingUserWithTg && existingUserWithTg.id !== user.id) {
+                    throw new AppError('Этот Telegram аккаунт уже привязан к другому пользователю', 409);
+                }
+
+                updateData.telegramId = String(telegramUser.id);
+            } catch (error) {
+                console.warn('Ошибка привязки Telegram: ', error.message);
+            }
         }
 
         const updatedUser = await prisma.user.update({
@@ -197,7 +270,6 @@ exports.verifyCode = async (req, res, next) => {
                 user: userData,
                 accessToken,
                 refreshToken,
-                isNewUser,
             },
         });
     } catch (error) {
