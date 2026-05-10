@@ -1,23 +1,20 @@
-import styles from './Login.module.scss';
-import LoginForm from '../../components/LoginForm/LoginFrom';
+import styles from './Register.module.scss';
+import RegisterForm from '../../components/RegisterForm/RegisterForm';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
-const Login = () => {
+const Register = () => {
     const navigate = useNavigate();
     const { requestCode, verifyCode } = useAuth();
 
-    const [email, setEmail] = useState('');
-    const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (formData) => {
         setLoading(true);
         try {
-            await verifyCode(email, code);
+            await verifyCode(formData.email, formData.code);
             toast.success('Добро пожаловать!');
             navigate('/');
         } catch (err) {
@@ -27,15 +24,15 @@ const Login = () => {
         }
     };
 
-    const handleRequestCode = async () => {
+    const handleRequestCode = async (formData) => {
         setLoading(true);
         try {
             await requestCode({
-                email,
-                firstName: '',
-                lastName: '',
-                phone: '',
-                familyName: ''
+                email: formData.email,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                phone: formData.phone,
+                familyName: formData.familyName,
             });
             toast.success('Код отправлен на почту');
         } catch (err) {
@@ -52,10 +49,8 @@ const Login = () => {
                 <h3 className={styles.subheader}>Управление дополнительным образованием</h3>
                 <img src="logo.svg" alt="Логотип" className={styles.logo} />
             </div>
-            <LoginForm
+            <RegisterForm
                 loading={loading}
-                onEmailChange={(e) => setEmail(e.target.value)}
-                onPasswordChange={(e) => setCode(e.target.value)}
                 onSubmit={handleSubmit}
                 onCodeRequest={handleRequestCode}
             />
@@ -63,4 +58,4 @@ const Login = () => {
     );
 }
 
-export default Login;
+export default Register;

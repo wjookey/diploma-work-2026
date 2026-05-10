@@ -10,6 +10,7 @@ router.post(
     '/requestCode',
     [
         body('email').isEmail().withMessage('Enter correct email'),
+        body('phone').optional({ checkFalsy: true }).isMobilePhone('ru-RU').withMessage('Enter correct phone number'),
     ],
     validate,
     controller.requestCode
@@ -18,7 +19,7 @@ router.post(
     '/verifyCode',
     [
         body('email').isEmail().withMessage('Enter correct email'),
-        body('code').isLength({ min: 6 }).withMessage('Code should be at least 6 symbols'),
+        body('code').isLength({ min: 6 }).withMessage('Код должен включать 6 символов'),
     ],
     validate,
     controller.verifyCode

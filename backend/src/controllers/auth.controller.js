@@ -24,7 +24,7 @@ const hashCode = (code) => {
 
 exports.requestCode = async (req, res, next) => {
     try {
-        const { email } = req.body;
+        const { email, firstName, lastName, phone, familyName } = req.body;
 
         const code = generateVerificationCode();
         const hashedCode = hashCode(code);
@@ -47,38 +47,42 @@ exports.requestCode = async (req, res, next) => {
         });
 
         if (!user) {
-            const familyName = "Семья ...";
-            user = await prisma.user.create({
-                data: {
-                    firstName: "Имя",
-                    lastName: "Фамилия",
-                    email,
-                    phone: "Телефон",
-                    role: 'PARENT',
-                    verificationCode: hashedCode,
-                    codeExpiresAt: expiresAt,
-                    parent: {
-                        create: {
-                            family: {
-                                create: {
-                                    familyName,
+            if (firstName !== '' && lastName !== '' && phone !== '' && familyName !== '') {
+                const famName = familyName;
+                user = await prisma.user.create({
+                    data: {
+                        firstName,
+                        lastName,
+                        email,
+                        phone,
+                        role: 'PARENT',
+                        verificationCode: hashedCode,
+                        codeExpiresAt: expiresAt,
+                        parent: {
+                            create: {
+                                family: {
+                                    create: {
+                                        familyName: famName,
+                                    },
                                 },
                             },
                         },
                     },
-                },
-                include: {
-                    parent: {
-                        include: {
-                            family: {
-                                include: {
-                                    children: true,
+                    include: {
+                        parent: {
+                            include: {
+                                family: {
+                                    include: {
+                                        children: true,
+                                    },
                                 },
                             },
                         },
                     },
-                },
-            });
+                });
+            } else {
+                throw new AppError('Пользователь не найден', 404);
+            }
         } else {
             user = await prisma.user.update({
                 where: { id: user.id },
@@ -142,11 +146,11 @@ exports.verifyCode = async (req, res, next) => {
         const isNotExpired = user.codeExpiresAt && user.codeExpiresAt > new Date();
 
         if (!isValidCode) {
-            throw new AppError('Неверный код подтверждения', 401);
+            throw new AppError('Неверный код подтверждения', 422);
         }
         
         if (!isNotExpired) {
-            throw new AppError('Код подтверждения истек. Запросите новый код.', 401);
+            throw new AppError('Код подтверждения истек. Запросите новый код.', 410);
         }
 
         const updateData = {

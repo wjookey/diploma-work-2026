@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }) => {
         loadUser();
     }, [loadUser]);
 
-    const requestCode = async (email) => {
-        const { data } = await api.post('/auth/requestCode', { email });
+    const requestCode = async (formData) => {
+        const { data } = await api.post('/auth/requestCode', formData);
         return data;
     };
 

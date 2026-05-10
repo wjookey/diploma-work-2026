@@ -23,6 +23,7 @@ import SubscriptionsParent from './pages/Parent/Subscriptions/SubscriptionsParen
 import PaymentsParent from './pages/Parent/Payments/PaymentsParent';
 import RequestsParent from './pages/Parent/Requests/RequestsParent';
 import Dashboard from './pages/Admin/Dashboard/Dashboard';
+import Register from './pages/Register/Register';
 
 function LessonsPage() {
   const { user } = useAuth();
@@ -84,6 +85,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/login' element={user ? <Navigate to="/" replace /> : <Login />} />
+        <Route path='/register' element={user ? <Navigate to="/" replace /> : <Register />} />
 
         <Route path='/' element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
         <Route path='/clients' element={<ProtectedRoute roles={['ADMIN']}><Clients /></ProtectedRoute>} />
