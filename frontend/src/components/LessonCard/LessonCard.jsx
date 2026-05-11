@@ -22,7 +22,7 @@ const LessonCard = ({ lesson, isEditMode = true, isInModal = false, isMarkAttMod
                             </div>
                             <div className={styles.teacher}>
                                 <GraduationCap className={styles.icon} />
-                                <p>{lesson?.teacher.user.lastName} {lesson?.teacher.user.firstName}</p>
+                                <p>{!lesson?.club.dayClasses ? `${lesson?.teacher?.user.lastName} ${lesson?.teacher?.user.firstName}` : '-'}</p>
                             </div>
                             <div className={styles.room}>
                                 <MapPin className={styles.icon} />

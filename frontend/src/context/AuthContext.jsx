@@ -10,7 +10,15 @@ export const AuthProvider = ({ children }) => {
     const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
 
     const checkTelegramWebApp = useCallback(() => {
-        const isInTelegram = !!(window.Telegram && window.Telegram.WebApp);
+        const tg = window.Telegram?.WebApp;
+
+        const isInTelegram = !!(
+            tg &&
+            tg.initData &&
+            tg.initData.length > 0 &&
+            tg.initDataUnsafe?.user
+        );
+        
         setIsTelegramWebApp(isInTelegram);
 
         if (isInTelegram) {

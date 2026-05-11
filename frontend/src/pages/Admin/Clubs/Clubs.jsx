@@ -139,6 +139,7 @@ const Clubs = () => {
                 classCategoryId: clubData.classCategoryId,
                 defaultTeacherId: clubData.defaultTeacherId,
                 maxStudents: clubData.maxStudents,
+                dayClasses: clubData.dayClasses,
             };
 
             await api.post('/clubs', { ...data });
@@ -179,6 +180,7 @@ const Clubs = () => {
                 classCategoryId: clubData.classCategoryId,
                 defaultTeacherId: clubData.defaultTeacherId,
                 maxStudents: clubData.maxStudents,
+                dayClasses: clubData.dayClasses,
             });
 
             toast.success('Кружок обновлен');

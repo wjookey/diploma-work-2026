@@ -130,13 +130,14 @@ model Club {
   name String
   description String?
   classCategoryId Int @map("class_category_id")
-  defaultTeacherId Int @map("default_teacher_id")
+  defaultTeacherId Int? @map("default_teacher_id")
+  dayClasses Boolean @default(false) @map("day_classes")
   maxStudents Int? @map("max_students")
   isActive Boolean @default(true) @map("is_active") 
   createdAt DateTime @default(now()) @map("created_at")
 
   clubCategory ClubCategory @relation(fields: [classCategoryId], references: [id], onDelete: Cascade)
-  teacher Teacher @relation(fields: [defaultTeacherId], references: [id])
+  teacher Teacher? @relation(fields: [defaultTeacherId], references: [id])
   clubServices ClubService[]
   lessons Lesson[]
   subscriptions Subscription[]

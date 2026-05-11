@@ -18,6 +18,7 @@ const EditLessonModal = ({ lesson, clubs, teachers, isOpen, onClose, onSubmit, o
         room: '',
         topic: '',
         status: '',
+        dayClasses: false,
     });
     const [isDangerModalOpen, setIsDangerModalOpen] = useState(false);
 
@@ -33,11 +34,16 @@ const EditLessonModal = ({ lesson, clubs, teachers, isOpen, onClose, onSubmit, o
                 room: lesson.room,
                 topic: lesson.topic,
                 status: lesson.status,
+                dayClasses: lesson.club.dayClasses
             });
         }
     }, [isOpen, lesson]);
 
     const handleChange = (field, value) => {
+        if (field === 'clubId') {
+            const club = clubs.find((club) => club.id === parseInt(value));
+            setFormData(prev => ({ ...prev, assignedTeacherId: club.defaultTeacherId, dayClasses: club.dayClasses }));
+        }
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -108,13 +114,13 @@ const EditLessonModal = ({ lesson, clubs, teachers, isOpen, onClose, onSubmit, o
                             label={"Учитель"}
                             id={"teacher"}
                             placeholder={'Выберите'}
-                            value={formData.assignedTeacherId}
+                            value={formData.assignedTeacherId || ''}
                             onChange={(e) => handleChange('assignedTeacherId', e.target.value)}
                             options={teachers.map((teacher) => ({
                                 value: teacher.teacher.id,
                                 label: `${teacher.lastName} ${teacher.firstName}`
                             }))}
-                            disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'}
+                            disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED' || formData.dayClasses}
                         />
                         <Input
                             label={"Кабинет"}

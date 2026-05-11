@@ -103,7 +103,7 @@ exports.getRecentActivity = async (req, res, next) => {
                 },
                 orderBy: { date: 'asc' },
                 include: {
-                    club: { select: { name: true } },
+                    club: true,
                     teacher: {
                         include: { user: { select: { firstName: true, lastName: true } } },
                     },

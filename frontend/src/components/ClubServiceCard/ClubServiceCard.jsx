@@ -21,7 +21,7 @@ const ClubServiceCard = ({ clubService, isEditMode = true, onEdit, isInModal = f
                     <div className={styles.aboutService}>
                         <div className={styles.teacher}>
                             <GraduationCap className={styles.icon} />
-                            <p>{clubService?.club?.teacher?.user?.lastName} {clubService?.club?.teacher?.user?.firstName}</p>
+                            <p>{!clubService?.club.dayClasses ? `${clubService?.club?.teacher?.user?.lastName} ${clubService?.club?.teacher?.user?.firstName}` : '-'}</p>
                         </div>
                         <div className={styles.included}>
                             <div className={styles.lessons}>

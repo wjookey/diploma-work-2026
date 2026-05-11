@@ -89,14 +89,15 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const { name, description, classCategoryId, defaultTeacherId, maxStudents } = req.body;
+        const { name, description, classCategoryId, defaultTeacherId, maxStudents, dayClasses } = req.body;
 
         const club = await prisma.club.create({
             data: {
                 name,
                 description,
                 classCategoryId: parseInt(classCategoryId),
-                defaultTeacherId: parseInt(defaultTeacherId),
+                defaultTeacherId: dayClasses ? null : parseInt(defaultTeacherId),
+                dayClasses,
                 maxStudents: maxStudents ? parseInt(maxStudents) : null,
             },
             include: {
@@ -117,7 +118,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { name, description, classCategoryId, defaultTeacherId, maxStudents, isActive } = req.body;
+        const { name, description, classCategoryId, defaultTeacherId, maxStudents, isActive, dayClasses } = req.body;
 
         const club = await prisma.club.update({
             where: { id: parseInt(req.params.id) },
@@ -128,6 +129,8 @@ exports.update = async (req, res, next) => {
                 ...(defaultTeacherId && { defaultTeacherId: parseInt(defaultTeacherId) }),
                 ...(maxStudents !== undefined && { maxStudents: maxStudents ? parseInt(maxStudents) : null }),
                 ...(isActive !== undefined && { isActive }),
+                ...(dayClasses !== undefined && { dayClasses }),
+                ...(dayClasses && { defaultTeacherId: null }),
             },
             include: {
                 clubCategory: { select: { id: true, name: true } },

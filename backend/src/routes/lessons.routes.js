@@ -20,7 +20,7 @@ router.post(
         body('endTime').notEmpty().withMessage('endTime is required').isString().withMessage('Время конца должно быть строкой'),
         body('room').optional().isString().withMessage('Кабинет должен быть строкой'),
         body('topic').optional().isString().withMessage('Тема занятия должна быть строкой'),
-        body('assignedTeacherId').optional().isInt({ gt: 0 }).withMessage('ID учителя должно быть положительным числом'),
+        body('assignedTeacherId').optional({ checkFalsy: true }).isInt({ gt: 0 }).withMessage('ID учителя должно быть положительным числом'),
     ],
     validate,
     controller.create

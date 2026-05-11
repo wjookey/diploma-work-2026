@@ -17,6 +17,7 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusCh
         defaultTeacherId: null,
         maxStudents: null,
         isActive: false,
+        dayClasses: false,
     });
     const [isDangerModalOpen, setIsDangerModalOpen] = useState(false);
 
@@ -29,6 +30,7 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusCh
                 defaultTeacherId: club.defaultTeacherId,
                 maxStudents: club.maxStudents,
                 isActive: club.isActive,
+                dayClasses: club.dayClasses,
             });
         }
     }, [isOpen, club]);
@@ -37,12 +39,16 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusCh
         if (field === 'isActive') {
             value = value === 'true' || value === true;
         }
+        if (field === 'dayClasses') {
+            value = value === 'true' || value === true;
+            if (value) setFormData(prev => ({ ...prev, defaultTeacherId: null }));
+        }
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = async () => {
-        if (!formData.name) {
-            toast.error("Введите название кружка");
+        if (!formData.name || !formData.classCategoryId || (!formData.defaultTeacherId && !formData.dayClasses)) {
+            toast.error("Заполните все обязательные поля");
             return;
         }
         await onSubmit({ ...club, ...formData });
@@ -73,6 +79,12 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusCh
                             value={formData.description || ''}
                             onChange={(e) => handleChange('description', e.target.value)}
                         />
+                        <Radiobutton
+                            label={"Лагерь/продлёнка"}
+                            value={formData.dayClasses}
+                            name={"dayClasses"}
+                            onChange={(e) => handleChange('dayClasses', e.target.value)}
+                        />
                         <div className={styles.details}>
                             <Select
                                 label={"Тип занятий"}
@@ -89,12 +101,13 @@ const EditClubModal = ({ club, categories, teachers, isOpen, onClose, onStatusCh
                                 label={"Преподаватель"}
                                 id={"teacher"}
                                 placeholder={"Выберите"}
-                                value={formData.defaultTeacherId}
+                                value={formData.defaultTeacherId || ''}
                                 onChange={(e) => handleChange('defaultTeacherId', e.target.value)}
                                 options={teachers.map((teacher) => ({
                                     value: teacher.teacher.id,
                                     label: `${teacher.lastName} ${teacher.firstName}`
                                 }))}
+                                disabled={formData.dayClasses}
                             />
                         </div>
                         <Input

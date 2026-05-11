@@ -14,7 +14,8 @@ const CreateLessonModal = ({ clubs, teachers, isOpen, onClose, onAdd, loading = 
         endTime: '',
         assignedTeacherId: null,
         room: '',
-        topic: ''
+        topic: '',
+        dayClasses: false,
     });
 
     useEffect(() => {
@@ -26,7 +27,8 @@ const CreateLessonModal = ({ clubs, teachers, isOpen, onClose, onAdd, loading = 
                 endTime: '',
                 assignedTeacherId: null,
                 room: '',
-                topic: ''
+                topic: '',
+                dayClasses: false,
             });
         }
     }, [isOpen]);
@@ -34,7 +36,7 @@ const CreateLessonModal = ({ clubs, teachers, isOpen, onClose, onAdd, loading = 
     const handleChange = (field, value) => {
         if (field === 'clubId') {
             const club = clubs.find((club) => club.id === parseInt(value));
-            setFormData(prev => ({ ...prev, assignedTeacherId: club.defaultTeacherId }));
+            setFormData(prev => ({ ...prev, assignedTeacherId: club.defaultTeacherId, dayClasses: club.dayClasses }));
         }
         setFormData(prev => ({ ...prev, [field]: value }));
     };
@@ -100,6 +102,7 @@ const CreateLessonModal = ({ clubs, teachers, isOpen, onClose, onAdd, loading = 
                             value: teacher.teacher.id,
                             label: `${teacher.lastName} ${teacher.firstName}`
                         }))}
+                        disabled={formData.dayClasses}
                     />
                     <Input
                         label={"Кабинет"}

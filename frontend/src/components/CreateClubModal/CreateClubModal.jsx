@@ -6,12 +6,14 @@ import Select from '../Select/Select';
 import Textarea from '../Textarea/Textarea';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import Radiobutton from '../Radiobutton/Radiobutton';
 
 const CreateClubModal = ({ categories, teachers, isOpen, onClose, onAdd, loading = false }) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         classCategoryId: null,
+        dayClasses: false,
         defaultTeacherId: null,
         maxStudents: ''
     });
@@ -22,6 +24,7 @@ const CreateClubModal = ({ categories, teachers, isOpen, onClose, onAdd, loading
                 name: '',
                 description: '',
                 classCategoryId: null,
+                dayClasses: false,
                 defaultTeacherId: null,
                 maxStudents: null
             });
@@ -29,11 +32,15 @@ const CreateClubModal = ({ categories, teachers, isOpen, onClose, onAdd, loading
     }, [isOpen]);
 
     const handleChange = (field, value) => {
+        if (field === 'dayClasses') {
+            value = value === 'true' || value === true;
+            if (value) setFormData(prev => ({ ...prev, defaultTeacherId: null }));
+        }
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = async () => {
-        if (!formData.name || !formData.classCategoryId || !formData.defaultTeacherId) {
+        if (!formData.name || !formData.classCategoryId || (!formData.defaultTeacherId && !formData.dayClasses)) {
             toast.error('Заполните все обязательные поля');
             return;
         }
@@ -58,6 +65,12 @@ const CreateClubModal = ({ categories, teachers, isOpen, onClose, onAdd, loading
                         onChange={(e) => handleChange('description', e.target.value)}
                         placeholder={"Описание"}
                     />
+                    <Radiobutton
+                        label={"Лагерь/продлёнка"}
+                        value={formData.dayClasses}
+                        name={"dayClasses"}
+                        onChange={(e) => handleChange('dayClasses', e.target.value)}
+                    />
                     <div className={styles.details}>
                         <Select
                             label={"Тип занятий"}
@@ -81,7 +94,7 @@ const CreateClubModal = ({ categories, teachers, isOpen, onClose, onAdd, loading
                                 value: teacher.teacher.id,
                                 label: `${teacher.lastName} ${teacher.firstName}`
                             }))}
-                            required
+                            disabled={formData.dayClasses}
                         />
                     </div>
                     <Input

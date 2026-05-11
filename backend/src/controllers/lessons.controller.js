@@ -30,7 +30,10 @@ exports.getAll = async (req, res, next) => {
         }
 
         if (req.user.role === 'TEACHER') {
-            where.assignedTeacherId = req.user.teacher.id;
+            where.OR = [
+                { assignedTeacherId: req.user.teacher.id },
+                { club: { dayClasses: true } },
+            ];
         }
 
         if (clubId) where.clubId = parseInt(clubId);
@@ -45,7 +48,7 @@ exports.getAll = async (req, res, next) => {
             prisma.lesson.findMany({
                 where,
                 include: {
-                    club: { select: { id: true, name: true } },
+                    club: true,
                     teacher: {
                         include: {
                             user: { select: { id: true, firstName: true, lastName: true } },
@@ -195,7 +198,7 @@ exports.createWeekLessons = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { clubId, date, startTime, endTime, teacherId, room, topic } = req.body;
+        const { clubId, date, startTime, endTime, assignedTeacherId, room, topic } = req.body;
 
         const lesson = await prisma.lesson.update({
             where: { id: parseInt(req.params.id) },
@@ -204,7 +207,7 @@ exports.update = async (req, res, next) => {
                 ...(date && { date: new Date(date) }),
                 ...(startTime && { startTime }),
                 ...(endTime && { endTime }),
-                ...(teacherId && { teacherId: parseInt(teacherId) }),
+                ...(assignedTeacherId && { assignedTeacherId: parseInt(assignedTeacherId) }),
                 ...(room !== undefined && { room }),
                 ...(topic !== undefined && { topic }),
             },
