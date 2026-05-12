@@ -86,7 +86,7 @@ exports.update = async (req, res, next) => {
             where: { id: parseInt(req.params.id) },
             data: {
                 ...(name && { name }),
-                ...(description && { description }),
+                ...(description !== undefined && { description }),
             },
         });
 

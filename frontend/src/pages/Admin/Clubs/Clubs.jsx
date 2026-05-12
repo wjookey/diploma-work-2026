@@ -1,8 +1,5 @@
 import styles from './Clubs.module.scss';
-import ClubCategoryCard from '../../../components/ClubCategoryCard/ClubCategoryCard';
 import ClubCard from '../../../components/ClubCard/ClubCard';
-import CreateClubCatModal from '../../../components/CreateClubCatModal/CreateClubCatModal';
-import EditClubCatModal from '../../../components/EditClubCatModal/EditClubCatModal';
 import CreateClubModal from '../../../components/CreateClubModal/CreateClubModal';
 import EditClubModal from '../../../components/EditClubModal/EditClubModal';
 import Input from '../../../components/Input/Input';
@@ -23,10 +20,7 @@ const Clubs = () => {
     const [categories, setCategories] = useState([]);
     const [clubs, setClubs] = useState([]);
     const [createClubModal, setCreateClubModal] = useState(false);
-    const [createCatModal, setCreateCatModal] = useState(false);
     const [search, setSearch] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [isEditCat, setIsEditCat] = useState(false);
     const [selectedClub, setSelectedClub] = useState(null);
     const [isEditClub, setIsEditClub] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -36,13 +30,6 @@ const Clubs = () => {
 
     const { user } = useAuth();
     const [editModal, setEditModal] = useState(false);
-
-    const [catPagination, setCatPagination] = useState({
-        page: 1,
-        limit: 10,
-        total: 0,
-        totalPages: 1
-    });
     
     const [clubPagination, setClubPagination] = useState({
         page: 1,
@@ -53,20 +40,12 @@ const Clubs = () => {
     
     useEffect(() => {
         const loadData = async () => {
-            setLoading(true);
             try {
-                const urlCat = search 
-                    ? `/clubCategories?search=${encodeURIComponent(search)}&page=${catPagination.page}&limit=${catPagination.limit}` 
-                    : `/clubCategories?page=${catPagination.page}&limit=${catPagination.limit}`;
-                
                 const urlClub = search 
                     ? `/clubs?search=${encodeURIComponent(search)}&page=${clubPagination.page}&limit=${clubPagination.limit}` 
                     : `/clubs?page=${clubPagination.page}&limit=${clubPagination.limit}`;
                 
-                const [resClub, resCat] = await Promise.all([
-                    api.get(urlClub),
-                    api.get(urlCat),
-                ]);
+                const resClub = await api.get(urlClub);
                 
                 setClubs(resClub.data.data);
                 if (resClub.data.pagination) {
@@ -75,16 +54,6 @@ const Clubs = () => {
                         limit: resClub.data.pagination.limit,
                         total: resClub.data.pagination.total,
                         totalPages: resClub.data.pagination.totalPages
-                    });
-                }
-                
-                setCategories(resCat.data.data);
-                if (resCat.data.pagination) {
-                    setCatPagination({
-                        page: resCat.data.pagination.page,
-                        limit: resCat.data.pagination.limit,
-                        total: resCat.data.pagination.total,
-                        totalPages: resCat.data.pagination.totalPages
                     });
                 }
             } catch (error) {
@@ -96,39 +65,24 @@ const Clubs = () => {
         }
 
         loadData();
-    }, [search, createCatModal, createClubModal, isEditCat, isEditClub, catPagination.page, clubPagination.page]);
+    }, [search, createClubModal, isEditClub, clubPagination.page]);
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const res = await api.get('/users?role=TEACHER');
-                setTeachers(res.data.data);
+                const [resTeacher, resCategory] = await Promise.all([
+                    api.get('/users?role=TEACHER'),
+                    api.get('/clubCategories'),
+                ]);
+                setTeachers(resTeacher.data.data);
+                setCategories(resCategory.data.data);
             } catch (error) {
                 console.error(error);
             }
         };
 
         loadData();
-    }, [isEditClub, createClubModal])
-
-    const handleCreateCat = async (catData) => {
-        setCreatingItem(true);
-        try {
-            const data = {
-                name: catData.name,
-                description: catData.description,
-            };
-
-            await api.post('/clubCategories', { ...data });
-            toast.success('Категория добавлена');
-            setCreateCatModal(false);
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Ошибка создания категории');
-            console.error(error);
-        } finally {
-            setCreatingItem(false);
-        }
-    };
+    }, [isEditClub, createClubModal]);
 
     const handleCreateClub = async (clubData) => {
         setCreatingItem(true);
@@ -150,24 +104,6 @@ const Clubs = () => {
             console.error(error);
         } finally {
             setCreatingItem(false);
-        }
-    };
-
-    const handleUpdateCat = async (catData) => {
-        setSubmittingEdit(true);
-        try {
-            await api.put(`/clubCategories/${catData.id}`, {
-                name: catData.name,
-                description: catData.description,
-            });
-
-            toast.success('Категория обновлена');
-            setIsEditCat(false);
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Ошибка обновления категория');
-            console.error(error);
-        } finally {
-            setSubmittingEdit(false);
         }
     };
 
@@ -193,19 +129,6 @@ const Clubs = () => {
         }
     };
 
-    const handleUpdateCatStatus = async (catId, isActive) => {
-        setSubmittingEdit(true);
-        try {
-            await api.put(`/clubCategories/${catId}/status`, { isActive: Boolean(isActive) });
-            toast.success('Статус категории изменён')
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Ошибка обновления статуса категории');
-            console.error(error);
-        } finally {
-            setSubmittingEdit(false);
-        }
-    };
-
     const handleUpdateClubStatus = async (clubId, isActive) => {
         setSubmittingEdit(true);
         try {
@@ -219,26 +142,12 @@ const Clubs = () => {
         }
     };
 
-    const handleDeleteCat = async (catId) => {
-        setSubmittingEdit(true);
-        try {
-            await api.delete(`/clubCategories/${catId}`);
-            toast.success('Категория удалена');
-            setIsEditCat(false);
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Ошибка удаления категории');
-            console.error(error);
-        } finally {
-            setSubmittingEdit(false);
-        }
-    };
-
     const handleDeleteClub = async (clubId) => {
         setSubmittingEdit(true);
         try {
             await api.delete(`/clubs/${clubId}`);
             toast.success('Кружок удалён');
-            setIsEditCat(false);
+            setIsEditClub(false);
         } catch (error) {
             toast.error(error.response?.data?.message || 'Ошибка удаления кружка');
             console.error(error);
@@ -261,18 +170,6 @@ const Clubs = () => {
         }
     };
 
-    const categoryItems = categories.map((cat) => (
-        <li key={cat.id}>
-            <ClubCategoryCard
-                clubCategory={cat}
-                onEdit={() => {
-                    setSelectedCategory(cat);
-                    setIsEditCat(true);
-                }}
-            />
-        </li>
-    ));
-
     const clubItems = clubs.map((club) => (
         <li key={club.id}>
             <ClubCard
@@ -284,10 +181,6 @@ const Clubs = () => {
             />
         </li>
     ));
-
-    const handleCatPageChange = (newPage) => {
-        setCatPagination(prev => ({ ...prev, page: newPage }));
-    };
 
     const handleClubPageChange = (newPage) => {
         setClubPagination(prev => ({ ...prev, page: newPage }));
@@ -303,35 +196,22 @@ const Clubs = () => {
                     <h1 className={styles.pageName}>Кружки</h1>
                 </div>
                 <div className={styles.buttons}>
-                    <Button variant='primary' onClick={() => setCreateCatModal(true)}>Добавить категорию</Button>
                     <Button variant='primary' onClick={() => setCreateClubModal(true)}>Добавить кружок</Button>
                 </div>
             </div>
             <div className={styles.wrapper}>
                 <div className={styles.input}>
-                    <Input icon={Search} placeholder={'Поиск по названию'} value={search} onChange={(e) => setSearch(e.target.value)} />
-                </div>
-                <div className={styles.categories}>
-                    <h2 className={styles.subheader}>Категории кружков</h2>
-                    {categoryItems.length > 0 ? (
-                        <>
-                            <ul className={styles.list}>{categoryItems}</ul>
-                            <Pagination 
-                                pagination={catPagination} 
-                                onPageChange={handleCatPageChange}
-                            />
-                        </>
-                    ) : (
-                        <EmptyState
-                            icon={Palette}
-                            title={'Нет категорий'}
-                            description={'Добавьте первую категорию для начала работы'}
-                            action={<Button icon={Plus} onClick={() => setCreateCatModal(true)}>Добавить категорию</Button>}
-                        />
-                    )}
+                    <Input
+                        icon={Search}
+                        placeholder={'Поиск по названию'}
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            setClubPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
+                    />
                 </div>
                 <div className={styles.clubs}>
-                    <h2 className={styles.subheader}>Кружки</h2>
                     {clubItems.length > 0 ? (
                         <>
                             <ul className={styles.list}>{clubItems}</ul>
@@ -359,12 +239,6 @@ const Clubs = () => {
                     setIsSidebarOpen(false);
                 }}
             />
-            <CreateClubCatModal
-                isOpen={createCatModal}
-                onClose={() => setCreateCatModal(false)}
-                onAdd={handleCreateCat}
-                loading={creatingItem}
-            />
             <CreateClubModal
                 isOpen={createClubModal}
                 onClose={() => setCreateClubModal(false)}
@@ -372,18 +246,6 @@ const Clubs = () => {
                 teachers={teachers}
                 onAdd={handleCreateClub}
                 loading={creatingItem}
-            />
-            <EditClubCatModal
-                category={selectedCategory}
-                isOpen={isEditCat}
-                onClose={() => {
-                    setIsEditCat(false);
-                    setSelectedCategory(null);
-                }}
-                onSubmit={handleUpdateCat}
-                onDelete={handleDeleteCat}
-                onStatusChange={handleUpdateCatStatus}
-                loading={submittingEdit}
             />
             <EditClubModal
                 club={selectedClub}

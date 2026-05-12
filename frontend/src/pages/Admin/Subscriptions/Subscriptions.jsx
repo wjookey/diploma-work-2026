@@ -235,7 +235,10 @@ const Subscriptions = () => {
                     <div className={styles.input}><Select
                         value={selectedFamily || ''}
                         placeholder={selectedFamily ? '' : "Семья"}
-                        onChange={(e) => setSelectedFamily(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedFamily(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={families.map((fam) => (
                             {
                                 value: fam.id,
@@ -246,7 +249,10 @@ const Subscriptions = () => {
                     <div className={styles.input}><Select
                         value={selectedChild || ''}
                         placeholder={selectedChild ? '' : "Ребёнок"}
-                        onChange={(e) => setSelectedChild(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedChild(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={children.map((child) => (
                             {
                                 value: child.id,
@@ -257,7 +263,10 @@ const Subscriptions = () => {
                     <div className={styles.input}><Select
                         value={selectedClub || ''}
                         placeholder={selectedClub ? '' : "Кружок"}
-                        onChange={(e) => setSelectedClub(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedClub(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={clubs.map((club) => (
                             {
                                 value: club.id,
@@ -268,7 +277,10 @@ const Subscriptions = () => {
                     <div className={styles.input}><Select
                         value={selectedStatus || ''}
                         placeholder={selectedStatus ? '' : "Статус"}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedStatus(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={SUBSCRIPTION_STATUS.map((s) => (
                             {
                                 value: s.value,

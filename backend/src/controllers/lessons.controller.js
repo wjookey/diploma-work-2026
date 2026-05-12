@@ -207,9 +207,9 @@ exports.update = async (req, res, next) => {
                 ...(date && { date: new Date(date) }),
                 ...(startTime && { startTime }),
                 ...(endTime && { endTime }),
-                ...(assignedTeacherId && { assignedTeacherId: parseInt(assignedTeacherId) }),
                 ...(room !== undefined && { room }),
                 ...(topic !== undefined && { topic }),
+                assignedTeacherId: assignedTeacherId ? parseInt(assignedTeacherId) : null,
             },
             include: {
                 club: { select: { id: true, name: true } },

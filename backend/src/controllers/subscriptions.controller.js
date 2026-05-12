@@ -121,13 +121,13 @@ exports.create = async (req, res, next) => {
             where: { childId: parseInt(childId), clubId: clubService.clubId, status: 'ACTIVE' },
         });
 
-        let date = new Date()
-        date = new Date(Date.UTC(
-            date.getUTCFullYear(),
-            date.getUTCMonth(),
-            date.getUTCDate() + 1,
-            0, 0, 0, 0
-        ));
+        let date = new Date();
+        date = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate() + 1,
+            3, 0, 0, 0
+        );
 
         const subscription = await prisma.subscription.create({
             data: {
@@ -173,13 +173,13 @@ exports.createCombo = async (req, res, next) => {
                     where: { clubId: clubService.clubId, childId: parseInt(comboSubscription.childId), status: 'ACTIVE' },
                 });
 
-                let date = new Date()
-                date = new Date(Date.UTC(
-                    date.getUTCFullYear(),
-                    date.getUTCMonth(),
-                    date.getUTCDate() + 1,
-                    0, 0, 0, 0
-                ));
+                let date = new Date();
+                date = new Date(
+                    date.getFullYear(),
+                    date.getMonth(),
+                    date.getDate() + 1,
+                    3, 0, 0, 0
+                );
 
                 const createdSubscription = await tx.subscription.create({
                     data: {
@@ -249,13 +249,13 @@ exports.update = async (req, res, next) => {
                 },
             });
 
-            let date = new Date()
-            date = new Date(Date.UTC(
-                date.getUTCFullYear(),
-                date.getUTCMonth(),
-                date.getUTCDate() + 1,
-                0, 0, 0, 0
-            ));
+            let date = new Date();
+            date = new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate() + 1,
+                3, 0, 0, 0
+            );
 
             if (pendingSubscription && activeSubscriptionCount === 0) {
                 await prisma.subscription.update({
@@ -300,13 +300,13 @@ exports.cancel = async (req, res, next) => {
             },
         });
 
-        let date = new Date()
-        date = new Date(Date.UTC(
-            date.getUTCFullYear(),
-            date.getUTCMonth(),
-            date.getUTCDate() + 1,
-            0, 0, 0, 0
-        ));
+        let date = new Date();
+        date = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate() + 1,
+            3, 0, 0, 0
+        );
 
         if (pendingSubscription && activeSubscriptionCount === 0) {
             await prisma.subscription.update({
@@ -347,13 +347,13 @@ exports.remove = async (req, res, next) => {
             },
         });
 
-        let date = new Date()
-        date = new Date(Date.UTC(
-            date.getUTCFullYear(),
-            date.getUTCMonth(),
-            date.getUTCDate() + 1,
-            0, 0, 0, 0
-        ));
+        let date = new Date();
+        date = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate() + 1,
+            3, 0, 0, 0
+        );
 
         if (pendingSubscription && activeSubscriptionCount === 0) {
             await prisma.subscription.update({

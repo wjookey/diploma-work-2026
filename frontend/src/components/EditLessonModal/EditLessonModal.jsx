@@ -3,7 +3,7 @@ import Modal from '../Modal/Modal';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import Select from '../Select/Select';
-import { LESSON_STATUS, getLessonStatus, formatDate } from '../../utils/helper';
+import { LESSON_STATUS } from '../../utils/helper';
 import toast from "react-hot-toast";
 import DangerModal from "../DangerModal/DangerModal";
 import { useState, useEffect } from "react";
@@ -127,13 +127,6 @@ const EditLessonModal = ({ lesson, clubs, teachers, isOpen, onClose, onSubmit, o
                             id={"room"}
                             value={formData.room || ''}
                             onChange={(e) => handleChange('room', e.target.value)}
-                            disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'}
-                        />
-                        <Input
-                            label={"Тема занятия"}
-                            id={"topic"}
-                            value={formData.topic || ''}
-                            onChange={(e) => handleChange('topic', e.target.value)}
                             disabled={lesson?.status === 'COMPLETED' || lesson?.status === 'CANCELLED'}
                         />
                         <Select

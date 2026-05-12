@@ -118,14 +118,20 @@ const LessonsParent = () => {
                     <div className={styles.input}>
                         <Input
                             value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
+                            onChange={(e) => {
+                                setStartDate(e.target.value);
+                                setPagination((prev) => ({ ...prev, page: 1 }));
+                            }}
                             type="date"
                         />
                     </div>
                     <div className={styles.input}>
                         <Input
                             value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
+                            onChange={(e) => {
+                                setEndDate(e.target.value);
+                                setPagination((prev) => ({ ...prev, page: 1 }));
+                            }}
                             type="date"
                         />
                     </div>

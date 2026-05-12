@@ -99,7 +99,7 @@ const EditScheduleRecModal = ({ record, clubs, isOpen, onClose, onSubmit, onDele
                             label={"Кабинет"}
                             id={"room"}
                             value={formData.room || ''}
-                            onChange={(e) => handleChange(e.target.calue)}
+                            onChange={(e) => handleChange('room', e.target.value)}
                         />
                     </div>   
                     <div className={styles.buttons}>

@@ -17,7 +17,7 @@ const CreatePaymentModal = ({ subscriptions, isOpen, onClose, onAdd, loading = f
     });
 
     useEffect(() => {
-        const date = new Date().toISOString().split("T")[0];
+        const date = new Date(new Date().setHours(3, 0, 0, 0)).toISOString().split('T')[0];
         if (!isOpen) {
             setFormData({
                 subscriptionId: null,

@@ -111,13 +111,6 @@ const CreateLessonModal = ({ clubs, teachers, isOpen, onClose, onAdd, loading = 
                         onChange={(e) => handleChange('room', e.target.value)}
                         placeholder={"Кабинет"}
                     />
-                    <Input
-                        label={"Тема занятия"}
-                        id={"topic"}
-                        value={formData.topic || ''}
-                        onChange={(e) => handleChange('topic', e.target.value)}
-                        placeholder={"Тема занятия"}
-                    />
                 </div>   
                 <Button
                     variant='primary'

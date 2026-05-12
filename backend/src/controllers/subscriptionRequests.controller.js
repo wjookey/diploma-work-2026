@@ -226,13 +226,13 @@ exports.approve = async (req, res, next) => {
             },
         });
 
-        let date = new Date()
-        date = new Date(Date.UTC(
-            date.getUTCFullYear(),
-            date.getUTCMonth(),
-            date.getUTCDate() + 1,
-            0, 0, 0, 0
-        ));
+        let date = new Date();
+        date = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate() + 1,
+            3, 0, 0, 0
+        );
 
         await prisma.$transaction([
             prisma.subscription.create({

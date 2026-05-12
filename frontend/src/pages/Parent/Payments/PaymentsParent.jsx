@@ -98,8 +98,22 @@ const PaymentsParent = () => {
             </div>
             <div className={styles.wrapper}>
                 <div className={styles.input}>
-                    <Input value={startDate} onChange={(e) => setStartDate(e.target.value)} type="date"/>
-                    <Input value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date"/>
+                    <Input
+                        value={startDate}
+                        onChange={(e) => {
+                            setStartDate(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
+                        type="date"
+                    />
+                    <Input
+                        value={endDate}
+                        onChange={(e) => {
+                            setEndDate(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
+                        type="date"
+                    />
                 </div>
                 {paymentItems.length > 0 ? (
                     <>

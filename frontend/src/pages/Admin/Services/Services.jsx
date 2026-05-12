@@ -192,7 +192,15 @@ const Services = () => {
             </div>
             <div className={styles.wrapper}>
                 <div className={styles.input}>
-                    <Input icon={Search} placeholder={'Поиск по названию'} value={search} onChange={(e) => setSearch(e.target.value)} />
+                    <Input
+                        icon={Search}
+                        placeholder={'Поиск по названию'}
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
+                    />
                 </div>
                 {serviceItems.length > 0 ? (
                     <div className={styles.services}>

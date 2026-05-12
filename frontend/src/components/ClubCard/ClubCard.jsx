@@ -17,7 +17,7 @@ const ClubCard = ({ club, onEdit, isInModal = false }) => {
                         <Tag text={club.clubCategory.name} color={'purple'} />
                         <Tag text={text} color={color} />
                     </div>
-                    <p className={styles.description}>{club.description !== null ? club.description : 'Нет описания'}</p>
+                    <p className={styles.description}>{club.description ? club.description : 'Нет описания'}</p>
                     <div className={styles.aboutClub}>
                         <div className={styles.teacher}>
                             <GraduationCap className={styles.icon} />
@@ -25,7 +25,7 @@ const ClubCard = ({ club, onEdit, isInModal = false }) => {
                         </div>
                         <div className={styles.clients}>
                             <Users className={styles.icon} />
-                            <p>Макс. {club.maxStudents !== null ? club.maxStudents : '-'} учеников</p>
+                            <p>Макс. {club.maxStudents ? club.maxStudents : '-'} учеников</p>
                         </div>
                     </div>
                 </div>

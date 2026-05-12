@@ -24,6 +24,7 @@ import PaymentsParent from './pages/Parent/Payments/PaymentsParent';
 import RequestsParent from './pages/Parent/Requests/RequestsParent';
 import Dashboard from './pages/Admin/Dashboard/Dashboard';
 import Register from './pages/Register/Register';
+import ClubCats from './pages/Admin/ClubCats/ClubCats';
 
 function LessonsPage() {
   const { user } = useAuth();
@@ -89,13 +90,14 @@ function App() {
 
         <Route path='/' element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
         <Route path='/clients' element={<ProtectedRoute roles={['ADMIN']}><Clients /></ProtectedRoute>} />
+        <Route path='/categories' element={<ProtectedRoute roles={['ADMIN']}><ClubCats /></ProtectedRoute>} />
         <Route path='/clubs' element={<ProtectedRoute roles={['ADMIN']}><Clubs /></ProtectedRoute>} />
         <Route path='/teachers' element={<ProtectedRoute roles={['ADMIN']}><Teachers /></ProtectedRoute>} />
         <Route path='/schedule' element={<ProtectedRoute roles={['ADMIN']}><Schedule /></ProtectedRoute>} />
-        <Route path='/services' element={<ProtectedRoute><ServicesPage /></ProtectedRoute>} />
-        <Route path='/payments' element={<ProtectedRoute><PaymentsPage /></ProtectedRoute>} />
-        <Route path='/requests' element={<ProtectedRoute><RequestsPage /></ProtectedRoute>} />
-        <Route path='/subscriptions' element={<ProtectedRoute><SubscriptionsPage /></ProtectedRoute>} />
+        <Route path='/services' element={<ProtectedRoute roles={['ADMIN', 'PARENT']}><ServicesPage /></ProtectedRoute>} />
+        <Route path='/payments' element={<ProtectedRoute roles={['ADMIN', 'PARENT']}><PaymentsPage /></ProtectedRoute>} />
+        <Route path='/requests' element={<ProtectedRoute roles={['ADMIN', 'PARENT']}><RequestsPage /></ProtectedRoute>} />
+        <Route path='/subscriptions' element={<ProtectedRoute roles={['ADMIN', 'PARENT']}><SubscriptionsPage /></ProtectedRoute>} />
         <Route path='/lessons' element={<ProtectedRoute><LessonsPage /></ProtectedRoute>} />
         <Route path='*' element={<Navigate to="/" replace />} />
         

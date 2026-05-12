@@ -27,7 +27,7 @@ const Lessons = () => {
     const [editLesson, setEditLesson] = useState(false);
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [selectedClub, setSelectedClub] = useState(null);
-    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+    const [startDate, setStartDate] = useState(new Date(new Date().setHours(3, 0, 0, 0)).toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState('');
     const [teachers, setTeachers] = useState([]);
     const [selectedAttendance, setSelectedAttendance] = useState([]);
@@ -269,7 +269,10 @@ const Lessons = () => {
                     <div className={styles.input}><Select
                         value={selectedClub || ''}
                         placeholder={"Кружок"}
-                        onChange={(e) => setSelectedClub(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedClub(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={clubs.map((club) => (
                             {
                                 value: club.id,
@@ -277,8 +280,26 @@ const Lessons = () => {
                             }
                         ))}
                     /></div>
-                    <div className={styles.input}><Input value={startDate} onChange={(e) => setStartDate(e.target.value)} type="date"/></div>
-                    <div className={styles.input}><Input value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date"/></div>
+                    <div className={styles.input}>
+                        <Input
+                            value={startDate}
+                            onChange={(e) => {
+                                setStartDate(e.target.value);
+                                setPagination((prev) => ({ ...prev, page: 1 }));
+                            }}
+                            type="date"
+                        />
+                    </div>
+                    <div className={styles.input}>
+                        <Input
+                            value={endDate}
+                            onChange={(e) => {
+                                setEndDate(e.target.value);
+                                setPagination((prev) => ({ ...prev, page: 1 }));
+                            }}
+                            type="date"
+                        />
+                    </div>
                 </div>
                 {lessonItems.length > 0 ? (
                     <>

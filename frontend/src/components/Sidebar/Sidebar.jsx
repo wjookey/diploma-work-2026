@@ -21,6 +21,7 @@ const adminLinks = [
     { to: "/", icon: LayoutDashboard, label: "Дашборд" },
     { to: "/clients", icon: Users, label: "Клиенты" },
     { to: "/teachers", icon: GraduationCap, label: "Преподаватели" },
+    { to: "/categories", icon: Palette, label: "Категории кружков" },
     { to: "/clubs", icon: Palette, label: "Кружки" },
     { to: "/services", icon: Clipboard, label: "Услуги" },
     { to: "/schedule", icon: CalendarDays, label: "Расписание" },

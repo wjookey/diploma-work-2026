@@ -92,7 +92,7 @@ const CreateScheduleRecModal = ({ clubs, isOpen, onClose, onAdd, loading = false
                         label={"Кабинет"}
                         id={"room"}
                         value={formData.room || ''}
-                        onChange={(e) => handleChange(e.target.calue)}
+                        onChange={(e) => handleChange('room', e.target.value)}
                         placeholder={"Кабинет"}
                     />
                 </div>   

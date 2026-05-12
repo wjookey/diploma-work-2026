@@ -124,7 +124,10 @@ const SubscriptionsParent = () => {
                     <div className={styles.input}><Select
                         value={selectedChild || ''}
                         placeholder={selectedChild ? '' : "Ребёнок"}
-                        onChange={(e) => setSelectedChild(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedChild(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={children.map((child) => (
                             {
                                 value: child.id,
@@ -135,7 +138,10 @@ const SubscriptionsParent = () => {
                     <div className={styles.input}><Select
                         value={selectedStatus || ''}
                         placeholder={selectedStatus ? '' : "Статус"}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedStatus(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={SUBSCRIPTION_STATUS.map((s) => (
                             {
                                 value: s.value,

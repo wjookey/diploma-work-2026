@@ -178,7 +178,10 @@ const RequestsParent = () => {
                     <Select
                         value={selectedChild}
                         placeholder={selectedChild ? '' : "Ребёнок"}
-                        onChange={(e) => setSelectedChild(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedChild(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={children.map((child) => (
                             {
                                 value: child.id,
@@ -190,7 +193,10 @@ const RequestsParent = () => {
                         value={selectedStatus}
                         placeholder={selectedStatus ? '' : "Статус"}
                         value={selectedStatus}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedStatus(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={REQUEST_STATUS.map((s) => (
                             {
                                 value: s.value,

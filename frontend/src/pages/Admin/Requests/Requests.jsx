@@ -142,7 +142,10 @@ const Requests = () => {
                     <Select
                         value={selectedChild}
                         placeholder={selectedChild ? '' : "Ребёнок"}
-                        onChange={(e) => setSelectedChild(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedChild(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={children.map((child) => (
                             {
                                 value: child.id,
@@ -153,7 +156,10 @@ const Requests = () => {
                     <Select
                         value={selectedClub}
                         placeholder={selectedClub ? '' : "Кружок"}
-                        onChange={(e) => setSelectedClub(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedClub(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={clubs.map((club) => (
                             {
                                 value: club.id,
@@ -164,7 +170,10 @@ const Requests = () => {
                     <Select
                         value={selectedStatus}
                         placeholder={selectedStatus ? '' : "Статус"}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedStatus(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
                         options={REQUEST_STATUS.map((s) => (
                             {
                                 value: s.value,

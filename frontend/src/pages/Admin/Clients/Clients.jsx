@@ -370,7 +370,15 @@ const Clients = () => {
             </div>
             <div className={styles.wrapper}>
                 <div className={styles.input}>
-                    <Input icon={Search} placeholder={'Введите контактные данные семьи'} value={search} onChange={(e) => setSearch(e.target.value)} />
+                    <Input
+                        icon={Search}
+                        placeholder={'Введите контактные данные семьи'}
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            setPagination((prev) => ({ ...prev, page: 1 }));
+                        }}
+                    />
                 </div>
                 {famItems.length > 0 ? (
                     <div className={styles.families}>
