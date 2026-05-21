@@ -1,24 +1,8 @@
-const prisma = require('../config/prisma');
-const { AppError } = require('../middleware/errorHandler');
+const scheduleModel = require('../model/schedule');
 
 exports.getAll = async (req, res, next) => {
     try {
-        const where = {};
-        const schedule = await prisma.schedule.findMany({
-            include: {
-                club: {
-                    include: {
-                        teacher: {
-                            include: {
-                                user: { select: { id: true, firstName: true, lastName: true, phone: true, email: true } },
-                            },
-                        },
-                    },
-                },
-            },
-            orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
-        });
-
+        const schedule = await scheduleModel.getAll();
         res.json({ success: true, data: schedule });
     } catch (error) {
         next(error);
@@ -27,21 +11,7 @@ exports.getAll = async (req, res, next) => {
 
 exports.getById = async (req, res, next) => {
     try {
-        const schedule = await prisma.schedule.findUnique({
-            where: { id: parseInt(req.params.id) },
-            include: {
-                club: {
-                    include: {
-                        teacher: {
-                            include: {
-                                user: { select: { id: true, firstName: true, lastName: true, phone: true, email: true } },
-                            },
-                        },
-                    },
-                },
-            },
-        });
-
+        const schedule = await scheduleModel.getById(parseInt(req.params.id));
         res.json({ success: true, data: schedule });
     } catch (error) {
         next(error);
@@ -50,32 +20,7 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const { clubId, dayOfWeek, startTime, endTime, room } = req.body;
-
-        const club = await prisma.club.findUnique({
-            where: { id: parseInt(clubId) },
-            include: {
-                teacher: true,
-            },
-        });
-        
-        if (!club) throw new AppError('Кружок не найден', 404);
-
-        const schedule = await prisma.schedule.create({
-            data: {
-                clubId: parseFloat(clubId),
-                dayOfWeek: parseInt(dayOfWeek),
-                startTime,
-                endTime,
-                room,
-            },
-            include: {
-                club: {
-                    include: { teacher: true },
-                },
-            },
-        });
-
+        const schedule = await scheduleModel.create(req.body);
         res.status(201).json({ success: true, data: schedule });
     } catch (error) {
         next(error);
@@ -84,24 +29,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { clubId, dayOfWeek, startTime, endTime, room } = req.body;
-
-        const schedule = await prisma.schedule.update({
-            where: { id: parseInt(req.params.id) },
-            data: {
-                ...(clubId && { clubId: parseInt(clubId) }),
-                ...(dayOfWeek !== undefined && { dayOfWeek: parseInt(dayOfWeek) }),
-                ...(startTime && { startTime }),
-                ...(endTime && { endTime }),
-                ...(room !== undefined && { room }),
-            },
-            include: {
-                club: {
-                    include: { teacher: true },
-                },
-            },
-        });
-
+        const schedule = await scheduleModel.update(parseInt(req.params.id), req.body);
         res.json({ success: true, data: schedule });
     } catch (error) {
         next(error);
@@ -110,10 +38,7 @@ exports.update = async (req, res, next) => {
 
 exports.remove = async (req, res, next) => {
     try {
-        await prisma.schedule.delete({
-            where: { id: parseInt(req.params.id) },
-        });
-
+        await scheduleModel.remove(parseInt(req.params.id));
         res.json({ success: true, message: 'Schedule is deleted' });
     } catch (error) {
         next(error);
@@ -122,57 +47,11 @@ exports.remove = async (req, res, next) => {
 
 exports.generateLessons = async (req, res, next) => {
     try {
-        const { startDate, endDate } = req.body;
-
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-
-        if (start > end) {
-            throw new AppError('Дата начала должна быть раньше даты конца', 400);
-        }
-
-        const schedule = await prisma.schedule.findMany({
-            include: {
-                club: true,
-            },
-        });
-
-        if (schedule.length === 0) throw new AppError('Расписание отсутствует', 404);
-
-        const lessons = [];
-        for (const record of schedule) {
-            let current = new Date(start);
-            while (current <= end) {
-                const jsDay = current.getDay();
-                const ourDay = jsDay === 0 ? 7 : jsDay;
-
-                if (ourDay === record.dayOfWeek) {
-                    lessons.push({
-                        clubId: record.clubId,
-                        date: new Date(current),
-                        startTime: record.startTime,
-                        endTime: record.endTime,
-                        room: record.room,
-                        status: 'SCHEDULED',
-                        assignedTeacherId: record.club.defaultTeacherId,
-                    });
-                }
-
-                current = new Date(current.setDate(current.getDate() + 1));
-            }
-        }
-
-        if (lessons.length === 0) throw new AppError('Нет уроков для генерации', 400);
-
-        const createdLessons = await prisma.lesson.createMany({
-            data: lessons,
-            skipDuplicates: true,
-        });
-
+        const count = await scheduleModel.generateLessons(req.body);
         res.status(201).json({
             success: true,
-            message: `Created ${createdLessons.count} lessons`,
-            data: { count: createdLessons.count }
+            message: `Created ${count} lessons`,
+            data: { count },
         });
     } catch (error) {
         next(error);

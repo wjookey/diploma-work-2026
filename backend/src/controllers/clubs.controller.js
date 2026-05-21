@@ -1,52 +1,9 @@
-const prisma = require('../config/prisma');
-const { AppError } = require('../middleware/errorHandler');
+const clubModel = require('../model/club');
 
 exports.getAll = async (req, res, next) => {
     try {
-        const { search, classCategoryId, isActive, page = 1, limit = 20 } = req.query;
-        const skip = (parseInt(page) - 1) * parseInt(limit);
-
-        const where = {};
-
-        if (isActive !== undefined) {
-            where.isActive = isActive === 'true';
-        }
-        if (classCategoryId) {
-            where.classCategoryId = parseInt(classCategoryId);
-        }
-        if (search) {
-            where.name = { contains: search, mode: 'insensitive' };
-        }
-
-        const [clubs, total] = await Promise.all([
-            prisma.club.findMany({
-                where,
-                include: {
-                    clubCategory: { select: { id: true, name: true, description: true, isActive: true } },
-                    teacher: {
-                        include: {
-                            user: { select: { firstName: true, lastName: true, phone: true, email: true } },
-                        }
-                    },
-                },
-                orderBy: { name: 'asc' },
-                skip,
-                take: parseInt(limit),
-            }),
-            prisma.club.count({ where }),
-        ]);
-
-        res.json({
-            success: true,
-            data: clubs,
-            pagination: {
-                total,
-                page: parseInt(page),
-                limit: parseInt(limit),
-                totalPages: Math.ceil(total / parseInt(limit)),
-            }
-        });
-
+        const { data, pagination } = await clubModel.getAll(req.query);
+        res.json({ success: true, data, pagination });
     } catch (error) {
         next(error);
     }
@@ -54,33 +11,7 @@ exports.getAll = async (req, res, next) => {
 
 exports.getById = async (req, res, next) => {
     try {
-        const club = await prisma.club.findUnique({
-            where: { id: parseInt(req.params.id) },
-            include: {
-                clubCategory: { select: { id: true, name: true, description: true } },
-                teacher: {
-                    include: {
-                        user: { select: { firstName: true, lastName: true, phone: true, email: true } },
-                    }
-                },
-                clubServices: {
-                    select: { id: true, name: true, price: true, subscriptionLessons: true, type: true },
-                },
-                lessons: {
-                    where: { date: { gte: new Date() } },
-                    orderBy: { date: 'asc' },
-                    take: 10,
-                    select: { id: true, date: true, startTime: true, endTime: true, status: true },
-                },
-                subscriptions: {
-                    where: { status: 'ACTIVE' },
-                    select: { id: true, child: { select: { id: true, firstName: true, lastName: true } } },
-                },
-            },
-        });
-
-        if (!club) throw new AppError('Кружок не найден', 404);
-
+        const club = await clubModel.getById(parseInt(req.params.id));
         res.json({ success: true, data: club });
     } catch (error) {
         next(error);
@@ -89,27 +20,7 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const { name, description, classCategoryId, defaultTeacherId, maxStudents, dayClasses } = req.body;
-
-        const club = await prisma.club.create({
-            data: {
-                name,
-                description,
-                classCategoryId: parseInt(classCategoryId),
-                defaultTeacherId: dayClasses ? null : parseInt(defaultTeacherId),
-                dayClasses,
-                maxStudents: maxStudents ? parseInt(maxStudents) : null,
-            },
-            include: {
-                clubCategory: { select: { id: true, name: true } },
-                teacher: {
-                    include: {
-                        user: { select: { firstName: true, lastName: true } },
-                    }
-                },
-            },
-        });
-
+        const club = await clubModel.create(req.body);
         res.status(201).json({ success: true, data: club });
     } catch (error) {
         next(error);
@@ -118,30 +29,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { name, description, classCategoryId, defaultTeacherId, maxStudents, isActive, dayClasses } = req.body;
-
-        const club = await prisma.club.update({
-            where: { id: parseInt(req.params.id) },
-            data: {
-                ...(name && { name }),
-                ...(description !== undefined && { description }),
-                ...(classCategoryId && { classCategoryId: parseInt(classCategoryId) }),
-                ...(defaultTeacherId && { defaultTeacherId: parseInt(defaultTeacherId) }),
-                ...(maxStudents !== undefined && { maxStudents: maxStudents ? parseInt(maxStudents) : null }),
-                ...(isActive !== undefined && { isActive }),
-                ...(dayClasses !== undefined && { dayClasses }),
-                ...(dayClasses && { defaultTeacherId: null }),
-            },
-            include: {
-                clubCategory: { select: { id: true, name: true } },
-                teacher: {
-                    include: {
-                        user: { select: { firstName: true, lastName: true } },
-                    }
-                },
-            },
-        });
-
+        const club = await clubModel.update(parseInt(req.params.id), req.body);
         res.json({ success: true, data: club });
     } catch (error) {
         next(error);
@@ -150,13 +38,7 @@ exports.update = async (req, res, next) => {
 
 exports.updateStatus = async (req, res, next) => {
     try {
-        const { isActive } = req.body;
-
-        await prisma.club.update({
-            where: { id: parseInt(req.params.id) },
-            data: { isActive },
-        });
-
+        await clubModel.updateStatus(parseInt(req.params.id), req.body);
         res.json({ success: true, message: 'Status is updated' });
     } catch (error) {
         next(error);
@@ -165,32 +47,9 @@ exports.updateStatus = async (req, res, next) => {
 
 exports.remove = async (req, res, next) => {
     try {
-        const currentSubscriptions = await prisma.subscription.count({
-            where: {
-                clubId: parseInt(req.params.id),
-                status: 'ACTIVE' || 'PENDING',
-            },
-        });
-
-        if (currentSubscriptions !== 0) throw new AppError('Вы не можете совершить это действие, так как к данному кружку привязаны абонементы', 409);
-
-        const currentRequests = await prisma.subscriptionRequest.count({
-            where: {
-                clubService: {
-                    clubId: parseInt(req.params.id),
-                },
-                status: 'PENDING',
-            },
-        });
-
-        if (currentRequests !== 0) throw new AppError('Вы не можете совершить это действие, так как к данному кружку привязаны заявки', 409);
-
-        await prisma.club.delete({
-            where: { id: parseInt(req.params.id) },
-        });
-
+        await clubModel.remove(parseInt(req.params.id));
         res.json({ success: true, message: 'Club is deleted' });
     } catch (error) {
         next(error);
     }
-}; 
+};

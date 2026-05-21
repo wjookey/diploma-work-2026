@@ -16,7 +16,7 @@ const ScheduleCard = ({ record, isEditMode = true, onEdit, isInModal = false }) 
                         </div>
                         <div className={styles.teacher}>
                             <GraduationCap className={styles.icon} />
-                            <p>{!record?.club.dayClasses ? `${record?.club?.teacher?.user?.lastName} ${record?.club?.teacher?.user?.firstName}` : '-'}</p>
+                            <p>{!record?.club.dayClasses && record?.club?.teacher ? `${record?.club?.teacher?.user?.lastName} ${record?.club?.teacher?.user?.firstName}` : '-'}</p>
                         </div>
                         <div className={styles.room}>
                             <MapPin className={styles.icon} />

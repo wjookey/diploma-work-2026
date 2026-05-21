@@ -21,7 +21,7 @@ const ClubCard = ({ club, onEdit, isInModal = false }) => {
                     <div className={styles.aboutClub}>
                         <div className={styles.teacher}>
                             <GraduationCap className={styles.icon} />
-                            <p>{!club.dayClasses ? `${club.teacher.user.lastName} ${club.teacher.user.firstName}` : '-'}</p>
+                            <p>{!club.dayClasses && club?.teacher ? `${club.teacher.user.lastName} ${club.teacher.user.firstName}` : '-'}</p>
                         </div>
                         <div className={styles.clients}>
                             <Users className={styles.icon} />

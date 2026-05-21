@@ -13,7 +13,7 @@ const UpcomingLessons = ({lessons}) => {
                         <AlarmClock className={styles.icon} />
                     </div>
                     <div className={styles.teacher}>
-                        <p>{!l?.club.dayClasses ? `${l?.teacher.user.lastName} ${l?.teacher.user.firstName}` : '-'}</p>
+                        <p>{!l?.club.dayClasses && l?.teacher ? `${l?.teacher.user.lastName} ${l?.teacher.user.firstName}` : '-'}</p>
                         <GraduationCap className={styles.icon} />
                     </div>
                 </div>

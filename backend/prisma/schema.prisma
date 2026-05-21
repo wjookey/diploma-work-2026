@@ -245,7 +245,7 @@ model Payment {
   note String?
   createdAt DateTime @default(now()) @map("created_at")
 
-  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }
