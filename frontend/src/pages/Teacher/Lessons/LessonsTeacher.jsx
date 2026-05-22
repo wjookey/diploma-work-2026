@@ -65,7 +65,7 @@ const LessonsTeacher = () => {
     const handleMarkAttendance = async () => {
         setSubmittingEdit(true);
         try {
-            const attData = selectedAttendance.map((record) => ({ childId: record.child?.id || record.childId, isPresent: record.isPresent }));
+            const attData = selectedAttendance.map((record) => ({ childId: record.child?.id || record.childId, isPresent: record.isPresent, subId: record.subId }));
             await api.post(`/attendances`, { lessonId: selectedLesson.id, attendances: attData });
             toast.success('Посещаемость отмечена');
             setAttendanceModal(false);
@@ -83,9 +83,13 @@ const LessonsTeacher = () => {
                 const url = `/subscriptions?clubId=${lesson.clubId}&status=ACTIVE`;
                 const res = await api.get(url);
                 const attendance = [];
-                res.data.data.map((sub) => {
-                    attendance.push({ child: sub.child, isPresent: false })
+                const subscriptions = res.data.data;
+                const activeSubCount = {};
+                subscriptions.map((sub) => activeSubCount[sub.childId] = (activeSubCount[sub.childId] || 0) + 1);
+                subscriptions.filter((sub) => activeSubCount[sub.childId] === 1 || activeSubCount[sub.childId] > 1 && sub.stateUpdateDate).map((sub) => {
+                    attendance.push({ child: sub.child, isPresent: false, subId: sub.id });
                 });
+
                 setSelectedAttendance(attendance);
             } else {
                 setSelectedAttendance(lesson.attendances);

@@ -1,13 +1,13 @@
 import styles from './DangerModal.module.scss';
 import Button from '../Button/Button';
 import { useEffect } from 'react';
+import { lockBodyScroll, unlockBodyScroll } from '../../utils/bodyScrollLock';
 
 const DangerModal = ({ onDelete, isOpen, onClose }) => {
     useEffect(() => {
-        if (isOpen) document.body.style.overflow = 'hidden';
-        else document.body.style.overflow = '';
-
-        return () => { document.body.style.overflow = ''; };
+        if (!isOpen) return;
+        lockBodyScroll();
+        return () => unlockBodyScroll();
     }, [isOpen]);
 
     if (!isOpen) return null;

@@ -1,13 +1,13 @@
 import styles from './Modal.module.scss';
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { lockBodyScroll, unlockBodyScroll } from '../../utils/bodyScrollLock';
 
 const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
     useEffect(() => {
-        if (isOpen) document.body.style.overflow = 'hidden';
-        else document.body.style.overflow = '';
-
-        return () => { document.body.style.overflow = ''; };
+        if (!isOpen) return;
+        lockBodyScroll();
+        return () => unlockBodyScroll();
     }, [isOpen]);
 
     if (!isOpen) return null;

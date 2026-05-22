@@ -63,11 +63,9 @@ const activatePendingSubscription = async (clubId, childId) => {
 };
 
 const processScheduledLessonSubscription = async (lesson, record) => {
-    const activeSubscription = await prisma.subscription.findFirst({
+    const activeSubscription = await prisma.subscription.findUnique({
         where: {
-            childId: parseInt(record.childId),
-            clubId: lesson.clubId,
-            status: 'ACTIVE',
+            id: parseInt(record.subId),
         },
         include: {
             clubService: true,
