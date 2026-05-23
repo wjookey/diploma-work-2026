@@ -180,7 +180,7 @@ describe('attendances.controller (unit)', () => {
 
         const markBody = {
             lessonId: 1,
-            attendances: [{ childId: 1, isPresent: true, note: 'пришёл' }],
+            attendances: [{ childId: 1, subId: 100, isPresent: true, note: 'пришёл' }],
         };
 
         it('returns 403 when lesson is not today', async () => {
@@ -210,7 +210,7 @@ describe('attendances.controller (unit)', () => {
             vi.spyOn(prisma.lesson, 'findUnique').mockResolvedValue(lessonToday());
             vi.spyOn(prisma.attendance, 'findUnique').mockResolvedValue(null);
             vi.spyOn(prisma.attendance, 'upsert').mockResolvedValue(upserted);
-            vi.spyOn(prisma.subscription, 'findFirst').mockResolvedValue(activeSubscription());
+            vi.spyOn(prisma.subscription, 'findUnique').mockResolvedValue(activeSubscription());
             vi.spyOn(prisma.subscription, 'update').mockResolvedValue({});
             vi.spyOn(prisma.lesson, 'update').mockResolvedValue({});
 
@@ -223,6 +223,10 @@ describe('attendances.controller (unit)', () => {
                 next
             );
 
+            expect(prisma.subscription.findUnique).toHaveBeenCalledWith({
+                where: { id: 100 },
+                include: { clubService: true },
+            });
             expect(prisma.attendance.upsert).toHaveBeenCalledWith(
                 expect.objectContaining({
                     create: expect.objectContaining({
@@ -242,7 +246,7 @@ describe('attendances.controller (unit)', () => {
                 isPresent: false,
             });
             vi.spyOn(prisma.attendance, 'upsert').mockResolvedValue({ id: 50 });
-            vi.spyOn(prisma.subscription, 'findFirst').mockResolvedValue(activeSubscription());
+            vi.spyOn(prisma.subscription, 'findUnique').mockResolvedValue(activeSubscription());
             vi.spyOn(prisma.subscription, 'update').mockResolvedValue({});
             vi.spyOn(prisma.lesson, 'update').mockResolvedValue({});
 
@@ -268,7 +272,7 @@ describe('attendances.controller (unit)', () => {
             vi.spyOn(prisma.lesson, 'findUnique').mockResolvedValue(lessonToday());
             vi.spyOn(prisma.attendance, 'findUnique').mockResolvedValue(null);
             vi.spyOn(prisma.attendance, 'upsert').mockResolvedValue({ id: 50 });
-            vi.spyOn(prisma.subscription, 'findFirst').mockResolvedValue(
+            vi.spyOn(prisma.subscription, 'findUnique').mockResolvedValue(
                 activeSubscription({ remainingLessons: 5 })
             );
             const subscriptionUpdate = vi.spyOn(prisma.subscription, 'update').mockResolvedValue({});
@@ -293,7 +297,7 @@ describe('attendances.controller (unit)', () => {
             vi.spyOn(prisma.lesson, 'findUnique').mockResolvedValue(lessonToday());
             vi.spyOn(prisma.attendance, 'findUnique').mockResolvedValue(null);
             vi.spyOn(prisma.attendance, 'upsert').mockResolvedValue({ id: 50 });
-            vi.spyOn(prisma.subscription, 'findFirst').mockResolvedValue(
+            vi.spyOn(prisma.subscription, 'findUnique').mockResolvedValue(
                 activeSubscription({ usedFreezes: 0 })
             );
             const subscriptionUpdate = vi.spyOn(prisma.subscription, 'update').mockResolvedValue({});
@@ -304,7 +308,7 @@ describe('attendances.controller (unit)', () => {
                     user: { role: 'ADMIN' },
                     body: {
                         lessonId: 1,
-                        attendances: [{ childId: 1, isPresent: false }],
+                        attendances: [{ childId: 1, subId: 100, isPresent: false }],
                     },
                 }),
                 res,
@@ -321,7 +325,7 @@ describe('attendances.controller (unit)', () => {
             vi.spyOn(prisma.lesson, 'findUnique').mockResolvedValue(lessonToday());
             vi.spyOn(prisma.attendance, 'findUnique').mockResolvedValue(null);
             vi.spyOn(prisma.attendance, 'upsert').mockResolvedValue({ id: 50 });
-            vi.spyOn(prisma.subscription, 'findFirst').mockResolvedValue(activeSubscription());
+            vi.spyOn(prisma.subscription, 'findUnique').mockResolvedValue(activeSubscription());
             vi.spyOn(prisma.subscription, 'update').mockResolvedValue({});
             const lessonUpdate = vi.spyOn(prisma.lesson, 'update').mockResolvedValue({});
 
