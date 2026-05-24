@@ -1,5 +1,5 @@
 body {
-  background-image: url('Webbackground.png');
+  background-image: url('/Webbackground.png');
   background-attachment: fixed;
   background-size: cover;
   background-position: center;
