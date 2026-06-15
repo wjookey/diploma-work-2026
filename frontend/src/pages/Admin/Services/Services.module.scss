@@ -1,25 +1,8 @@
 @use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/mixins/page-header' as *;
 
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-
-    .left {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-
-        .pageName {
-            font-size: 30px;
-            color: $neutral-1;
-        }
-        
-        .sidebarButton {
-            width: 40px;
-        }
-    }
+    @include page-header;
 }
 
 .wrapper {

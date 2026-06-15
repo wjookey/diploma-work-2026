@@ -79,3 +79,10 @@
         }
     }
 }
+
+@media (max-width: 500px) {
+    .toRegister {
+        flex-direction: column;
+        align-items: center;
+    }
+}

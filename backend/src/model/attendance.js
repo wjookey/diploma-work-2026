@@ -15,6 +15,16 @@ const attendanceListInclude = {
     },
 };
 
+const toLocalDayStart = (date) => {
+    const d = new Date(date);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+};
+
+const isSubscriptionStartedOnOrBefore = (lessonDate, startDate) => {
+    if (!startDate) return false;
+    return toLocalDayStart(startDate) <= toLocalDayStart(lessonDate);
+};
+
 const buildListWhere = ({ childId, familyId, dateFrom, dateTo }) => {
     const where = {};
 
@@ -64,13 +74,18 @@ const activatePendingSubscription = async (clubId, childId) => {
 
 const processScheduledLessonSubscription = async (lesson, record) => {
     const activeSubscription = await prisma.subscription.findUnique({
-        where: {
-            id: parseInt(record.subId),
-        },
+        where: { id: parseInt(record.subId) },
         include: {
             clubService: true,
         },
     });
+
+    if (
+        !activeSubscription
+        || !isSubscriptionStartedOnOrBefore(lesson.date, activeSubscription.startDate)
+    ) {
+        return;
+    }
 
     if (!record.isPresent && activeSubscription.clubService.freezedLesson !== 0 && activeSubscription.usedFreezes < activeSubscription.clubService.freezedLesson) {
         const updatedUsedFreezes = activeSubscription.usedFreezes + 1;

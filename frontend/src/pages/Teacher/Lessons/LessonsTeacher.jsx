@@ -5,7 +5,7 @@ import Sidebar from '../../../components/Sidebar/Sidebar';
 import EmptyState from '../../../components/EmptyState/EmptyState';
 import { AlarmClock, Plus, Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { formatDate } from '../../../utils/helper';
+import { formatDate, isSubscriptionStartedOnOrBefore } from '../../../utils/helper';
 import Select from '../../../components/Select/Select';
 import Input from '../../../components/Input/Input';
 import AttendanceModal from '../../../components/AttendanceModal/AttendanceModal';
@@ -86,7 +86,10 @@ const LessonsTeacher = () => {
                 const subscriptions = res.data.data;
                 const activeSubCount = {};
                 subscriptions.map((sub) => activeSubCount[sub.childId] = (activeSubCount[sub.childId] || 0) + 1);
-                subscriptions.filter((sub) => activeSubCount[sub.childId] === 1 || activeSubCount[sub.childId] > 1 && sub.stateUpdateDate).map((sub) => {
+                subscriptions.filter((sub) => (
+                    (activeSubCount[sub.childId] === 1 || (activeSubCount[sub.childId] > 1 && sub.stateUpdateDate))
+                    && isSubscriptionStartedOnOrBefore(lesson.date, sub.startDate)
+                )).map((sub) => {
                     attendance.push({ child: sub.child, isPresent: false, subId: sub.id });
                 });
 

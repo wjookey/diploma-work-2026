@@ -1,11 +1,22 @@
+html,
 body {
+  min-height: 100%;
+}
+
+body {
+  background-color: #2a2438;
   background-image: url('/Webbackground.png');
-  background-attachment: fixed;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: scroll;
 }
 
+@media (min-width: 768px) {
+  body {
+    background-attachment: fixed;
+  }
+}
 * {
   margin: 0;
   padding: 0;

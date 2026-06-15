@@ -73,3 +73,13 @@ export const formatDateToISO = (date) => {
     const dateISO = new Date(date);
     return dateISO.toISOString();
 };
+
+export const toLocalDayStart = (date) => {
+    const d = new Date(date);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+};
+
+export const isSubscriptionStartedOnOrBefore = (lessonDate, startDate) => {
+    if (!startDate || !lessonDate) return false;
+    return toLocalDayStart(startDate) <= toLocalDayStart(lessonDate);
+};

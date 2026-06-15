@@ -27,6 +27,7 @@ const activeSubscription = (overrides = {}) => ({
     childId: 1,
     clubId: 5,
     status: 'ACTIVE',
+    startDate: new Date('2025-01-01'),
     remainingLessons: 10,
     usedFreezes: 0,
     clubService: { freezedLesson: 2 },
